@@ -1,0 +1,93 @@
+   <%- include('partials/header') %>
+
+    <div class="no-bottom no-top" id="content">
+             <section id="subheader" class="breadcrumb-section text-center" style="background: linear-gradient(
+                rgba(0, 0, 0, 0.6), 
+                rgba(0, 0, 0, 0.4)
+              ),url('images/breadcrumb-img.jpg'); background-size: cover; background-position: center center; min-height: 300px; display: flex; align-items: center;">
+                <div class="container relative z-2">
+                    <div class="row align-items-center">
+                        <div class="col-lg-12">
+                            <h1 class="wow fadeInUp">Contact Us</h1>
+                            <ul class="crumb wow fadeInDown">
+                                <li><a href="/index">Home</a></li>
+                                <li class="active">Contact Us</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+                 <section>
+                <div class="container">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="subtitle">Get In Touch</div>
+                            <h2 class="wow fadeInUp">We are always ready to help you and answer your questions</h2>
+
+                            <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
+
+                            <div class="row g-4 gx-5">
+                               
+
+                                <div class="col-lg-6">
+                                    <div class="fw-bold text-dark"><i class="icofont-location-pin me-2 id-color-2"></i>Clinic Location</div>
+                                   Vizag , India.
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="fw-bold text-dark"><i class="icofont-phone me-2 id-color-2"></i>Call Us Directly</div>
+                                   <a href="tel:  +91 98765 43210">  +91 98765 43210</a>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="fw-bold text-dark"><i class="icofont-envelope me-2 id-color-2"></i>Send a Message</div>
+                                     <a href="mailto:info@vidyavedika.com">info@vidyavedika.com</a>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="p-40 bg-color-op-1 rounded-1">
+                                <h3>Get In Touch</h3>
+                                <form >
+
+                                    <div class="mb-4">
+                                        <input type="text" name="name" id="name" class="form-control" placeholder="Your Name" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <input type="text" name="email" id="email" class="form-control" placeholder="Your Email" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <input type="text" name="phone" id="phone" class="form-control" placeholder="Your Phone" required>
+                                    </div>
+
+                                    <div class="mb-4 mb20">
+                                        <textarea name="message" id="message" class="form-control" placeholder="Your Message" required></textarea>
+                                    </div>
+
+
+                                    <div id='submit' class="mt20">
+                                        <input type='submit' id='send_message' value='Send Message' class="btn-main">
+                                    </div>
+
+                                    <div id="success_message" class='success'>
+                                        Your message has been sent successfully. Refresh this page if you want to send more messages.
+                                    </div>
+                                    <div id="error_message" class='error'>
+                                        Sorry there was an error sending your form.
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+</div>
+<%- include('partials/footer') %>

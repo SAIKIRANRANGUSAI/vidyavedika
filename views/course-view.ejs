@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+
+<div class="no-bottom no-top" id="content">
+  <section id="subheader" class="breadcrumb-section text-center" 
+      style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.4)),
+             url('images/breadcrumb-img.jpg'); background-size: cover; min-height: 300px; display: flex; align-items: center;">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-12">
+          <h1 class="wow fadeInUp"><%= course.name %></h1>
+          <ul class="crumb wow fadeInDown">
+            <li><a href="/index">Home</a></li>
+            <li class="active"><%= course.name %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row gx-5">
+        <div class="col-lg-8">
+          <div class="blog-read">
+            <div class="post-text">
+              <img src="<%= course.banner %>" class="w-100 mb-4 rounded-1" alt="">
+              <%- course.full_content %> <!-- Render CKEditor content -->
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="widget widget-post">
+            <h4>Related Courses</h4>
+            <ul class="de-bloglist-type-1">
+              <% related.forEach(r => { %>
+                <li>
+                  <div class="d-image">
+                    <img src="<%= r.icon %>" alt="">
+                  </div>
+                  <div class="d-content">
+                    <a href="/courses/<%= r.slug %>"><h4><%= r.name %></h4></a>
+                    <p class="mb-0"><%= r.short_desc %></p>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>
