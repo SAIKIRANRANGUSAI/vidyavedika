@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Management | VidyaVedika</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/static/css/admin.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 2em;
+        }
+
+        .section-subtitle {
+            color: #555;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+        }
+
+        .table-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .table-actions .btn {
+            margin-right: 5px;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 1rem;
+        }
+    </style>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background: #f1f5f9;
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            padding: 10px 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .menu-item span {
+            flex: 1;
+        }
+
+        .menu-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-details span {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            margin-right: 16px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            width: 300px;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-action {
+            position: relative;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb i {
+            margin: 0 8px;
+            font-size: 12px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-action i {
+            margin-left: 6px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d93757;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8fafc;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dashboard-footer {
+            background: white;
+            padding: 16px 24px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .modal-sm {
+            max-width: 400px;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 71, 111, 0.8);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-delete {
+            opacity: 1;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://placehold.co/40x40" alt="Logo">
+            <h2>VidyaVedika Admin</h2>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="/admin/dashboard" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/home" class="menu-item active">
+                <i class="fas fa-house-user"></i>
+                <span>Home</span>
+            </a>
+            <div class="menu-label">Content</div>
+            <a href="/admin/about" class="menu-item">
+                <i class="fas fa-info-circle"></i>
+                <span>About Us</span>
+            </a>
+            <a href="/admin/academics" class="menu-item">
+                <i class="fas fa-book-open"></i>
+                <span>Academics</span>
+            </a>
+            <a href="/admin/courses" class="menu-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Courses</span>
+            </a>
+            <a href="/admin/student-life" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Student Life</span>
+            </a>
+            <a href="/admin/gallery" class="menu-item">
+                <i class="fas fa-image"></i>
+                <span>Gallery</span>
+                <span class="menu-badge">12</span>
+            </a>
+            <a href="/admin/contacts" class="menu-item">
+                <i class="fas fa-envelope"></i>
+                <span>Contact Messages</span>
+                <span class="menu-badge">5</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <img src="https://placehold.co/40x40" alt="User">
+                <div class="user-details">
+                    <h4>Admin User</h4>
+                    <span>Content Manager</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <div class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfileBtn">
+                    <img src="https://placehold.co/36x36" alt="User">
+                    <span>Admin User</span>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">Home Page Management</h1>
+                <div class="breadcrumb">
+                    <a href="#">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Home Page</span>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Hero Section</h2>
+                </div>
+                <form id="heroForm" action="/admin/home/hero" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="heroTitle" class="form-label">Title</label>
+                        <input type="text" class="form-input" id="heroTitle" name="heading"
+                            value="<%= homeContent.heading %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="heroSubtitle" class="form-label">Subtitle</label>
+                        <input type="text" class="form-input" id="heroSubtitle" name="sub_heading"
+                            value="<%= homeContent.sub_heading %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="heroDescription" class="form-label">Description</label>
+                        <textarea class="form-textarea" id="heroDescription"
+                            name="description"><%= homeContent.description %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Current Banner Images</label>
+                        <div class="gallery-grid">
+                            <% if (homeContent.banner_image_paths && homeContent.banner_image_paths.length> 0) { %>
+                                <% homeContent.banner_image_paths.forEach(imagePath=> { %>
+                                    <div class="gallery-item">
+                                        <img src="<%= imagePath %>" alt="Banner Image">
+                                        <a href="/admin/home/hero/delete-image?path=<%= encodeURIComponent(imagePath) %>"
+                                            class="gallery-delete"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <p>No banner images uploaded yet.</p>
+                                            <% } %>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heroImages" class="form-label">Upload New Banner Images</label>
+                        <input type="file" class="form-input" id="heroImages" name="banner_images" multiple>
+                        <small class="form-text text-muted">You can select multiple images to upload. They will be added
+                            to the current banners.</small>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Hero Section</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Call to Action (CTA) Section</h2>
+                </div>
+                <form id="ctaForm" action="/admin/home/cta" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="ctaHeading" class="form-label">Heading</label>
+                        <input type="text" class="form-input" id="ctaHeading" name="cta_heading"
+                            value="<%= cta.cta_heading %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="ctaText" class="form-label">Text</label>
+                        <textarea class="form-textarea" id="ctaText" name="cta_text"><%= cta.cta_text %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Current CTA Image</label>
+                        <div class="image-preview-container">
+                            <% if (cta.cta_image_path) { %>
+                                <img src="<%= cta.cta_image_path %>" alt="Current CTA Image" class="image-preview">
+                                <p class="mt-2">Image URL: <%= cta.cta_image_path %>
+                                </p>
+                                <% } else { %>
+                                    <p>No image uploaded yet.</p>
+                                    <% } %>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ctaImage" class="form-label">Upload New CTA Image</label>
+                        <input type="file" class="form-input" id="ctaImage" name="cta_image">
+                        <small class="form-text text-muted">Upload a single image to replace the current one.</small>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save CTA Section</button>
+                    </div>
+                </form>
+            </div>
+
+
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Statistics Counter</h2>
+                </div>
+
+                <form id="counterForm" action="/admin/home/counters" method="POST">
+                    <% counters.forEach(counter=> { %>
+                        <div class="form-group">
+                            <label for="counterLabel<%= counter.id %>" class="form-label">Label</label>
+                            <input type="text" id="counterLabel<%= counter.id %>" class="form-input"
+                                name="counters[<%= counter.id %>][label]" value="<%= counter.label %>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="counterValue<%= counter.id %>" class="form-label">Value</label>
+                            <input type="number" id="counterValue<%= counter.id %>" class="form-input"
+                                name="counters[<%= counter.id %>][value]" value="<%= counter.value %>" required>
+                        </div>
+
+                        <hr class="my-3">
+                        <% }) %>
+
+                            <div class="form-footer mt-3">
+                                <button type="submit" class="btn btn-primary">Save All Statistics</button>
+                            </div>
+                </form>
+            </div>
+
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Gallery Section</h2>
+                </div>
+
+                <!-- 🎯 Update heading + description -->
+                <form id="galleryForm" action="/admin/home/gallery/update" method="POST">
+                    <div class="form-group">
+                        <label for="galleryHeading" class="form-label">Heading</label>
+                        <input type="text" class="form-input" id="galleryHeading" name="gallery_heading"
+                            value="<%= galleryContent.heading %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="galleryDescription" class="form-label">Description</label>
+                        <textarea class="form-textarea" id="galleryDescription" name="gallery_description" rows="4"
+                            required><%= galleryContent.description %></textarea>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Gallery Section</button>
+                    </div>
+                </form>
+
+                <!-- 🎯 Upload new images -->
+                <form action="/admin/home/gallery/upload" method="POST" enctype="multipart/form-data" class="mt-4">
+                    <div class="form-group">
+                        <label class="form-label">Upload New Gallery Images</label>
+                        <input type="file" name="gallery_images" class="form-input" multiple accept="image/*">
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Upload Images</button>
+                    </div>
+                </form>
+
+                <!-- 🎯 Current gallery images -->
+                <div class="form-group mt-4">
+                    <label class="form-label">Current Gallery Images</label>
+                    <div class="gallery-grid">
+                        <% if (galleryImages && galleryImages.length> 0) { %>
+                            <% galleryImages.forEach(image=> { %>
+                                <div class="gallery-item">
+                                    <img src="<%= image.file_path %>" alt="Gallery Image">
+                                    <a href="/admin/home/gallery/delete-image/<%= image.id %>" class="gallery-delete"
+                                        onclick="return confirm('Are you sure you want to delete this image?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <p>No gallery images uploaded yet.</p>
+                                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Edit "Why Choose Vidyavedika"</h2>
+                </div>
+                <form action="/admin/home/why-choose-us/update" method="POST" enctype="multipart/form-data">
+                    <!-- Main Heading -->
+                    <div class="form-group">
+                        <label for="mainHeading" class="form-label">Main Heading</label>
+                        <input type="text" class="form-input" id="mainHeading" name="main_heading"
+                            value="<%= whyChooseUs.main_heading || '' %>" required>
+                    </div>
+
+                    <!-- Second Heading -->
+                    <div class="form-group">
+                        <label for="heading2" class="form-label">Second Heading</label>
+                        <input type="text" class="form-input" id="heading2" name="heading_2"
+                            value="<%= whyChooseUs.heading_2 || '' %>" required>
+                    </div>
+
+                    <!-- Main Description -->
+                    <div class="form-group">
+                        <label for="mainDescription" class="form-label">Main Description</label>
+                        <textarea class="form-textarea" id="mainDescription" name="main_description" rows="3"
+                            required><%= whyChooseUs.main_description || '' %></textarea>
+                    </div>
+
+                    <!-- Sub Headings & Descriptions -->
+                    <% for(let i=1; i <=4; i++) { %>
+                        <div class="form-group">
+                            <label for="subHeading<%= i %>" class="form-label">Sub Heading <%= i %></label>
+                            <input type="text" class="form-input" id="subHeading<%= i %>" name="sub_heading_<%= i %>"
+                                value="<%= whyChooseUs['sub_heading_' + i] || '' %>">
+                        </div>
+                        <div class="form-group">
+                            <label for="desc<%= i %>" class="form-label">Description <%= i %></label>
+                            <textarea class="form-textarea" id="desc<%= i %>" name="description_<%= i %>"
+                                rows="2"><%= whyChooseUs['description_' + i] || '' %></textarea>
+                        </div>
+                        <% } %>
+
+                            <!-- Images -->
+                            <% for(let i=1; i<=3; i++) { %>
+                                <div class="form-group">
+                                    <label>Image <%= i %></label>
+                                    <input type="file" class="form-control" name="image_<%= i %>" accept="image/*">
+                                    <% if (whyChooseUs['image_' + i]) { %>
+                                        <div class="mt-2">
+                                            <img src="<%= whyChooseUs['image_' + i].replace(/\\/g, '/') %>"
+                                                alt="Image <%= i %>" style="max-width:150px;">
+                                        </div>
+                                        <% } %>
+                                </div>
+                                <% } %>
+
+
+
+                                    <!-- Submit Button -->
+                                    <div class="form-footer mt-3">
+                                        <button type="submit" class="btn btn-primary">Update Section</button>
+                                    </div>
+                </form>
+            </div>
+
+
+
+
+
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Testimonials</h2>
+                </div>
+
+                <form id="testimonialsTextForm" action="/admin/home/testimonials/update-text" method="POST">
+                    <div class="form-group">
+                        <label for="testimonialsHeading" class="form-label">Heading</label>
+                        <input type="text" class="form-input" id="testimonialsHeading" name="testimonials_heading"
+                            value="<%= testimonialsContent.heading %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="testimonialsDescription" class="form-label">Description</label>
+                        <textarea class="form-textarea" id="testimonialsDescription"
+                            name="testimonials_description"><%= testimonialsContent.description %></textarea>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Section Text</button>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="container">
+                <div class="content-section">
+                    <hr class="mt-4 mb-4">
+                    <div class="section-header">
+                        <h3 class="section-subtitle">Manage Testimonial Cards</h3>
+                        <button type="button" class="btn btn-primary open-testimonial-modal" data-action="add">Add New
+                            Testimonial</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (testimonials && testimonials.length> 0) { %>
+                                    <% testimonials.forEach(testimonial=> { %>
+                                        <tr>
+                                            <td><img src="<%= testimonial.image_path %>" alt="Testimonial Image"
+                                                    class="table-image" width="80"></td>
+                                            <td>
+                                                <%= testimonial.name %>
+                                            </td>
+                                            <td>
+                                                <%= testimonial.role %>
+                                            </td>
+                                            <td>
+                                                <%= testimonial.description %>
+                                            </td>
+                                            <td>
+                                                <div class="table-actions">
+                                                    <button type="button"
+                                                        class="btn btn-primary btn-sm open-testimonial-modal"
+                                                        data-action="edit" data-id="<%= testimonial.id %>"
+                                                        data-name="<%= testimonial.name %>"
+                                                        data-role="<%= testimonial.role %>"
+                                                        data-description="<%= testimonial.description %>"
+                                                        data-image-path="<%= testimonial.image_path %>">Edit</button>
+                                                    <form action="/admin/home/testimonials/delete/<%= testimonial.id %>"
+                                                        method="POST" style="display:inline;">
+                                                        <input type="hidden" name="image_path"
+                                                            value="<%= testimonial.image_path %>">
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Are you sure you want to delete this testimonial?');">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="5">No testimonials found.</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Centered Modal -->
+            <div class="modal fade" id="testimonialModal" tabindex="-1" role="dialog"
+                aria-labelledby="testimonialModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document"> <!-- Centered -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="testimonialModalLabel"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form id="testimonialForm" action="" method="POST" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <input type="hidden" id="testimonialId" name="id">
+                                <div class="form-group">
+                                    <label for="testimonialName">Name</label>
+                                    <input type="text" class="form-input form-control" id="testimonialName" name="name"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="testimonialRole">Role</label>
+                                    <input type="text" class="form-input form-control" id="testimonialRole" name="role"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="testimonialDescription">Description</label>
+                                    <textarea class="form-textarea form-control" id="testimonialDescription"
+                                        name="description" required></textarea>
+                                </div>
+                                <div class="form-group" id="imageInputGroup">
+                                    <label for="testimonialImage">Image</label>
+                                    <input type="file" class="form-input form-control" id="testimonialImage"
+                                        name="testimonial_image" accept="image/*">
+                                </div>
+                                <div class="form-group" id="currentImageContainer" style="display: none;">
+                                    <label>Current Image</label>
+                                    <img id="currentTestimonialImage" src="" alt="Current Testimonial Image"
+                                        style="max-width: 150px;">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="modalSubmitButton"></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const testimonialModalEl = document.getElementById('testimonialModal');
+                    const testimonialModal = new bootstrap.Modal(testimonialModalEl);
+                    const modalTitle = document.getElementById('testimonialModalLabel');
+                    const testimonialForm = document.getElementById('testimonialForm');
+                    const testimonialId = document.getElementById('testimonialId');
+                    const testimonialName = document.getElementById('testimonialName');
+                    const testimonialRole = document.getElementById('testimonialRole');
+                    const testimonialDescription = document.getElementById('testimonialDescription');
+                    const testimonialImageInput = document.getElementById('testimonialImage');
+                    const currentImageContainer = document.getElementById('currentImageContainer');
+                    const currentTestimonialImage = document.getElementById('currentTestimonialImage');
+                    const modalSubmitButton = document.getElementById('modalSubmitButton');
+                    const imageInputGroup = document.getElementById('imageInputGroup');
+
+                    document.querySelectorAll('.open-testimonial-modal').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const action = this.getAttribute('data-action');
+
+                            if (action === 'add') {
+                                modalTitle.textContent = 'Add New Testimonial';
+                                modalSubmitButton.textContent = 'Add Testimonial';
+                                testimonialForm.action = '/admin/home/testimonials/add';
+
+                                testimonialId.value = '';
+                                testimonialName.value = '';
+                                testimonialRole.value = '';
+                                testimonialDescription.value = '';
+                                testimonialImageInput.required = true;
+                                imageInputGroup.style.display = 'block';
+                                currentImageContainer.style.display = 'none';
+                            } else if (action === 'edit') {
+                                modalTitle.textContent = 'Edit Testimonial';
+                                modalSubmitButton.textContent = 'Save Changes';
+                                testimonialForm.action = '/admin/home/testimonials/edit/' + this.getAttribute('data-id');
+
+                                testimonialId.value = this.getAttribute('data-id');
+                                testimonialName.value = this.getAttribute('data-name');
+                                testimonialRole.value = this.getAttribute('data-role');
+                                testimonialDescription.value = this.getAttribute('data-description');
+
+                                testimonialImageInput.required = false;
+                                imageInputGroup.style.display = 'block';
+                                currentImageContainer.style.display = 'block';
+                                currentTestimonialImage.src = this.getAttribute('data-image-path');
+                            }
+
+                            testimonialModal.show();
+                        });
+                    });
+                });
+            </script>
+
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+            <footer class="dashboard-footer">
+                <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
+            </footer>
+        </div>
+
+        <div class="modal-overlay" id="profileModal">
+            <div class="modal modal-sm">
+                <div class="modal-header">
+                    <h2 class="modal-title">User Profile</h2>
+                    <button class="modal-close" id="closeProfileModalBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="username" value="Admin User">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-input" id="currentPassword">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-input" id="newPassword">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-input" id="confirmPassword">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="cancelChanges">Cancel</button>
+                    <button class="btn btn-primary" id="saveChanges">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="editCourseModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Edit Course</h2>
+                    <button class="modal-close" id="closeCourseModalBtn">&times;</button>
+                </div>
+                <form id="editCourseForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Course Name</label>
+                            <input type="text" class="form-input" id="editCourseName" value="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <input type="text" class="form-input" id="editCourseCategory" value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancelCourseBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="addCourseModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Add New Course</h2>
+                    <button class="modal-close" id="closeAddCourseModalBtn">&times;</button>
+                </div>
+                <form id="addCourseForm" action="/admin/home/courses/add" method="POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Course Name</label>
+                            <input type="text" class="form-input" name="course_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <input type="text" class="form-input" name="course_category" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancelAddCourseBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Course</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="editCounterModal">
+            <div class="modal modal-sm">
+                <div class="modal-header">
+                    <h2 class="modal-title">Edit Statistic</h2>
+                    <button class="modal-close" id="closeCounterModalBtn">&times;</button>
+                </div>
+                <form id="editCounterForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Label</label>
+                            <input type="text" class="form-input" id="editCounterLabel" value="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Value</label>
+                            <input type="number" class="form-input" id="editCounterValue" value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancelCounterBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- <div class="modal-overlay" id="editTestimonialModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Edit Testimonial</h2>
+                    <button class="modal-close" id="closeTestimonialModalBtn">&times;</button>
+                </div>
+                <form id="editTestimonialForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-input" id="editTestimonialName" value="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Designation</label>
+                            <input type="text" class="form-input" id="editTestimonialDesignation" value="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quote</label>
+                            <textarea class="form-textarea" id="editTestimonialQuote"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancelTestimonialBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="addTestimonialModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Add New Testimonial</h2>
+                    <button class="modal-close" id="closeAddTestimonialBtn">&times;</button>
+                </div>
+                <form id="addTestimonialForm" action="/admin/home/testimonials/add" method="POST">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-input" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Designation</label>
+                            <input type="text" class="form-input" name="designation" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quote</label>
+                            <textarea class="form-textarea" name="quote" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="cancelAddTestimonialBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Testimonial</button>
+                    </div>
+                </form>
+            </div>
+        </div> -->
+
+</body>
+
+</html>

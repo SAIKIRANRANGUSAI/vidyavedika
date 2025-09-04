@@ -1,131 +1,176 @@
 require("dotenv").config();
 const express = require("express");
-const path = require("path");
+//const path = require("path");
 const db = require("./config/db");
 const app = express();
 const DEFAULT_IMAGE = "/images/default.png";
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+const bcrypt = require("bcrypt");
 const session = require("express-session");
 const adminRoutes = require("./admin/routes/adminRoutes");
+const indexRoutes = require('./routes/indexRoutes');
+app.use('/', indexRoutes); 
+const galleryRoutes = require("./routes/galleryRoutes");
+app.use("/", galleryRoutes);
 
+
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware
+// Middleware to parse URL-encoded bodies from HTML forms
+// Middleware to parse incoming request bodies
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
 // Session setup
 app.use(session({
-    secret: "your_secret_key",
+    secret: process.env.SESSION_SECRET || "your_secret_key",
     resave: false,
     saveUninitialized: true
 }));
 
-// Mount admin routes
-app.use("/admin", adminRoutes);
+// Serve static files
+// 1. Admin panel assets (CSS/JS/images specific to admin)
+// Public images and assets
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use(express.static(path.join(__dirname, 'public'))); // serves /images, /css, etc
 
-// Serve admin static files
+
+//app.use('/images', express.static(path.join(__dirname, 'public/images')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Admin panel assets
 app.use("/admin/static", express.static(path.join(__dirname, "admin/public")));
 
-app.get("/admin/test", (req, res) => {
-    res.send("Admin test route works!");
-});
 
 
 // Set EJS as template engine
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-app.use(express.static(path.join(__dirname, "public")));
 
+// ✅ Allow both frontend views and admin views
+app.set("views", [
+    path.join(__dirname, "views"),        // frontend
+    path.join(__dirname, "admin/views")   // admin
+]);
 
-// Static files (CSS, JS, Images)
-app.use(express.static(path.join(__dirname, "public")));
-
-// Example route
-app.get("/", (req, res) => {
-  res.render("index"); 
+// -------------------- LOGIN ROUTES -------------------- //
+// Dynamic Admin Login Page
+app.get("/admin/login", async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT logo FROM settings WHERE id=1");
+        const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+        res.render("login", { logo, error: null });   // ✅ just "login"
+    } catch (err) {
+        console.error("❌ Error fetching logo:", err);
+        res.render("login", { logo: "/admin/static/images/logo.png", error: null });
+    }
 });
+
+// Handle Login POST
+app.post("/admin/login", async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const [rows] = await db.query("SELECT * FROM admins WHERE username = ?", [username]);
+        if (rows.length === 0)
+            return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
+
+        const match = await bcrypt.compare(password, rows[0].password);
+        if (!match)
+            return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
+
+        req.session.admin = { id: rows[0].id, username: rows[0].username };
+        res.redirect("/admin/dashboard");
+    } catch (err) {
+        console.error("❌ Login error:", err);
+        res.render("login", { logo: "/admin/static/images/logo.png", error: "Something went wrong" });
+    }
+});
+
+// Logout route
+app.get("/admin/logout", (req, res) => {
+    req.session.destroy();
+    res.redirect("/admin/login");
+});
+// ----------------------------------------------------------- //
+
+// Mount admin routes
+app.use("/admin", adminRoutes);
+
+// -------------------- PUBLIC ROUTES -------------------- //
+app.get("/", (req, res) => res.render("index"));
 app.get("/about", (req, res) => res.render("about"));
 app.get("/student-life", (req, res) => res.render("student-life"));
 app.get("/gallery", (req, res) => res.render("gallery"));
 app.get("/contact", (req, res) => res.render("contact"));
 app.get("/academics", (req, res) => res.render("academics"));
 
-//app.get("/courses", (req, res) => res.render("courses"));
-// List all courses
-
-// 📌 GET all courses (courses page)
+// Courses page
 app.get("/courses", async (req, res) => {
-  try {
-    const [courses] = await db.query(
-      `SELECT c.id, c.name, c.slug, c.short_desc,
-              IFNULL(i.file_path, ?) AS icon
-       FROM courses c
-       LEFT JOIN other_images i ON c.icon_image_id = i.id`,
-      [DEFAULT_IMAGE]
-    );
-    res.render("courses", { courses });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching courses");
-  }
+    try {
+        const [courses] = await db.query(
+            `SELECT c.id, c.name, c.slug, c.short_desc,
+                    IFNULL(i.file_path, ?) AS icon
+             FROM courses c
+             LEFT JOIN other_images i ON c.icon_image_id = i.id`,
+            [DEFAULT_IMAGE]
+        );
+        res.render("courses", { courses });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching courses");
+    }
 });
+
 // Single course by slug
 app.get("/courses/:slug", async (req, res) => {
-  try {
-    const { slug } = req.params;
+    try {
+        const { slug } = req.params;
+        const [courseRows] = await db.query(
+            `SELECT c.id, c.name, c.slug, c.short_desc, c.full_content,
+                    IFNULL(b.file_path, ?) AS banner
+             FROM courses c
+             LEFT JOIN other_images b ON c.banner_image_id = b.id
+             WHERE c.slug = ?`,
+            [DEFAULT_IMAGE, slug]
+        );
+        if (courseRows.length === 0) return res.status(404).send("Course not found");
+        const course = courseRows[0];
 
-    // Fetch selected course
-    const [courseRows] = await db.query(
-      `SELECT c.id, c.name, c.slug, c.short_desc, c.full_content,
-              IFNULL(b.file_path, ?) AS banner
-       FROM courses c
-       LEFT JOIN other_images b ON c.banner_image_id = b.id
-       WHERE c.slug = ?`,
-      [DEFAULT_IMAGE, slug]
-    );
-
-    if (courseRows.length === 0) {
-      return res.status(404).send("Course not found");
+        const [related] = await db.query(
+            `SELECT c.id, c.name, c.slug, c.short_desc,
+                    IFNULL(i.file_path, ?) AS icon
+             FROM courses c
+             LEFT JOIN other_images i ON c.icon_image_id = i.id
+             WHERE c.slug != ?
+             LIMIT 6`,
+            [DEFAULT_IMAGE, slug]
+        );
+        res.render("course-view", { course, related });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching course details");
     }
-
-    const course = courseRows[0];
-
-    // Fetch related courses
-    const [related] = await db.query(
-      `SELECT c.id, c.name, c.slug, c.short_desc,
-              IFNULL(i.file_path, ?) AS icon
-       FROM courses c
-       LEFT JOIN other_images i ON c.icon_image_id = i.id
-       WHERE c.slug != ?
-       LIMIT 6`,
-      [DEFAULT_IMAGE, slug]
-    );
-
-    res.render("course-view", { course, related });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching course details");
-  }
 });
-
-
-
-
-
 
 // DB test route
-app.get("/test-db", (req, res) => {
-  db.query("SELECT 1 + 1 AS result", (err, results) => {
-    if (err) {
-      console.error("❌ Query error:", err);
-      return res.status(500).send("Database test failed");
+app.get("/test-db", async (req, res) => {
+    try {
+        const [results] = await db.query("SELECT 1 + 1 AS result");
+        res.send(`✅ Database Connected! Result: ${results[0].result}`);
+    } catch (err) {
+        console.error("❌ Query error:", err);
+        res.status(500).send("Database test failed");
     }
-    res.send(`✅ Database Connected! Result: ${results[0].result}`);
-  });
+});
+//app.use(express.static(path.join(__dirname, 'public')));
+app.get('/test-image', (req, res) => {
+    res.send('<img src="/images/1756986237536-160805489.png">');
 });
 
-// Use PORT from .env or default to 3000
+
+// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
-
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
