@@ -6,15 +6,24 @@ const app = express();
 const DEFAULT_IMAGE = "/images/default.png";
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+const aboutusRoutes = require("./routes/aboutusRoutes"); 
+app.use("/", aboutusRoutes);
+
 const adminRoutes = require("./admin/routes/adminRoutes");
 const indexRoutes = require('./routes/indexRoutes');
 app.use('/', indexRoutes); 
 const galleryRoutes = require("./routes/galleryRoutes");
 app.use("/", galleryRoutes);
-
+const adminAboutRoutes = require("./admin/routes/adminaboutRoutes"); 
 
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public/images', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
 
 // Middleware
 // Middleware to parse URL-encoded bodies from HTML forms
@@ -31,6 +40,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+
 
 // Serve static files
 // 1. Admin panel assets (CSS/JS/images specific to admin)
@@ -69,6 +79,10 @@ app.get("/admin/login", async (req, res) => {
     }
 });
 
+
+// Admin About Us routes
+app.use("/admin", adminAboutRoutes); 
+
 // Handle Login POST
 app.post("/admin/login", async (req, res) => {
     const { username, password } = req.body;
@@ -88,6 +102,15 @@ app.post("/admin/login", async (req, res) => {
         res.render("login", { logo: "/admin/static/images/logo.png", error: "Something went wrong" });
     }
 });
+
+
+// Admin routes
+
+
+
+
+
+
 
 // Logout route
 app.get("/admin/logout", (req, res) => {
@@ -169,6 +192,8 @@ app.get("/test-db", async (req, res) => {
 app.get('/test-image', (req, res) => {
     res.send('<img src="/images/1756986237536-160805489.png">');
 });
+
+
 
 
 // Start server

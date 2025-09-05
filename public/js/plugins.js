@@ -154,26 +154,7 @@ delayBeforeStart:1E3,direction:"left",duplicated:!1,duration:5E3,gap:20,pauseOnC
 //! moment.js
 //! version : 2.18.1
 
-// A common pattern for Swiper initialization
-document.addEventListener('DOMContentLoaded', function() {
 
-  // YOUR NEW CODE GOES HERE:
-  const swiperContainers = document.querySelectorAll('.swiper-slide');
-  swiperContainers.forEach(container => {
-    const innerDiv = container.querySelector('.swiper-inner');
-    const imagePath = innerDiv.getAttribute('data-bgimage');
-
-    if (imagePath) {
-      innerDiv.style.backgroundImage = imagePath;
-    }
-  });
-
-  // Then, initialize Swiper
-  const mySwiper = new Swiper('.swiper-container', {
-    // Swiper configuration options
-    // ...
-  });
-});
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
