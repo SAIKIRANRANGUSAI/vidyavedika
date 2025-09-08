@@ -1,6 +1,8 @@
 const path = require("path");
 const db = require("../../config/db");
+// const bcrypt = require("bcrypt");
 const bcrypt = require("bcrypt");
+//const db = require("../config/db");
 
 // Middleware to get logo for all admin pages
 exports.getAdminLogo = async (req, res, next) => {
@@ -59,121 +61,138 @@ exports.isAuthenticated = (req, res, next) => {
 
 // GET dashboard page
 // GET dashboard page
+//const db = require("../../config/db");  // ✅ only once
+
 exports.getDashboard = async (req, res) => {
     try {
-        const [contactData] = await db.query("SELECT name, email, message FROM contacts");
+        // Fetch Contact Us
+        const [rows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
+        const contactUs = rows[0] || {};
 
-        // Use the session data to get the username
-        const username = req.session.admin?.username || "Admin User";
+        // Fetch Contact Details
+        const [rows1] = await db.query("SELECT * FROM contact_details LIMIT 1");
+        const contactDetails = rows1[0] || {};
+        const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
         res.render("dashboard", {
-            contactData,
-            username, // Pass the username variable to the view
-            success: null,
-            error: null
+            username: req.session.username || "Admin User",
+            contactUs,
+            contactDetails,
+            messages
         });
+        //res.render("dashboard", { contactUs, contactDetails });
+
     } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        res.render("dashboard", {
-            contactData: [],
-            username: "Admin User", // Also pass a default value in case of an error
-            error: "Server error. Could not load dashboard.",
-            success: null
-        });
+        console.error("Error loading dashboard:", err);
+        res.status(500).send("Server error");
     }
 };
 
-// GET change credentials page
+
+
+// Middleware to check authentication
+exports.isAuthenticated = (req, res, next) => {
+  if (!req.session.admin || !req.session.admin.id) {
+    return res.redirect("/admin/login");
+  }
+  next();
+};
+// GET change credentials page (optional if you render separately)
 exports.getChangeCredentials = async (req, res) => {
-    // Use the session ID to load the current username
+  try {
     const adminId = req.session.admin.id;
-
-    try {
-        const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
-        const currentUsername = rows[0]?.username || "";
-        res.render("admin/change-credentials", {
-            username: currentUsername,
-            error: null,
-            success: null
-        });
-    } catch (err) {
-        console.error(err);
-        res.render("admin/change-credentials", {
-            username: req.session.admin.username,
-            error: "Failed to load admin details",
-            success: null
-        });
-    }
+    const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
+    const currentUsername = rows[0]?.username || "";
+    res.render("admin/dashboard", { username: currentUsername, error: null, success: null });
+  } catch (err) {
+    console.error(err);
+    res.render("admin/dashboard", { username: req.session.admin.username, error: "Failed to load admin details", success: null });
+  }
 };
 
-// POST change credentials
 exports.postChangeCredentials = async (req, res) => {
-    const { newUsername, currentPassword, newPassword, confirmNewPassword } = req.body;
-    const adminId = req.session.admin.id;
+  const { newUsername, currentPassword, newPassword, confirmNewPassword } = req.body;
+  const adminId = req.session.admin.id;
 
-    try {
-        if (!req.session.admin || !adminId) {
-            return res.status(401).render("admin/change-credentials", {
-                username: null,
-                error: "Unauthorized access. Please log in again.",
-                success: null
-            });
-        }
+  try {
+    const [rows] = await db.query("SELECT password FROM admins WHERE id = ?", [adminId]);
+    const user = rows[0];
+    if (!user) return res.status(404).json({ error: "User not found." });
 
-        // 1. Verify the current password
-        const [rows] = await db.query("SELECT password FROM admins WHERE id = ?", [adminId]);
-        const user = rows[0];
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) return res.status(401).json({ error: "Current password is incorrect." });
 
-        if (!user) {
-            return res.status(404).render("admin/change-credentials", {
-                username: req.session.admin.username,
-                error: "User not found.",
-                success: null
-            });
-        }
+    if (newPassword !== confirmNewPassword)
+      return res.status(400).json({ error: "New passwords do not match." });
 
-        const match = await bcrypt.compare(currentPassword, user.password);
-        if (!match) {
-            return res.status(401).render("admin/change-credentials", {
-                username: req.session.admin.username,
-                error: "Current password is incorrect.",
-                success: null
-            });
-        }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.query("UPDATE admins SET username = ?, password = ? WHERE id = ?", [newUsername, hashedPassword, adminId]);
 
-        // 2. Check if new passwords match
-        if (newPassword !== confirmNewPassword) {
-            return res.status(400).render("admin/change-credentials", {
-                username: req.session.admin.username,
-                error: "New passwords do not match.",
-                success: null
-            });
-        }
+    req.session.admin.username = newUsername;
 
-        // 3. Hash the new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+    return res.json({ success: true, message: "Credentials updated successfully!" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error. Please try again." });
+  }
+};
+// GET social links for dashboard
+// adminController.js
+exports.getDashboardWithSocial = async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
+    const social = rows[0] || {}; // always an object
 
-        // 4. Update the database
-        await db.query(
-            "UPDATE admins SET username = ?, password = ? WHERE id = ?",
-            [newUsername, hashedPassword, adminId]
-        );
+    res.render("admin/dashboard", {
+      admin: req.session.admin,
+      social,          // PASS social
+      socialError: null,
+      socialSuccess: null,
+      error: null,
+      success: null
+    });
+  } catch (err) {
+    console.error(err);
+    res.render("admin/dashboard", {
+      admin: req.session.admin,
+      social: {},      // still pass an empty object
+      socialError: "Failed to load social links",
+      socialSuccess: null,
+      error: "Failed to load dashboard",
+      success: null
+    });
+  }
+};
 
-        // 5. Update the session with the new username
-        req.session.admin.username = newUsername;
 
-        return res.status(200).render("admin/change-credentials", {
-            username: newUsername,
-            success: "Credentials updated successfully!",
-            error: null
-        });
+// POST Update Social Links
+exports.postSocialSettings = async (req, res) => {
+  const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
 
-    } catch (err) {
-        console.error("Error updating credentials:", err);
-        return res.status(500).render("admin/change-credentials", {
-            username: req.session.admin ? req.session.admin.username : null,
-            error: "Server error. Please try again.",
-            success: null
-        });
+  try {
+    const [rows] = await db.query("SELECT id FROM admin_social WHERE id = 1");
+
+    if (rows.length > 0) {
+      // Update existing row
+      await db.query(
+        `UPDATE admin_social 
+         SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=? 
+         WHERE id=1`,
+        [description, facebook, twitter, instagram, youtube, whatsapp]
+      );
+    } else {
+      // Insert new row
+      await db.query(
+        `INSERT INTO admin_social (id, description, facebook, twitter, instagram, youtube, whatsapp) 
+         VALUES (1, ?, ?, ?, ?, ?, ?)`,
+        [description, facebook, twitter, instagram, youtube, whatsapp]
+      );
     }
+
+    res.json({ success: true, message: "Social links updated successfully!" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error. Please try again." });
+  }
 };

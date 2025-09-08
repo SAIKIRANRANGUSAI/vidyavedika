@@ -151,15 +151,23 @@
   <section class="bg-color-op-1">
     <div class="container">
       <div class="row g-4 justify-content-center">
-        <div class="col-lg-8 text-center">
-          <div class="subtitle wow fadeInUp mb-3">Our Courses</div>
-          <h2 class="wow fadeInUp" data-wow-delay=".2s">Complete Care for Every Smile</h2>
-          <p class="col-lg-8 offset-lg-2 mb-0 wow fadeInUp">From routine cleanings to advanced restorations, we
-            provide personalized dental solutions for patients of all ages.</p>
-          <div class="spacer-single"></div>
-          <div class="spacer-half"></div>
-        </div>
-      </div>
+  <div class="col-lg-8 text-center">
+    <div class="subtitle wow fadeInUp mb-3">Our Courses</div>
+
+    <% if (sections && sections.length > 0) { %>
+      <% sections.forEach(section => { %>
+        <h2 class="wow fadeInUp" data-wow-delay=".2s"><%= section.main_heading %></h2>
+        <p class="col-lg-8 offset-lg-2 mb-0 wow fadeInUp"><%= section.main_description %></p>
+        <div class="spacer-single"></div>
+        <div class="spacer-half"></div>
+      <% }) %>
+    <% } else { %>
+      <p>No courses available at the moment.</p>
+    <% } %>
+
+  </div>
+</div>
+
 
 
       <!-- Carousel -->

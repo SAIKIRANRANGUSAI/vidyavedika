@@ -731,35 +731,14 @@
 
             <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>24</h3>
-                        <p>Courses</p>
-                    </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon red">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>12</h3>
-                        <p>New Messages</p>
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Recent Messages Section -->
             <div class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">Recent Contact Messages</h2>
-                    <a href="#" class="section-action">
-                        View All
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
                 </div>
 
                 <div class="table-responsive">
@@ -768,305 +747,526 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Phone</th>
                                 <th>Message</th>
                                 <th>Date</th>
-                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>John Doe</td>
-                                <td>john@example.com</td>
-                                <td>Interested in the computer science program</td>
-                                <td>Jun 12, 2023</td>
-                                <td><span class="status active">Replied</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="btn btn-primary btn-sm">View</button>
-                                        <button class="btn btn-danger btn-sm">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Jane Smith</td>
-                                <td>jane@example.com</td>
-                                <td>Question about admission requirements</td>
-                                <td>Jun 11, 2023</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="btn btn-primary btn-sm">View</button>
-                                        <button class="btn btn-danger btn-sm">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Robert Johnson</td>
-                                <td>robert@example.com</td>
-                                <td>Request for campus tour</td>
-                                <td>Jun 10, 2023</td>
-                                <td><span class="status active">Replied</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="btn btn-primary btn-sm">View</button>
-                                        <button class="btn btn-danger btn-sm">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Sarah Williams</td>
-                                <td>sarah@example.com</td>
-                                <td>Scholarship inquiry</td>
-                                <td>Jun 9, 2023</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="btn btn-primary btn-sm">View</button>
-                                        <button class="btn btn-danger btn-sm">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Michael Brown</td>
-                                <td>michael@example.com</td>
-                                <td>Question about online courses</td>
-                                <td>Jun 8, 2023</td>
-                                <td><span class="status active">Replied</span></td>
-                                <td>
-                                    <div class="table-actions">
-                                        <button class="btn btn-primary btn-sm">View</button>
-                                        <button class="btn btn-danger btn-sm">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <% if(messages && messages.length> 0) { %>
+                                <% messages.forEach(msg=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= msg.name %>
+                                        </td>
+                                        <td>
+                                            <%= msg.email %>
+                                        </td>
+                                        <td>
+                                            <%= msg.phone %>
+                                        </td>
+                                        <td>
+                                            <%= msg.message %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(msg.created_at).toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <form action="/admin/contactus/messages/delete/<%= msg.id %>"
+                                                    method="POST" style="display:inline;">
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="6" class="text-center">No messages yet</td>
+                                            </tr>
+                                            <% } %>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Recent Activity Section -->
+
+
+
             <div class="content-section">
                 <div class="section-header">
-                    <h2 class="section-title">Recent Activity</h2>
-                    <a href="#" class="section-action">
-                        View All
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h2 class="section-title">Contact Us / Get In Touch</h2>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Activity</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Admin User</td>
-                                <td>Updated course information</td>
-                                <td>2 hours ago</td>
-                            </tr>
-                            <tr>
-                                <td>Content Manager</td>
-                                <td>Added new gallery images</td>
-                                <td>5 hours ago</td>
-                            </tr>
-                            <tr>
-                                <td>Admin User</td>
-                                <td>Replied to contact message</td>
-                                <td>Yesterday</td>
-                            </tr>
-                            <tr>
-                                <td>Content Manager</td>
-                                <td>Updated about us page</td>
-                                <td>2 days ago</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <form action="/admin/contactus/contact-us/save" method="POST">
+
+                    <!-- Heading -->
+                    <div class="form-group">
+                        <label for="contactHeading" class="form-label">Heading</label>
+                        <input type="text" id="contactHeading" name="heading" class="form-input"
+                            value="<%= contactUs.heading || '' %>" required>
+                    </div>
+
+                    <!-- Description (same style as heading) -->
+                    <div class="form-group">
+                        <label for="contactDescription" class="form-label">Description</label>
+                        <input type="text" id="contactDescription" name="description" class="form-input"
+                            value="<%= contactUs.description || '' %>" required>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Contact Us</button>
+                    </div>
+                </form>
             </div>
+
+
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Contact Details</h2>
+                </div>
+                <form action="/admin/contactus/contact-details/save" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Location Heading</label>
+                        <input type="text" class="form-input" name="location_heading"
+                            value="<%= (contactDetails && contactDetails.location_heading) ? contactDetails.location_heading : '' %>" " required>
+                    </div>
+                    <div class=" form-group">
+                        <label class="form-label">Location Text</label>
+                        <input type="text" class="form-input" name="location_text"
+                            value="<%= contactDetails?.location_text || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Heading</label>
+                        <input type="text" class="form-input" name="phone_heading"
+                            value="<%= contactDetails?.phone_heading || '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-input" name="phone_number"
+                            value="<%= contactDetails?.phone_number || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Heading</label>
+                        <input type="text" class="form-input" name="email_heading"
+                            value="<%= contactDetails?.email_heading || '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" name="email_address"
+                            value="<%= contactDetails?.email_address || '' %>" required>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Contact Details</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Social Links Settings Section -->
+            <section id="social-links-section" class="card p-4 mb-4">
+                <h3 class="mb-3">Social Links & Description</h3>
+
+                <!-- Success/Error Message -->
+                <div id="socialMessage" class="alert" style="display:none;"></div>
+
+                <!-- Social Links Form -->
+                <form id="socialLinksForm" method="POST" action="/admin/update-social">
+                    <% const socialData=typeof social !=='undefined' ? social : {}; %>
+
+                        <div class="form-group mb-3">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" class="form-input w-full p-2 border rounded"
+                                rows="3"><%= socialData.description || '' %></textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="facebook">Facebook</label>
+                            <input type="text" id="facebook" name="facebook"
+                                class="form-input w-full p-2 border rounded" value="<%= socialData.facebook || '' %>">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="twitter">Twitter (X)</label>
+                            <input type="text" id="twitter" name="twitter" class="form-input w-full p-2 border rounded"
+                                value="<%= socialData.twitter || '' %>">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="instagram">Instagram</label>
+                            <input type="text" id="instagram" name="instagram"
+                                class="form-input w-full p-2 border rounded" value="<%= socialData.instagram || '' %>">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="youtube">YouTube</label>
+                            <input type="text" id="youtube" name="youtube" class="form-input w-full p-2 border rounded"
+                                value="<%= socialData.youtube || '' %>">
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="whatsapp">WhatsApp</label>
+                            <input type="text" id="whatsapp" name="whatsapp"
+                                class="form-input w-full p-2 border rounded" value="<%= socialData.whatsapp || '' %>">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-2">Update Social Links</button>
+                </form>
+            </section>
+
+
+            <script>
+                const socialForm = document.getElementById('socialLinksForm');
+                const socialMessage = document.getElementById('socialMessage');
+
+                socialForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const formData = new URLSearchParams(new FormData(socialForm));
+
+                    try {
+                        const response = await fetch('/admin/update-social', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            socialMessage.textContent = result.message;
+                            socialMessage.className = 'alert alert-success';
+                            socialMessage.style.display = 'block';
+                        } else {
+                            socialMessage.textContent = result.message || 'Something went wrong';
+                            socialMessage.className = 'alert alert-danger';
+                            socialMessage.style.display = 'block';
+                        }
+
+                    } catch (err) {
+                        socialMessage.textContent = 'Server error. Try again.';
+                        socialMessage.className = 'alert alert-danger';
+                        socialMessage.style.display = 'block';
+                        console.error(err);
+                    }
+                });
+            </script>
+
         </div>
+
+
+        <!-- <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+        <script>
+            ClassicEditor.create(document.querySelector('#description'))
+                .catch(error => console.error(error));
+        </script> -->
+
+
 
         <!-- Footer -->
         <footer class="dashboard-footer">
-            <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
+            <p>&copy; 2025 VidyaVedika Institute. All rights reserved.</p>
         </footer>
     </div>
 
     <!-- Credentials Modal -->
-    <!-- Credentials Modal -->
+    <!-- Credentials Modal HTML -->
     <div class="modal-overlay" id="credentialsModal">
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title">Change Admin Credentials</h2>
-                <button class="modal-close" id="closeCredentialsModal">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="modal-close" id="closeCredentialsModal">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Error / Success Messages -->
                 <div id="credentialsMessage" style="display: none;" class="alert"></div>
 
-                <form action="/admin/change-credentials" method="POST" id="changeCredentialsForm">
-                    <!-- Username -->
+                <form id="changeCredentialsForm">
                     <div class="form-group">
-                        <label for="newUsername" class="form-label">Username</label>
-                        <input type="text" class="form-input" id="newUsername" name="newUsername"
-                            value="<%= username || 'Admin User' %>" required>
+                        <label for="newUsername">Username</label>
+                        <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username"
+                            required>
                     </div>
 
-                    <!-- Current Password -->
                     <div class="form-group">
-                        <label for="currentPassword" class="form-label">Current Password</label>
-                        <input type="password" class="form-input" id="currentPassword" name="currentPassword"
-                            placeholder="Enter your current password" required>
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword"
+                            placeholder="Enter current password" required>
                     </div>
 
-                    <!-- New Password -->
                     <div class="form-group">
-                        <label for="newPassword" class="form-label">New Password</label>
-                        <input type="password" class="form-input" id="newPassword" name="newPassword"
-                            placeholder="Enter a new password" required>
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password"
+                            required>
                     </div>
 
-                    <!-- Confirm New Password -->
                     <div class="form-group">
-                        <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-                        <input type="password" class="form-input" id="confirmNewPassword" name="confirmNewPassword"
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword"
                             placeholder="Confirm new password" required>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn" id="cancelCredentialsChange">Cancel</button>
+                        <button type="button" class="btn btn-cancel" id="cancelCredentialsChange">Cancel</button>
                         <button type="submit" class="btn btn-primary">Update Credentials</button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 
-    <script>
-        // Toggle sidebar on mobile
-        document.querySelector('.toggle-sidebar').addEventListener('click', function () {
-            document.querySelector('.sidebar').classList.toggle('active');
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function (event) {
-            const sidebar = document.querySelector('.sidebar');
-            const toggleBtn = document.querySelector('.toggle-sidebar');
-
-            if (window.innerWidth < 992 &&
-                !sidebar.contains(event.target) &&
-                !toggleBtn.contains(event.target) &&
-                sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            }
-        });
-
-        // Simulate loading
-        document.addEventListener('DOMContentLoaded', function () {
-            // Add loading animation to stats cards
-            const stats = document.querySelectorAll('.stat-info h3');
-            stats.forEach(stat => {
-                const originalText = stat.textContent;
-                stat.textContent = '0';
-
-                let counter = 0;
-                const target = parseInt(originalText.replace(/,/g, ''));
-                const duration = 1500;
-                const steps = 60;
-                const increment = target / steps;
-                const timer = setInterval(() => {
-                    counter += increment;
-                    if (counter >= target) {
-                        stat.textContent = originalText;
-                        clearInterval(timer);
-                    } else {
-                        stat.textContent = Math.round(counter).toLocaleString();
-                    }
-                }, duration / steps);
-            });
-        });
-
-        // Credentials Modal Functionality
-        const credentialsModal = document.getElementById('credentialsModal');
-        const userProfileBtn = document.getElementById('userProfileBtn');
-        const closeCredentialsModal = document.getElementById('closeCredentialsModal');
-        const cancelCredentialsChange = document.getElementById('cancelCredentialsChange');
-        const credentialsMessage = document.getElementById('credentialsMessage');
-        const changeCredentialsForm = document.getElementById('changeCredentialsForm');
-
-        // Open modal when user profile is clicked
-        userProfileBtn.addEventListener('click', function () {
-            credentialsModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        });
-
-        // Close modal functions
-        function closeCredentialsModalFunc() {
-            credentialsModal.classList.remove('active');
-            document.body.style.overflow = ''; // Re-enable scrolling
-            // Reset form fields except username
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
-            credentialsMessage.style.display = 'none';
+    <style>
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
 
-        closeCredentialsModal.addEventListener('click', closeCredentialsModalFunc);
-        cancelCredentialsChange.addEventListener('click', closeCredentialsModalFunc);
+        /* Show modal */
+        .modal-overlay.active {
+            display: flex;
+        }
 
-        // Close modal when clicking outside the modal content
-        credentialsModal.addEventListener('click', function (e) {
-            if (e.target === credentialsModal) {
-                closeCredentialsModalFunc();
+        /* Modal box */
+        .modal {
+            background-color: #fff;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Header */
+        .modal-header {
+            padding: 16px 24px;
+            background-color: #4A90E2;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Body */
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        /* Form groups */
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .form-group input {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #4A90E2;
+            outline: none;
+            box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Footer buttons */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #4A90E2;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #357ABD;
+        }
+
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background-color: #ddd;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
-        });
 
-        // Form validation
-        changeCredentialsForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmNewPassword').value;
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const credentialsModal = document.getElementById('credentialsModal');
+            const userProfileBtn = document.getElementById('userProfileBtn');
+            const closeCredentialsModal = document.getElementById('closeCredentialsModal');
+            const cancelCredentialsChange = document.getElementById('cancelCredentialsChange');
+            const credentialsMessage = document.getElementById('credentialsMessage');
+            const changeCredentialsForm = document.getElementById('changeCredentialsForm');
 
-            // Validate password match
-            if (newPassword !== confirmPassword) {
-                credentialsMessage.textContent = 'New passwords do not match!';
-                credentialsMessage.className = 'alert alert-danger';
-                credentialsMessage.style.display = 'block';
-                return;
+            // Open modal
+            if (userProfileBtn && credentialsModal) {
+                userProfileBtn.addEventListener('click', () => {
+                    credentialsModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    if (credentialsMessage) credentialsMessage.style.display = 'none';
+                });
             }
 
-            // If validation passes, submit the form
-            // This would typically be an AJAX call in a real application
-            credentialsMessage.textContent = 'Credentials updated successfully!';
-            credentialsMessage.className = 'alert alert-success';
-            credentialsMessage.style.display = 'block';
+            // Close modal
+            function closeModal() {
+                if (!credentialsModal) return;
+                credentialsModal.classList.remove('active');
+                document.body.style.overflow = '';
+                if (credentialsMessage) credentialsMessage.style.display = 'none';
+                if (document.getElementById('currentPassword')) document.getElementById('currentPassword').value = '';
+                if (document.getElementById('newPassword')) document.getElementById('newPassword').value = '';
+                if (document.getElementById('confirmNewPassword')) document.getElementById('confirmNewPassword').value = '';
+            }
 
-            // Update the username in the UI
-            const newUsername = document.getElementById('newUsername').value;
-            document.querySelectorAll('.user-details h4, .user-profile span').forEach(el => {
-                el.textContent = newUsername;
-            });
+            if (closeCredentialsModal) closeCredentialsModal.addEventListener('click', closeModal);
+            if (cancelCredentialsChange) cancelCredentialsChange.addEventListener('click', closeModal);
 
-            // Clear password fields
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
+            // Close modal when clicking outside modal content
+            if (credentialsModal) {
+                credentialsModal.addEventListener('click', function (e) {
+                    if (e.target === credentialsModal) closeModal();
+                });
+            }
 
-            // Close modal after a delay
-            setTimeout(function () {
-                closeCredentialsModalFunc();
-            }, 2000);
+            // AJAX form submit
+            if (changeCredentialsForm) {
+                changeCredentialsForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const newUsername = document.getElementById('newUsername').value;
+                    const currentPassword = document.getElementById('currentPassword').value;
+                    const newPassword = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                    if (newPassword !== confirmPassword) {
+                        credentialsMessage.textContent = 'New passwords do not match!';
+                        credentialsMessage.className = 'alert alert-danger';
+                        credentialsMessage.style.display = 'block';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/admin/change-credentials', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({
+                                newUsername,
+                                currentPassword,
+                                newPassword,
+                                confirmNewPassword: confirmPassword
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            credentialsMessage.textContent = result.message;
+                            credentialsMessage.className = 'alert alert-success';
+                            credentialsMessage.style.display = 'block';
+
+                            // Redirect to dashboard after short delay
+                            setTimeout(() => {
+                                window.location.href = '/admin/dashboard';
+                            }, 1500);
+                        } else if (result.error) {
+                            credentialsMessage.textContent = result.error;
+                            credentialsMessage.className = 'alert alert-danger';
+                            credentialsMessage.style.display = 'block';
+                        }
+                    } catch (err) {
+                        credentialsMessage.textContent = 'Server error. Try again.';
+                        credentialsMessage.className = 'alert alert-danger';
+                        credentialsMessage.style.display = 'block';
+                        console.error(err);
+                    }
+                });
+            }
         });
     </script>
+
+
 </body>
 
 </html>

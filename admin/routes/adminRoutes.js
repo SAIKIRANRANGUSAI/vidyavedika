@@ -6,6 +6,8 @@ const multer = require('multer');
 //const adminController = require("../controllers/adminController");
 const adminController = require('../controllers/adminController');
 const db = require("../../config/db");
+const contactUsRoute = require("./admincontactus");
+const { isAuthenticated } = adminController;
 
 // Configure Multer for file uploads
 
@@ -33,195 +35,196 @@ router.post("/login", adminController.postLogin);
 
 // Dashboard (protected)
 router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboard);
-
+router.use("/contact-us", adminController.isAuthenticated, contactUsRoute);
 // --- Home editor (GET) ---
 // --- Home editor (GET) ---
 // --- Home editor (GET) ---
 router.get("/home", adminController.isAuthenticated, async (req, res) => {
-    try {
-        // Query the database for the hero section content
-        const [homeContentRows] = await db.query("SELECT * FROM home_page_content WHERE id = 1");
-        const homeContentData = homeContentRows[0] || {};
-        
-        // Query the CTA content
-        const [ctaContentRows] = await db.query("SELECT * FROM cta_content WHERE id = 1");
-        const ctaContentData = ctaContentRows[0] || {};
-        
-         // 🎯 Query the database for the counters data
-        const [counters] = await db.query("SELECT id, label, value FROM counters ORDER BY id ASC");
+  try {
+    // Query the database for the hero section content
+    const [homeContentRows] = await db.query("SELECT * FROM home_page_content WHERE id = 1");
+    const homeContentData = homeContentRows[0] || {};
+
+    // Query the CTA content
+    const [ctaContentRows] = await db.query("SELECT * FROM cta_content WHERE id = 1");
+    const ctaContentData = ctaContentRows[0] || {};
+
+    // 🎯 Query the database for the counters data
+    const [counters] = await db.query("SELECT id, label, value FROM counters ORDER BY id ASC");
 
 
 
-        const [galleryContentRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
-        const galleryContentData = galleryContentRows[0] || {};
+    const [galleryContentRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
+    const galleryContentData = galleryContentRows[0] || {};
 
-        const [galleryImages] = await db.query("SELECT * FROM gallery_images ORDER BY id DESC");
+    const [galleryImages] = await db.query("SELECT * FROM gallery_images ORDER BY id DESC");
 
-        // 🎯 Query for testimonial section content
-        const [testimonialContentRows] = await db.query("SELECT * FROM testimonial_content WHERE id = 1");
-        const testimonialContentData = testimonialContentRows[0] || {};
+    // 🎯 Query for testimonial section content
+    const [testimonialContentRows] = await db.query("SELECT * FROM testimonial_content WHERE id = 1");
+    const testimonialContentData = testimonialContentRows[0] || {};
 
-        // Fetch Why Choose Us content
-        // Fetch Why Choose Us data
-        const [whyChooseRows] = await db.query('SELECT * FROM why_choose_us WHERE id = 1');
-        const whyChooseUs = whyChooseRows[0] || {};
+    // Fetch Why Choose Us content
+    // Fetch Why Choose Us data
+    const [whyChooseRows] = await db.query('SELECT * FROM why_choose_us WHERE id = 1');
+    const whyChooseUs = whyChooseRows[0] || {};
 
-        // 🎯 Query for individual testimonials
-        const [testimonialsRows] = await db.query("SELECT * FROM testimonials ORDER BY id");
-        const testimonialsData = testimonialsRows || [];
+    // 🎯 Query for individual testimonials
+    const [testimonialsRows] = await db.query("SELECT * FROM testimonials ORDER BY id");
+    const testimonialsData = testimonialsRows || [];
 
-        // Inside /admin/home GET route
-        const [galleryRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
-        let galleryContent = galleryRows[0] || { heading: "", description: "" };
+    // Inside /admin/home GET route
+    const [galleryRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
+    let galleryContent = galleryRows[0] || { heading: "", description: "" };
 
 
-        // Query the database to get all courses
-        const [courses] = await db.query(
-            "SELECT c.id, c.name, c.slug, IFNULL(i.file_path, '/images/default.png') AS icon FROM courses c LEFT JOIN other_images i ON c.icon_image_id = i.id"
-        );
+    // Query the database to get all courses
+    const [courses] = await db.query(
+      "SELECT id, main_heading, main_description, created_at, updated_at FROM course_section"
+    );
 
-        // Construct the data object to be passed to the view
-        const viewData = {
-            homeContent: {
-                heading: homeContentData.heading || "",
-                sub_heading: homeContentData.sub_heading || "",
-                description: homeContentData.description || "",
-                banner_image_paths: homeContentData.banner_image_paths || []
-            },
-            // 🎯 CORRECT CTA DATA HERE
-            cta: {
-                cta_heading: ctaContentData.cta_heading || "",
-                cta_text: ctaContentData.cta_text || "",
-                cta_image_path: ctaContentData.cta_image_path || ""
-            },
-            counters,
-            galleryContent,
-            galleryImages,
-            whyChooseUs,
 
-            galleryContent: {
-                heading: galleryContentData.heading || "",
-                description: galleryContentData.description || ""
-            },
-            
-            // REMOVE THIS DUPLICATE cta KEY ❌
-            // cta: { title: "", button_text: "", button_link: "", updated_at: null }, 
-            testimonialsContent: {
-                heading: testimonialContentData.heading || "",
-                description: testimonialContentData.description || ""
-            },
-            testimonials: testimonialsData
-        };
+    // Construct the data object to be passed to the view
+    const viewData = {
+      homeContent: {
+        heading: homeContentData.heading || "",
+        sub_heading: homeContentData.sub_heading || "",
+        description: homeContentData.description || "",
+        banner_image_paths: homeContentData.banner_image_paths || []
+      },
+      // 🎯 CORRECT CTA DATA HERE
+      cta: {
+        cta_heading: ctaContentData.cta_heading || "",
+        cta_text: ctaContentData.cta_text || "",
+        cta_image_path: ctaContentData.cta_image_path || ""
+      },
+      counters,
+      galleryContent,
+      galleryImages,
+      whyChooseUs,
 
-        // Render the EJS template with the data
-        res.render("home", viewData);
-    } catch (err) {
-        console.error("Home load error:", err);
-        res.status(500).send("An error occurred while loading the page.");
-    }
+      galleryContent: {
+        heading: galleryContentData.heading || "",
+        description: galleryContentData.description || ""
+      },
+
+      // REMOVE THIS DUPLICATE cta KEY ❌
+      // cta: { title: "", button_text: "", button_link: "", updated_at: null }, 
+      testimonialsContent: {
+        heading: testimonialContentData.heading || "",
+        description: testimonialContentData.description || ""
+      },
+      testimonials: testimonialsData
+    };
+
+    // Render the EJS template with the data
+    res.render("home", viewData);
+  } catch (err) {
+    console.error("Home load error:", err);
+    res.status(500).send("An error occurred while loading the page.");
+  }
 });
 // --- Home hero section (POST) ---
 // --- Home hero section (POST) ---
 router.post("/home/hero", adminController.isAuthenticated, upload.array("banner_images"), async (req, res) => {
-    const { heading, sub_heading, description } = req.body;
-    const newFiles = req.files || [];
+  const { heading, sub_heading, description } = req.body;
+  const newFiles = req.files || [];
 
-    try {
-        // 1. Get the current image paths from the database
-        // This is the correct way to handle data from a JSON column
-        const [homeContentRows] = await db.query("SELECT banner_image_paths FROM home_page_content WHERE id = 1");
-        const currentPaths = (homeContentRows[0] && homeContentRows[0].banner_image_paths) || [];
+  try {
+    // 1. Get the current image paths from the database
+    // This is the correct way to handle data from a JSON column
+    const [homeContentRows] = await db.query("SELECT banner_image_paths FROM home_page_content WHERE id = 1");
+    const currentPaths = (homeContentRows[0] && homeContentRows[0].banner_image_paths) || [];
 
-        // 2. Create paths for the newly uploaded images
-        const newPaths = newFiles.map(file => `/images/${file.filename}`);
+    // 2. Create paths for the newly uploaded images
+    const newPaths = newFiles.map(file => `/images/${file.filename}`);
 
-        // 3. Combine the old and new image paths
-        const updatedPaths = [...currentPaths, ...newPaths];
+    // 3. Combine the old and new image paths
+    const updatedPaths = [...currentPaths, ...newPaths];
 
-        // 4. Update the database with the new data
-        await db.query(
-            "UPDATE home_page_content SET heading = ?, sub_heading = ?, description = ?, banner_image_paths = ? WHERE id = 1",
-            [heading, sub_heading, description, JSON.stringify(updatedPaths)]
-        );
+    // 4. Update the database with the new data
+    await db.query(
+      "UPDATE home_page_content SET heading = ?, sub_heading = ?, description = ?, banner_image_paths = ? WHERE id = 1",
+      [heading, sub_heading, description, JSON.stringify(updatedPaths)]
+    );
 
-        res.redirect("/admin/home");
+    res.redirect("/admin/home");
 
-    } catch (err) {
-        console.error("Home hero update error:", err);
-        // ... (error handling for file cleanup)
-    }
+  } catch (err) {
+    console.error("Home hero update error:", err);
+    // ... (error handling for file cleanup)
+  }
 });// --- Home hero image delete (GET) ---
 router.get("/home/hero/delete-image", adminController.isAuthenticated, async (req, res) => {
-    const imagePath = req.query.path;
+  const imagePath = req.query.path;
 
-    if (!imagePath) {
-        return res.status(400).send("Image path is required.");
-    }
+  if (!imagePath) {
+    return res.status(400).send("Image path is required.");
+  }
 
-    try {
-        // 1. Get the current image paths from the database
-        const [homeContentRows] = await db.query("SELECT banner_image_paths FROM home_page_content WHERE id = 1");
-        // Access the data directly. It is already a JS array.
-        const currentPaths = (homeContentRows[0] && homeContentRows[0].banner_image_paths) || [];
+  try {
+    // 1. Get the current image paths from the database
+    const [homeContentRows] = await db.query("SELECT banner_image_paths FROM home_page_content WHERE id = 1");
+    // Access the data directly. It is already a JS array.
+    const currentPaths = (homeContentRows[0] && homeContentRows[0].banner_image_paths) || [];
 
-        // 2. Filter out the path to be deleted
-        const updatedPaths = currentPaths.filter(p => p !== imagePath);
+    // 2. Filter out the path to be deleted
+    const updatedPaths = currentPaths.filter(p => p !== imagePath);
 
-        // 3. Update the database (convert the JS array back to a JSON string)
-        await db.query(
-            "UPDATE home_page_content SET banner_image_paths = ? WHERE id = 1",
-            [JSON.stringify(updatedPaths)]
-        );
+    // 3. Update the database (convert the JS array back to a JSON string)
+    await db.query(
+      "UPDATE home_page_content SET banner_image_paths = ? WHERE id = 1",
+      [JSON.stringify(updatedPaths)]
+    );
 
-        // 4. Delete the file from the server
-        const filePath = path.join(__dirname, "../../public", imagePath);
-        await fs.unlink(filePath);
+    // 4. Delete the file from the server
+    const filePath = path.join(__dirname, "../../public", imagePath);
+    await fs.unlink(filePath);
 
-        // 5. Redirect back to the home page
-        res.redirect("/admin/home");
-    } catch (err) {
-        console.error("Image delete error:", err);
-        res.status(500).send("Server error occurred while deleting the image.");
-    }
+    // 5. Redirect back to the home page
+    res.redirect("/admin/home");
+  } catch (err) {
+    console.error("Image delete error:", err);
+    res.status(500).send("Server error occurred while deleting the image.");
+  }
 });
 
 // --- CTA update (POST) ---
 router.post("/home/cta", adminController.isAuthenticated, upload.single("cta_image"), async (req, res) => {
-    const { cta_heading, cta_text } = req.body;
-    const newFile = req.file;
-    let newImagePath = null;
+  const { cta_heading, cta_text } = req.body;
+  const newFile = req.file;
+  let newImagePath = null;
 
-    try {
-        // 1. Get the current CTA image path from the database
-        const [ctaContentRows] = await db.query("SELECT cta_image_path FROM cta_content WHERE id = 1");
-        const currentImagePath = ctaContentRows[0]?.cta_image_path;
+  try {
+    // 1. Get the current CTA image path from the database
+    const [ctaContentRows] = await db.query("SELECT cta_image_path FROM cta_content WHERE id = 1");
+    const currentImagePath = ctaContentRows[0]?.cta_image_path;
 
-        if (newFile) {
-            // New file was uploaded, so update the path and delete the old one
-            newImagePath = `/images/${newFile.filename}`;
-            if (currentImagePath) {
-                const oldFilePath = path.join(__dirname, "../../public", currentImagePath);
-                await fs.unlink(oldFilePath).catch(err => console.error("Failed to delete old CTA image:", err));
-            }
-        } else {
-            // No new file, keep the old path
-            newImagePath = currentImagePath;
-        }
-
-        // 2. Update the database with the new data
-        await db.query(
-            "UPDATE cta_content SET cta_heading = ?, cta_text = ?, cta_image_path = ? WHERE id = 1",
-            [cta_heading, cta_text, newImagePath]
-        );
-
-        res.redirect("/admin/home");
-    } catch (err) {
-        console.error("CTA update error:", err);
-        if (newFile) { // Clean up if an error occurred after upload
-            await fs.unlink(newFile.path).catch(err => console.error("Failed to delete orphaned file:", err));
-        }
-        res.status(500).send("Server error occurred while updating the CTA section.");
+    if (newFile) {
+      // New file was uploaded, so update the path and delete the old one
+      newImagePath = `/images/${newFile.filename}`;
+      if (currentImagePath) {
+        const oldFilePath = path.join(__dirname, "../../public", currentImagePath);
+        await fs.unlink(oldFilePath).catch(err => console.error("Failed to delete old CTA image:", err));
+      }
+    } else {
+      // No new file, keep the old path
+      newImagePath = currentImagePath;
     }
+
+    // 2. Update the database with the new data
+    await db.query(
+      "UPDATE cta_content SET cta_heading = ?, cta_text = ?, cta_image_path = ? WHERE id = 1",
+      [cta_heading, cta_text, newImagePath]
+    );
+
+    res.redirect("/admin/home");
+  } catch (err) {
+    console.error("CTA update error:", err);
+    if (newFile) { // Clean up if an error occurred after upload
+      await fs.unlink(newFile.path).catch(err => console.error("Failed to delete orphaned file:", err));
+    }
+    res.status(500).send("Server error occurred while updating the CTA section.");
+  }
 });
 router.post("/home/counters", adminController.isAuthenticated, async (req, res) => {
   console.log("Counters POST body:", req.body); // ✅ debug
@@ -277,37 +280,37 @@ router.post("/home/gallery/update", adminController.isAuthenticated, async (req,
 
 // GET route to display testimonials
 router.get('/home/testimonials', adminController.isAuthenticated, async (req, res) => {
-    try {
-        const [testimonialsContent] = await db.query('SELECT * FROM testimonial_content WHERE id = 1');
-        const [testimonials] = await db.query('SELECT * FROM testimonials ORDER BY id');
-        
-        // Ensure success message is retrieved from a session or query parameter if coming from a redirect
-        const successMessage = req.session.successMessage || null;
-        const errorMessage = req.session.errorMessage || null;
+  try {
+    const [testimonialsContent] = await db.query('SELECT * FROM testimonial_content WHERE id = 1');
+    const [testimonials] = await db.query('SELECT * FROM testimonials ORDER BY id');
 
-        // Clear the messages from the session
-        delete req.session.successMessage;
-        delete req.session.errorMessage;
+    // Ensure success message is retrieved from a session or query parameter if coming from a redirect
+    const successMessage = req.session.successMessage || null;
+    const errorMessage = req.session.errorMessage || null;
 
-        res.redirect("/admin/home");
-    } catch (err) {
-        console.error('Error fetching testimonials:', err);
-        res.status(500).send('Server Error');
-    }
+    // Clear the messages from the session
+    delete req.session.successMessage;
+    delete req.session.errorMessage;
+
+    res.redirect("/admin/home");
+  } catch (err) {
+    console.error('Error fetching testimonials:', err);
+    res.status(500).send('Server Error');
+  }
 });
 
 // POST route to update the main testimonial heading and description
 router.post('/home/testimonials/update-text', adminController.isAuthenticated, async (req, res) => {
-    const { testimonials_heading, testimonials_description } = req.body;
-    try {
-        await db.query('UPDATE testimonial_content SET heading = ?, description = ? WHERE id = 1', [testimonials_heading, testimonials_description]);
-        req.session.successMessage = "Testimonial section text updated successfully!";
-        res.redirect('/admin/home/testimonials');
-    } catch (err) {
-        console.error('Error updating testimonial text:', err);
-        req.session.errorMessage = "Failed to update testimonial section text.";
-        res.redirect('/admin/home/testimonials');
-    }
+  const { testimonials_heading, testimonials_description } = req.body;
+  try {
+    await db.query('UPDATE testimonial_content SET heading = ?, description = ? WHERE id = 1', [testimonials_heading, testimonials_description]);
+    req.session.successMessage = "Testimonial section text updated successfully!";
+    res.redirect('/admin/home/testimonials');
+  } catch (err) {
+    console.error('Error updating testimonial text:', err);
+    req.session.errorMessage = "Failed to update testimonial section text.";
+    res.redirect('/admin/home/testimonials');
+  }
 });
 
 // --- Add new testimonial ---
@@ -334,166 +337,100 @@ router.post("/home/testimonials/add", adminController.isAuthenticated, upload.si
 
 // POST route to delete a testimonial card
 router.post('/home/testimonials/delete/:id', adminController.isAuthenticated, async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const [rows] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
-        const testimonial = rows[0];
+  try {
+    const [rows] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
+    const testimonial = rows[0];
 
-        if (testimonial && testimonial.image_path) {
-            const imagePath = path.join(__dirname, '../../public', testimonial.image_path);
-            
-            try {
-                await fs.promises.access(imagePath);
-                await fs.promises.unlink(imagePath);
-            } catch (fsErr) {
-                if (fsErr.code === 'ENOENT') {
-                    console.warn(`File not found, but continuing with database deletion: ${imagePath}`);
-                } else {
-                    throw fsErr;
-                }
-            }
+    if (testimonial && testimonial.image_path) {
+      const imagePath = path.join(__dirname, '../../public', testimonial.image_path);
+
+      try {
+        await fs.promises.access(imagePath);
+        await fs.promises.unlink(imagePath);
+      } catch (fsErr) {
+        if (fsErr.code === 'ENOENT') {
+          console.warn(`File not found, but continuing with database deletion: ${imagePath}`);
+        } else {
+          throw fsErr;
         }
-
-        await db.query('DELETE FROM testimonials WHERE id = ?', [id]);
-        req.session.successMessage = "Testimonial deleted successfully!";
-        res.redirect('/admin/home/testimonials');
-    } catch (err) {
-        console.error('Error deleting testimonial:', err);
-        req.session.errorMessage = "Failed to delete testimonial.";
-        res.redirect('/admin/home/testimonials');
+      }
     }
+
+    await db.query('DELETE FROM testimonials WHERE id = ?', [id]);
+    req.session.successMessage = "Testimonial deleted successfully!";
+    res.redirect('/admin/home/testimonials');
+  } catch (err) {
+    console.error('Error deleting testimonial:', err);
+    req.session.errorMessage = "Failed to delete testimonial.";
+    res.redirect('/admin/home/testimonials');
+  }
 });
 
 // POST route to edit an existing testimonial card
 // --- Update testimonial ---
 router.post('/home/testimonials/edit/:id', adminController.isAuthenticated, upload.single('testimonial_image'), async (req, res) => {
-    const { id } = req.params;
-    const { name, role, description } = req.body;
-    let image_path;
+  const { id } = req.params;
+  const { name, role, description } = req.body;
+  let image_path;
 
-    try {
-        // If new image uploaded, use it, else keep old
-        if (req.file) {
-            image_path = `/images/testimonial/${req.file.filename}`;
-            // Optional: delete old image from /public/images/testimonial
-            const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
-            if (oldData.length && oldData[0].image_path) {
-                const fs = require('fs');
-                const oldImagePath = __dirname + '/../public' + oldData[0].image_path;
-                fs.unlink(oldImagePath, (err) => {
-                    if (err) console.log('Old image not found:', err.message);
-                });
-            }
-        } else {
-            const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
-            image_path = oldData.length ? oldData[0].image_path : null;
-        }
-
-        await db.query('UPDATE testimonials SET name = ?, role = ?, description = ?, image_path = ? WHERE id = ?', [name, role, description, image_path, id]);
-        req.session.successMessage = 'Testimonial updated successfully!';
-        res.redirect('/admin/home/testimonials');
-    } catch (err) {
-        console.error('Error updating testimonial:', err);
-        req.session.errorMessage = 'Failed to update testimonial.';
-        res.redirect('/admin/home/testimonials');
+  try {
+    // If new image uploaded, use it, else keep old
+    if (req.file) {
+      image_path = `/images/testimonial/${req.file.filename}`;
+      // Optional: delete old image from /public/images/testimonial
+      const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
+      if (oldData.length && oldData[0].image_path) {
+        const fs = require('fs');
+        const oldImagePath = __dirname + '/../public' + oldData[0].image_path;
+        fs.unlink(oldImagePath, (err) => {
+          if (err) console.log('Old image not found:', err.message);
+        });
+      }
+    } else {
+      const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
+      image_path = oldData.length ? oldData[0].image_path : null;
     }
+
+    await db.query('UPDATE testimonials SET name = ?, role = ?, description = ?, image_path = ? WHERE id = ?', [name, role, description, image_path, id]);
+    req.session.successMessage = 'Testimonial updated successfully!';
+    res.redirect('/admin/home/testimonials');
+  } catch (err) {
+    console.error('Error updating testimonial:', err);
+    req.session.errorMessage = 'Failed to update testimonial.';
+    res.redirect('/admin/home/testimonials');
+  }
 });
 
 // Change credentials (protected)
 // GET change credentials page
 router.get("/change-credentials", adminController.isAuthenticated, async (req, res) => {
-    try {
-        const adminId = req.session.admin.id;
-        const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
-        const currentUsername = rows[0]?.username || "";
-        res.render("admin/change-credentials", {
-            username: currentUsername,
-            error: null,
-            success: null
-        });
-    } catch (err) {
-        console.error("Error loading change credentials page:", err);
-        res.render("admin/change-credentials", {
-            username: req.session.admin.username,
-            error: "Failed to load admin details",
-            success: null
-        });
-    }
-});
-
-// POST change credentials
-router.post("/change-credentials", adminController.isAuthenticated, async (req, res) => {
-    const { newUsername, currentPassword, newPassword, confirmNewPassword } = req.body;
+  try {
     const adminId = req.session.admin.id;
-
-    try {
-        if (!req.session.admin || !adminId) {
-            return res.status(401).render("admin/change-credentials", {
-                username: null,
-                error: "Unauthorized access. Please log in again.",
-                success: null
-            });
-        }
-
-        // 1. Verify the current password
-        const [rows] = await db.query("SELECT password FROM admins WHERE id = ?", [adminId]);
-        const user = rows[0];
-
-        if (!user) {
-            return res.status(404).render("admin/change-credentials", {
-                username: req.session.admin.username,
-                error: "User not found.",
-                success: null
-            });
-        }
-
-        const match = await bcrypt.compare(currentPassword, user.password);
-        if (!match) {
-            return res.status(401).render("admin/change-credentials", {
-                username: req.session.admin.username,
-                error: "Current password is incorrect.",
-                success: null
-            });
-        }
-
-        // 2. Check if new passwords match
-        if (newPassword !== confirmNewPassword) {
-            return res.status(400).render("admin/change-credentials", {
-                username: req.session.admin.username,
-                error: "New passwords do not match.",
-                success: null
-            });
-        }
-
-        // 3. Hash the new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // 4. Update the database
-        await db.query(
-            "UPDATE admins SET username = ?, password = ? WHERE id = ?",
-            [newUsername, hashedPassword, adminId]
-        );
-
-        // 5. Update the session with the new username
-        req.session.admin.username = newUsername;
-
-        return res.status(200).render("admin/change-credentials", {
-            username: newUsername,
-            success: "Credentials updated successfully!",
-            error: null
-        });
-
-    } catch (err) {
-        console.error("Error updating credentials:", err);
-        return res.status(500).render("admin/change-credentials", {
-            username: req.session.admin ? req.session.admin.username : null,
-            error: "Server error. Please try again.",
-            success: null
-        });
-    }
+    const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
+    const currentUsername = rows[0]?.username || "";
+    res.render("admin/change-credentials", {
+      username: currentUsername,
+      error: null,
+      success: null
+    });
+  } catch (err) {
+    console.error("Error loading change credentials page:", err);
+    res.render("admin/change-credentials", {
+      username: req.session.admin.username,
+      error: "Failed to load admin details",
+      success: null
+    });
+  }
 });
-// =========================
+
+// GET credentials (optional)
+router.get("/change-credentials", isAuthenticated, adminController.getChangeCredentials);
+
+// POST credentials
+router.post("/change-credentials", isAuthenticated, adminController.postChangeCredentials);
+
 // 📌 UPLOAD Gallery Images
 // =========================
 router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (req, res) => {
@@ -559,67 +496,111 @@ router.get("/home/gallery/delete-image/:id", async (req, res) => {
 
 
 // POST route: update text and images
-router.post('/home/why-choose-us/update', adminController.isAuthenticated, 
-    upload.fields([
-        { name: 'image_1', maxCount: 1 },
-        { name: 'image_2', maxCount: 1 },
-        { name: 'image_3', maxCount: 1 }
-    ]), 
-    async (req, res) => {
-  try {
-    const {
-      main_heading,
-      heading_2,
-      main_description,
-      sub_heading_1,
-      description_1,
-      sub_heading_2,
-      description_2,
-      sub_heading_3,
-      description_3,
-      sub_heading_4,
-      description_4
-    } = req.body;
+router.post('/home/why-choose-us/update', adminController.isAuthenticated,
+  upload.fields([
+    { name: 'image_1', maxCount: 1 },
+    { name: 'image_2', maxCount: 1 },
+    { name: 'image_3', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const {
+        main_heading,
+        heading_2,
+        main_description,
+        sub_heading_1,
+        description_1,
+        sub_heading_2,
+        description_2,
+        sub_heading_3,
+        description_3,
+        sub_heading_4,
+        description_4
+      } = req.body;
 
-    // Build image paths dynamically
-    const images = {};
-    if (req.files['image_1']) images.image_1 = '/images/' + req.files['image_1'][0].filename;
-    if (req.files['image_2']) images.image_2 = '/images/' + req.files['image_2'][0].filename;
-    if (req.files['image_3']) images.image_3 = '/images/' + req.files['image_3'][0].filename;
+      // Build image paths dynamically
+      const images = {};
+      if (req.files['image_1']) images.image_1 = '/images/' + req.files['image_1'][0].filename;
+      if (req.files['image_2']) images.image_2 = '/images/' + req.files['image_2'][0].filename;
+      if (req.files['image_3']) images.image_3 = '/images/' + req.files['image_3'][0].filename;
 
-    // Update query
-    let query = `UPDATE why_choose_us SET 
+      // Update query
+      let query = `UPDATE why_choose_us SET 
       main_heading=?, heading_2=?, main_description=?,
       sub_heading_1=?, description_1=?,
       sub_heading_2=?, description_2=?,
       sub_heading_3=?, description_3=?,
       sub_heading_4=?, description_4=?`;
 
-    const params = [
-      main_heading, heading_2, main_description,
-      sub_heading_1, description_1,
-      sub_heading_2, description_2,
-      sub_heading_3, description_3,
-      sub_heading_4, description_4
-    ];
+      const params = [
+        main_heading, heading_2, main_description,
+        sub_heading_1, description_1,
+        sub_heading_2, description_2,
+        sub_heading_3, description_3,
+        sub_heading_4, description_4
+      ];
 
-    // Append images if uploaded
-    for (const key in images) {
-      query += `, ${key}=?`;
-      params.push(images[key]);
+      // Append images if uploaded
+      for (const key in images) {
+        query += `, ${key}=?`;
+        params.push(images[key]);
+      }
+
+      query += ' WHERE id=1';
+      await db.query(query, params);
+
+      req.session.successMessage = 'Section updated successfully!';
+      res.redirect('/admin/home');
+    } catch (err) {
+      console.error(err);
+      req.session.errorMessage = 'Failed to update section.';
+      res.redirect('/admin/home');
     }
+  });
 
-    query += ' WHERE id=1';
-    await db.query(query, params);
-
-    req.session.successMessage = 'Section updated successfully!';
-    res.redirect('/admin/home');
-  } catch (err) {
-    console.error(err);
-    req.session.errorMessage = 'Failed to update section.';
-    res.redirect('/admin/home');
-  }
+// GET social links page (modal data)
+router.get("/social-links", adminController.isAuthenticated, async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
+        const social = rows[0] || {};
+        res.render("admin/dashboard", { social, socialError: null, socialSuccess: null });
+    } catch (err) {
+        console.error(err);
+        res.render("admin/dashboard", { social: {}, socialError: "Failed to load social links", socialSuccess: null });
+    }
 });
+
+// POST update social links
+router.post("/social-links", adminController.isAuthenticated, async (req, res) => {
+    const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
+
+    try {
+        const [rows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
+        if (rows.length) {
+            await db.query(
+                "UPDATE admin_social SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=? WHERE id=1",
+                [description, facebook, twitter, instagram, youtube, whatsapp]
+            );
+        } else {
+            await db.query(
+                "INSERT INTO admin_social (id, description, facebook, twitter, instagram, youtube, whatsapp) VALUES (1,?,?,?,?,?,?)",
+                [description, facebook, twitter, instagram, youtube, whatsapp]
+            );
+        }
+
+        return res.json({ success: true, message: "Social links updated successfully!" });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Server error. Try again." });
+    }
+});
+
+// GET Dashboard with Social Links
+// Dashboard page (GET)
+router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboardWithSocial);
+// Update social links (POST)
+router.post("/update-social", adminController.isAuthenticated, adminController.postSocialSettings);
+// GET dashboard messages
 
 
 module.exports = router;

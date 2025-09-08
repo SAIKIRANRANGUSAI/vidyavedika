@@ -1,8 +1,23 @@
 require("dotenv").config();
 const express = require("express");
+
 //const path = require("path");
 const db = require("./config/db");
 const app = express();
+const path = require("path");
+
+app.set("view engine", "ejs");
+
+// Add both main views and admin views
+app.set("views", [
+    path.join(__dirname, "views"),
+    path.join(__dirname, "admin", "views")
+]);
+
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 const DEFAULT_IMAGE = "/images/default.png";
 const bcrypt = require("bcrypt");
 const session = require("express-session");
@@ -16,14 +31,22 @@ const galleryRoutes = require("./routes/galleryRoutes");
 app.use("/", galleryRoutes);
 const adminAboutRoutes = require("./admin/routes/adminaboutRoutes"); 
 
-const path = require('path');
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public/images', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
+// Top of app.js
 
+const adminAcademicsRoutes = require("./admin/routes/adminacademics");
+app.use("/admin/academics", adminAcademicsRoutes);
+const adminCourseRoutes = require("./admin/routes/admincourse");
+app.use("/admin/course", adminCourseRoutes);
+const adminStudentLifeRoutes = require("./admin/routes/adminstudent-life");
+app.use("/admin/student-life", adminStudentLifeRoutes);
 
-
+const adminContactUsRouter = require('./admin/routes/admincontactus');
+app.use('/admin/contactus', adminContactUsRouter);
 
 // Middleware
 // Middleware to parse URL-encoded bodies from HTML forms
@@ -40,6 +63,11 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+const websiteContactRoutes = require("./routes/websiteContact");
+app.use(express.urlencoded({ extended: true })); // parse form data
+app.use(express.json());
+app.use("/", websiteContactRoutes);
+
 
 
 // Serve static files
@@ -61,10 +89,7 @@ app.use("/admin/static", express.static(path.join(__dirname, "admin/public")));
 app.set("view engine", "ejs");
 
 // ✅ Allow both frontend views and admin views
-app.set("views", [
-    path.join(__dirname, "views"),        // frontend
-    path.join(__dirname, "admin/views")   // admin
-]);
+
 
 // -------------------- LOGIN ROUTES -------------------- //
 // Dynamic Admin Login Page
@@ -193,6 +218,9 @@ app.get('/test-image', (req, res) => {
     res.send('<img src="/images/1756986237536-160805489.png">');
 });
 
+
+const courseRoutes = require('./routes/courseRoutes');
+app.use('/', courseRoutes);
 
 
 

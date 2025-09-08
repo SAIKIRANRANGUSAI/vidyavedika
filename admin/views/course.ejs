@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Management | VidyaVedika</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/static/css/admin.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 2em;
+        }
+
+        .section-subtitle {
+            color: #555;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+        }
+
+        .table-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .table-actions .btn {
+            margin-right: 5px;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 1rem;
+        }
+    </style>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background: #f1f5f9;
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            padding: 10px 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .menu-item span {
+            flex: 1;
+        }
+
+        .menu-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-details span {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            margin-right: 16px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            width: 300px;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-action {
+            position: relative;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb i {
+            margin: 0 8px;
+            font-size: 12px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-action i {
+            margin-left: 6px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d93757;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8fafc;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dashboard-footer {
+            background: white;
+            padding: 16px 24px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .modal-sm {
+            max-width: 400px;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 71, 111, 0.8);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-delete {
+            opacity: 1;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+
+    <!-- Add these in your HTML layout (head or before closing body tag) -->
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://placehold.co/40x40" alt="Logo">
+            <h2>VidyaVedika Admin</h2>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="/admin/dashboard" class="menu-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/home" class="menu-item active">
+                <i class="fas fa-house-user"></i>
+                <span>Home</span>
+            </a>
+            <div class="menu-label">Content</div>
+            <a href="/admin/about" class="menu-item">
+                <i class="fas fa-info-circle"></i>
+                <span>About Us</span>
+            </a>
+            <a href="/admin/academics" class="menu-item">
+                <i class="fas fa-book-open"></i>
+                <span>Academics</span>
+            </a>
+            <a href="/admin/courses" class="menu-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Courses</span>
+            </a>
+            <a href="/admin/student-life" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Student Life</span>
+            </a>
+            <a href="/admin/gallery" class="menu-item">
+                <i class="fas fa-image"></i>
+                <span>Gallery</span>
+                <span class="menu-badge">12</span>
+            </a>
+            <a href="/admin/contacts" class="menu-item">
+                <i class="fas fa-envelope"></i>
+                <span>Contact Messages</span>
+                <span class="menu-badge">5</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <img src="https://placehold.co/40x40" alt="User">
+                <div class="user-details">
+                    <h4>Admin User</h4>
+                    <span>Content Manager</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <div class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" id="userProfileBtn">
+                    <img src="https://placehold.co/36x36" alt="User">
+                    <span>Admin User</span>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">course Page Management</h1>
+                <div class="breadcrumb">
+                    <a href="#">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Home Page</span>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Course Section</h2>
+                </div>
+
+                <form action="/admin/course/save" method="POST">
+
+                    <div class="form-group">
+                        <label for="courseHeading" class="form-label">Main Heading</label>
+                        <input type="text" class="form-input" id="courseHeading" name="main_heading"
+                            value="<%= section.main_heading || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="courseDescription" class="form-label">Main Description</label>
+                        <textarea class="form-textarea" id="courseDescription" name="main_description"
+                            rows="5"><%= section.main_description || '' %></textarea>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Section</button>
+                    </div>
+
+                </form>
+            </div>
+
+
+            <!-- Courses Section -->
+            <div class="container">
+                <div class="content-section">
+                    <div class="section-header d-flex justify-content-between align-items-center">
+                        <h2 class="section-title">Courses</h2>
+                        <button type="button" class="btn btn-primary" onclick="openCourseModal('add')">
+                            Add New Course
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Heading</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (courses && courses.length> 0) { %>
+                                    <% courses.forEach(course=> { %>
+                                        <tr>
+                                            <td>
+                                                <% if (course.image) { %>
+                                                    <img src="<%= course.image %>" width="80">
+                                                    <% } else { %>
+                                                        <span class="text-muted">N/A</span>
+                                                        <% } %>
+                                            </td>
+                                            <td>
+                                                <%= course.heading %>
+                                            </td>
+                                            <td>
+                                                <%= course.description %>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary"
+                                                    onclick='openCourseModal("edit", "<%= course.id %>", <%- JSON.stringify(course.heading) %>, <%- JSON.stringify(course.description) %>, <%- JSON.stringify(course.image || "") %>)'>
+                                                    Edit
+                                                </button>
+                                                <form action="/admin/course/delete/<%= course.id %>" method="POST"
+                                                    style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Are you sure?')">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No courses available.</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Modal -->
+            <!-- Course Modal -->
+            <div class="modal fade" id="courseModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-md">
+                    <div class="modal-content shadow-lg rounded-3 border-0">
+                        <form id="courseForm" method="POST" enctype="multipart/form-data">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title" id="courseModalTitle">Add Course</h5>
+                                <button type="button" class="btn-close btn-close-white"
+                                    data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="modalCourseHeading" class="form-label">Course Heading</label>
+                                    <input type="text" class="form-control" id="modalCourseHeading" name="heading"
+                                        required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="modalCourseDescription" class="form-label">Course Description</label>
+                                    <textarea class="form-control" id="modalCourseDescription" name="description"
+                                        rows="5" required></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="modalCourseImage" class="form-label">Upload Image</label>
+                                    <input type="file" class="form-control" id="modalCourseImage" name="image">
+                                    <div id="modalCourseImagePreview" class="mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" id="courseModalSubmit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JS -->
+            <script>
+                function openCourseModal(action, id = "", heading = "", description = "", image = "") {
+                    const modalTitle = document.getElementById("courseModalTitle");
+                    const form = document.getElementById("courseForm");
+                    const preview = document.getElementById("modalCourseImagePreview");
+                    const submitBtn = document.getElementById("courseModalSubmit");
+
+                    // Reset fields
+                    document.getElementById("modalCourseHeading").value = "";
+                    document.getElementById("modalCourseDescription").value = "";
+                    document.getElementById("modalCourseImage").value = "";
+                    preview.innerHTML = "";
+
+                    if (action === "add") {
+                        modalTitle.innerText = "Add Course";
+                        form.action = "/admin/course/add";
+                        submitBtn.innerText = "Add Course";
+                    } else {
+                        modalTitle.innerText = "Edit Course";
+                        form.action = "/admin/course/edit/" + id;
+                        submitBtn.innerText = "Save Changes";
+
+                        // Populate fields
+                        document.getElementById("modalCourseHeading").value = heading;
+                        document.getElementById("modalCourseDescription").value = description;
+
+                        if (image) {
+                            preview.innerHTML = `<img src="${image}" class="img-thumbnail mt-2" width="100">`;
+                        }
+                    }
+
+                    const modal = new bootstrap.Modal(document.getElementById("courseModal"));
+                    modal.show();
+                }
+            </script>
+
+            <footer class="dashboard-footer">
+                <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
+            </footer>
+
+
+</body>
+
+</html>
