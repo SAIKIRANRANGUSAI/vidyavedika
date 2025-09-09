@@ -192,5 +192,11 @@ app.get('/course-view', (req, res) => {
   res.render('course-view');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+const pool = require("./db");
+
+app.get("/users", async (req, res) => {
+  const [rows] = await pool.query("SELECT * FROM users");
+  res.json(rows);
+});
