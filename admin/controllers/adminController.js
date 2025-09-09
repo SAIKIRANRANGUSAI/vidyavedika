@@ -5,16 +5,16 @@ const bcrypt = require("bcrypt");
 //const db = require("../config/db");
 
 // Middleware to get logo for all admin pages
-exports.getAdminLogo = async (req, res, next) => {
-    try {
-        const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
-        res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-    } catch (err) {
-        console.error(err);
-        res.locals.logo = "/admin/static/images/logo.png";
-    }
-    next();
-};
+// exports.getAdminLogo = async (req, res, next) => {
+//     try {
+//         const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+//         res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+//     } catch (err) {
+//         console.error(err);
+//         res.locals.logo = "/admin/static/images/logo.png";
+//     }
+//     next();
+// };
 
 // GET login page
 exports.getLogin = async (req, res) => {
@@ -134,61 +134,56 @@ exports.postChangeCredentials = async (req, res) => {
 };
 // GET social links for dashboard
 // adminController.js
-exports.getDashboardWithSocial = async (req, res) => {
-  try {
-    const [rows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
-    const social = rows[0] || {}; // always an object
+// exports.getDashboardWithSocial = async (req, res) => {
+//   try {
+//     const [rows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
+//     const social = rows[0] || {};
+//     res.render("admin/dashboard", {
+//       admin: req.session.admin,
+//       social,
+//       socialError: null,
+//       socialSuccess: null,
+//       error: null,
+//       success: null
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.render("admin/dashboard", {
+//       admin: req.session.admin,
+//       social: {},
+//       socialError: "Failed to load social links",
+//       socialSuccess: null,
+//       error: "Failed to load dashboard",
+//       success: null
+//     });
+//   }
+// };
 
-    res.render("admin/dashboard", {
-      admin: req.session.admin,
-      social,          // PASS social
-      socialError: null,
-      socialSuccess: null,
-      error: null,
-      success: null
-    });
-  } catch (err) {
-    console.error(err);
-    res.render("admin/dashboard", {
-      admin: req.session.admin,
-      social: {},      // still pass an empty object
-      socialError: "Failed to load social links",
-      socialSuccess: null,
-      error: "Failed to load dashboard",
-      success: null
-    });
-  }
-};
+// exports.postSocialSettings = async (req, res) => {
+//   const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
 
+//   try {
+//     const [rows] = await db.query("SELECT id FROM admin_social WHERE id = 1");
 
-// POST Update Social Links
-exports.postSocialSettings = async (req, res) => {
-  const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
+//     if (rows.length > 0) {
+//       await db.query(
+//         `UPDATE admin_social 
+//          SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=? 
+//          WHERE id=1`,
+//         [description, facebook, twitter, instagram, youtube, whatsapp]
+//       );
+//     } else {
+//       await db.query(
+//         `INSERT INTO admin_social (id, description, facebook, twitter, instagram, youtube, whatsapp) 
+//          VALUES (1, ?, ?, ?, ?, ?, ?)`,
+//         [description, facebook, twitter, instagram, youtube, whatsapp]
+//       );
+//     }
 
-  try {
-    const [rows] = await db.query("SELECT id FROM admin_social WHERE id = 1");
+//     res.json({ success: true, message: "Social links updated successfully!" });
 
-    if (rows.length > 0) {
-      // Update existing row
-      await db.query(
-        `UPDATE admin_social 
-         SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=? 
-         WHERE id=1`,
-        [description, facebook, twitter, instagram, youtube, whatsapp]
-      );
-    } else {
-      // Insert new row
-      await db.query(
-        `INSERT INTO admin_social (id, description, facebook, twitter, instagram, youtube, whatsapp) 
-         VALUES (1, ?, ?, ?, ?, ?, ?)`,
-        [description, facebook, twitter, instagram, youtube, whatsapp]
-      );
-    }
-
-    res.json({ success: true, message: "Social links updated successfully!" });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error. Please try again." });
-  }
-};
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error. Please try again." });
+//   }
+// };

@@ -15,6 +15,44 @@ app.set("views", [
     path.join(__dirname, "admin", "views")
 ]);
 
+// Middleware to load footer data for all pages
+app.use(async function (req, res, next) {
+  try {
+    // Fetch contact details
+    const [contactRows] = await db.query(
+      "SELECT * FROM contact_details ORDER BY id DESC LIMIT 1"
+    );
+    const contactData = contactRows[0] || null;
+
+    // Fetch social links
+    const [socialRows] = await db.query(
+      "SELECT * FROM admin_social ORDER BY id DESC LIMIT 1"
+    );
+    const socialData = socialRows[0] || null;
+
+    // Fetch current logo
+    const [logoRows] = await db.query(
+      "SELECT logo FROM settings ORDER BY id DESC LIMIT 1"
+    );
+    const logo = logoRows.length ? logoRows[0].logo : "/admin/static/images/logo.png";
+
+    // Attach to res.locals so EJS can access it in any view
+    res.locals.footerData = {
+      contact: contactData,
+      social: socialData,
+    };
+    res.locals.logo = logo; // make logo available globally
+
+    next();
+  } catch (err) {
+    console.error("Footer data error:", err);
+    res.locals.footerData = { contact: null, social: null };
+    res.locals.logo = "/admin/static/images/logo.png";
+    next();
+  }
+});
+
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -31,6 +69,8 @@ app.use('/', indexRoutes);
 const galleryRoutes = require("./routes/galleryRoutes");
 app.use("/", galleryRoutes);
 const adminAboutRoutes = require("./admin/routes/adminaboutRoutes"); 
+
+
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -145,8 +185,8 @@ app.get("/admin/logout", (req, res) => {
     res.redirect("/admin/login");
 });
 // ----------------------------------------------------------- //
-const footerRoute = require("./routes/footerRoute");
-app.use("/", footerRoute);
+// const footerRoute = require("./routes/footerRoute");
+// app.use("/", footerRoute);
 
 // Mount admin routes
 app.use("/admin", adminRoutes);
@@ -192,11 +232,6 @@ app.get('/course-view', (req, res) => {
   res.render('course-view');
 });
 
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
-const pool = require("./db");
 
-app.get("/users", async (req, res) => {
-  const [rows] = await pool.query("SELECT * FROM users");
-  res.json(rows);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));

@@ -1289,19 +1289,28 @@
 
     <div class="sidebar">
         <div class="sidebar-header">
-            <img src="<%= locals.logo %>" alt="Logo">
+           <img src="<%= logo %>" alt="Logo">
+
+
+
+
+
             <h2>VidyaVedika Admin</h2>
         </div>
+
+
         <div class="sidebar-menu">
             <div class="menu-label">Main</div>
-            <a href="/admin/dashboard" class="menu-item">
+            <a href="/admin/dashboard" class="menu-item active">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/admin/home" class="menu-item active">
+
+            <a href="/admin/home" class="menu-item">
                 <i class="fas fa-house-user"></i>
                 <span>Home</span>
             </a>
+
             <div class="menu-label">Content</div>
             <a href="/admin/about-us" class="menu-item">
                 <i class="fas fa-info-circle"></i>
@@ -1311,7 +1320,7 @@
                 <i class="fas fa-book-open"></i>
                 <span>Academics</span>
             </a>
-            <a href="/admin/courses" class="menu-item">
+            <a href="/admin/course" class="menu-item">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Courses</span>
             </a>
@@ -1319,30 +1328,38 @@
                 <i class="fas fa-users"></i>
                 <span>Student Life</span>
             </a>
-            
-        </div>
-        
-    </div>
 
-    <div class="main-content">
-        <div class="header">
-            <div class="header-left">
-                <div class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
+        </div>
+
+
+        <!-- <div class="sidebar-footer">
+            <div class="user-info">
+                <img src="https://placehold.co/40x40" alt="User">
+                <div class="user-details">
+                    <h4>Admin User</h4>
+                    <span>Content Manager</span>
                 </div>
             </div>
+        </div> -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                
+                
+            </div>
+
             <div class="header-right">
                 <div class="user-profile" id="userProfileBtn">
-                    <img src="<%= locals.logo %>" alt="User">
+                    <img src="<%= logo %>" alt="User">
                     <span>Admin User</span>
                 </div>
             </div>
         </div>
-        <div class="content">
+    <div class="content">
             <div class="page-header">
                 <h1 class="page-title">About Page Management</h1>
                 <div class="breadcrumb">
@@ -1889,75 +1906,7 @@
                 </div>
             </div>
 
-
-            <div class="content-section" id="contact-us">
-                <div class="section-header">
-                    <h2 class="section-title">Contact Us / Get In Touch</h2>
-                </div>
-
-                <form action="/admin/contact-us/save" method="POST">
-                    <div class="form-group">
-                        <label for="contactHeading" class="form-label">Heading</label>
-                        <input type="text" id="contactHeading" name="heading" class="form-input"
-                            value="<%= contactUs && contactUs.heading ? contactUs.heading : '' %>" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="contactDescription" class="form-label">Description</label>
-                        <textarea id="contactDescription" name="description" class="form-input" rows="4"
-                            required><%= contactUs && contactUs.description ? contactUs.description : '' %></textarea>
-                    </div>
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-primary">Save Contact Us</button>
-                    </div>
-                </form>
-            </div>
-
-
-            <div class="content-section" id="contact-details">
-                <div class="section-header">
-                    <h2 class="section-title">Contact Details</h2>
-                </div>
-                <form action="/admin/contactus/contact-details/save" method="POST">
-                    <div class="form-group">
-                        <label class="form-label">Location Heading</label>
-                        <input type="text" class="form-input" name="location_heading"
-                            value="<%= (contactDetails && contactDetails.location_heading) ? contactDetails.location_heading : '' %>" " required>
-                    </div>
-                    <div class=" form-group">
-                        <label class="form-label">Location Text</label>
-                        <input type="text" class="form-input" name="location_text"
-                            value="<%= contactDetails?.location_text || '' %>" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Phone Heading</label>
-                        <input type="text" class="form-input" name="phone_heading"
-                            value="<%= contactDetails?.phone_heading || '' %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="text" class="form-input" name="phone_number"
-                            value="<%= contactDetails?.phone_number || '' %>" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email Heading</label>
-                        <input type="text" class="form-input" name="email_heading"
-                            value="<%= contactDetails?.email_heading || '' %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" name="email_address"
-                            value="<%= contactDetails?.email_address || '' %>" required>
-                    </div>
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-primary">Save Contact Details</button>
-                    </div>
-                </form>
-            </div>
+            
 
 
             <footer class="dashboard-footer">
@@ -2254,7 +2203,6 @@
             }
         });
     </script>
-
             
 
 

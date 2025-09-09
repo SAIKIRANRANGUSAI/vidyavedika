@@ -12,7 +12,7 @@ const db = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0
 });
-
+// 
 // Test database connection
 (async () => {
   try {

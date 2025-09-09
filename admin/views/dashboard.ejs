@@ -640,7 +640,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-           <img src="/images/logo.png" alt="Logo">
+            <img src="<%= logo %>" alt="Logo">
 
 
 
@@ -699,18 +699,13 @@
         <!-- Header -->
         <div class="header">
             <div class="header-left">
-                <div class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
+
+
             </div>
 
             <div class="header-right">
                 <div class="user-profile" id="userProfileBtn">
-                    <img src="/images/logo.png" alt="User">
+                    <img src="<%= logo %>" alt="User">
                     <span>Admin User</span>
                 </div>
             </div>
@@ -869,7 +864,7 @@
                 <div id="socialMessage" class="alert" style="display:none;"></div>
 
                 <!-- Social Links Form -->
-                <form id="socialLinksForm" method="POST" action="/admin/update-social">
+                <form id="socialLinksForm">
                     <% const socialData=typeof social !=='undefined' ? social : {}; %>
 
                         <div class="form-group mb-3">
@@ -911,10 +906,6 @@
                         <button type="submit" class="btn btn-primary mt-2">Update Social Links</button>
                 </form>
             </section>
-            <br>
-
-            
-
             <script>
                 const socialForm = document.getElementById('socialLinksForm');
                 const socialMessage = document.getElementById('socialMessage');
@@ -927,6 +918,7 @@
                     try {
                         const response = await fetch('/admin/update-social', {
                             method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: formData
                         });
 
@@ -941,15 +933,35 @@
                             socialMessage.className = 'alert alert-danger';
                             socialMessage.style.display = 'block';
                         }
-
                     } catch (err) {
+                        console.error(err);
                         socialMessage.textContent = 'Server error. Try again.';
                         socialMessage.className = 'alert alert-danger';
                         socialMessage.style.display = 'block';
-                        console.error(err);
                     }
                 });
             </script>
+
+            <div class="card p-4 mb-4">
+  <h4>Current Logo</h4>
+  <img src="<%= logo %>" alt="Current Logo" class="img-fluid mb-3" style="max-width:200px;">
+
+  <% if (locals.logoError) { %>
+    <div class="alert alert-danger"><%= locals.logoError %></div>
+  <% } %>
+
+  <% if (locals.logoSuccess) { %>
+    <div class="alert alert-success"><%= locals.logoSuccess %></div>
+  <% } %>
+
+  <form action="/admin/dashboard/update-logo" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="logo" class="form-label">Upload New Logo</label>
+      <input type="file" name="logo" id="logo" class="form-control" accept="image/*" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Logo</button>
+  </form>
+</div>
 
         </div>
 
