@@ -25,4 +25,17 @@ router.post("/contact-us/send", async (req, res) => {
     }
 });
 
+router.get("/contact", async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
+        const getInTouch = rows.length ? rows[0] : {};
+        const [rows1] = await db.query("SELECT * FROM contact_details LIMIT 1");
+        const contactDetails = rows1[0] || {};
+        res.render("contact", { getInTouch, contactDetails });
+    } catch (err) {
+        console.error(err);
+        res.render("contact", { getInTouch: {} }); // fallback
+    }
+});
+
 module.exports = router;

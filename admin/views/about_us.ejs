@@ -697,13 +697,599 @@
             }
         }
     </style>
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background: #f1f5f9;
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            padding: 10px 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .menu-item span {
+            flex: 1;
+        }
+
+        .menu-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-details span {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            margin-right: 16px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            width: 300px;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-action {
+            position: relative;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb i {
+            margin: 0 8px;
+            font-size: 12px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-action i {
+            margin-left: 6px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d93757;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8fafc;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dashboard-footer {
+            background: white;
+            padding: 16px 24px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .modal-sm {
+            max-width: 400px;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 71, 111, 0.8);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-delete {
+            opacity: 1;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+
+    <!-- Add these in your HTML layout (head or before closing body tag) -->
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <body>
 
     <div class="sidebar">
         <div class="sidebar-header">
-            <img src="https://placehold.co/40x40" alt="Logo">
+            <img src="<%= locals.logo %>" alt="Logo">
             <h2>VidyaVedika Admin</h2>
         </div>
         <div class="sidebar-menu">
@@ -717,7 +1303,7 @@
                 <span>Home</span>
             </a>
             <div class="menu-label">Content</div>
-            <a href="/admin/about" class="menu-item">
+            <a href="/admin/about-us" class="menu-item">
                 <i class="fas fa-info-circle"></i>
                 <span>About Us</span>
             </a>
@@ -733,26 +1319,9 @@
                 <i class="fas fa-users"></i>
                 <span>Student Life</span>
             </a>
-            <a href="/admin/gallery" class="menu-item">
-                <i class="fas fa-image"></i>
-                <span>Gallery</span>
-                <span class="menu-badge">12</span>
-            </a>
-            <a href="/admin/contacts" class="menu-item">
-                <i class="fas fa-envelope"></i>
-                <span>Contact Messages</span>
-                <span class="menu-badge">5</span>
-            </a>
+            
         </div>
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <img src="https://placehold.co/40x40" alt="User">
-                <div class="user-details">
-                    <h4>Admin User</h4>
-                    <span>Content Manager</span>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
     <div class="main-content">
@@ -768,7 +1337,7 @@
             </div>
             <div class="header-right">
                 <div class="user-profile" id="userProfileBtn">
-                    <img src="https://placehold.co/36x36" alt="User">
+                    <img src="<%= locals.logo %>" alt="User">
                     <span>Admin User</span>
                 </div>
             </div>
@@ -959,139 +1528,150 @@
             </form>
 
             <div class="container">
-                <div class="content-section">
-                    <div class="section-header">
-                        <h3 class="section-subtitle">Meet Our Team Members</h3>
-                        <button type="button" class="btn btn-primary" onclick="openTeamModal('add')">Add New
-                            Member</button>
-                    </div>
+  <div class="content-section">
+    <div class="section-header d-flex justify-content-between align-items-center">
+      <h2 class="section-title">Team Members</h2>
+      <button type="button" class="btn btn-primary" onclick="openTeamModal('add')">
+        Add New Member
+      </button>
+    </div>
 
-                    <div class="table-responsive">
-                        <table class="data-table table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Designation</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (members && members.length> 0) { %>
-                                    <% members.forEach(member=> { %>
-                                        <tr>
-                                            <td><img src="<%= member.image_path %>" width="80"></td>
-                                            <td>
-                                                <%= member.name %>
-                                            </td>
-                                            <td>
-                                                <%= member.designation %>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-primary"
-                                                    onclick="openTeamModal('edit', <%= member.id %>, '<%= member.name %>', '<%= member.designation %>', '<%= member.image_path %>')">Edit</button>
-                                                <form action="/admin/team-members/delete/<%= member.id %>" method="POST"
-                                                    style="display:inline;">
-                                                    <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Are you sure?')">Delete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <% }) %>
-                                            <% } else { %>
-                                                <tr>
-                                                    <td colspan="4">No team members yet.</td>
-                                                </tr>
-                                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="table-responsive">
+      <table class="data-table table table-bordered align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (members && members.length > 0) { %>
+            <% members.forEach(member => { %>
+              <tr>
+                <td>
+                  <% if (member.image_path) { %>
+                    <img src="<%= member.image_path %>" class="rounded-circle border" width="70" height="70" style="object-fit: cover;">
+                  <% } else { %>
+                    <span class="text-muted">N/A</span>
+                  <% } %>
+                </td>
+                <td><%= member.name %></td>
+                <td><%= member.designation %></td>
+                <td>
+                  <button class="btn btn-sm btn-primary"
+    onclick="openTeamModal('edit', <%= member.id %>, 
+        `<%- member.name %>`, 
+        `<%- member.designation %>`, 
+        `<%- member.image_path %>` )">
+    Edit
+</button>
 
-            </div>
+                  <form action="/admin/team-members/delete/<%= member.id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Are you sure you want to delete <%= member.name %>?')">
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="4" class="text-center text-muted">No team members yet.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-            <!-- Modal -->
-            <!-- ✅ Team Member Modal (Bootstrap only, no duplicates) -->
-            <!-- Team Member Modal -->
-            <div class="modal fade" id="teamModal" tabindex="-1" aria-labelledby="teamModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-md">
-                    <!-- ✅ modal-dialog-centered keeps it in middle -->
-                    <div class="modal-content shadow-lg rounded-3 border-0">
+<!-- Team Member Modal -->
+<div class="modal fade" id="teamModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content shadow-lg rounded-3 border-0">
+      <form id="teamForm" method="POST" enctype="multipart/form-data">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="teamModalTitle">Add Team Member</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
 
-                        <!-- Modal Header -->
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title" id="teamModalTitle">Add Member</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="teamName" class="form-label">Member Name</label>
+            <input type="text" class="form-control" id="teamName" name="name" required>
+          </div>
 
-                        <!-- Modal Body -->
-                        <div class="modal-body">
-                            <form id="teamForm" method="POST" enctype="multipart/form-data">
-                                <input type="hidden" id="teamId" name="id">
+          <div class="mb-3">
+            <label for="teamDesignation" class="form-label">Designation</label>
+            <input type="text" class="form-control" id="teamDesignation" name="designation" required>
+          </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Name</label>
-                                    <input type="text" name="name" id="teamName" class="form-control" required>
-                                </div>
+          <div class="mb-3">
+            <label for="teamImage" class="form-label">Upload Image</label>
+            <input type="file" class="form-control" id="teamImage" name="image">
+            <div id="teamImagePreview" class="mt-2"></div>
+          </div>
+        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Designation</label>
-                                    <input type="text" name="designation" id="teamDesignation" class="form-control"
-                                        required>
-                                </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="teamModalSubmit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Upload Image</label>
-                                    <input type="file" name="image" class="form-control">
-                                    <div id="teamImagePreview" class="mt-2"></div>
-                                </div>
-                            </form>
-                        </div>
+<!-- JS -->
+<script>
+  function openTeamModal(action, id = "", name = "", designation = "", image = "") {
+    const modalTitle = document.getElementById("teamModalTitle");
+    const form = document.getElementById("teamForm");
+    const preview = document.getElementById("teamImagePreview");
+    const submitBtn = document.getElementById("teamModalSubmit");
 
-                        <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <!-- Cancel button same color as Delete -->
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                                <i class="bi bi-x-circle me-1"></i> Cancel
-                            </button>
-                            <!-- Save button same color as Edit -->
-                            <button type="submit" form="teamForm" class="btn btn-primary">
-                                <i class="bi bi-save me-1"></i> Save
-                            </button>
-                        </div>
+    // Reset fields
+    document.getElementById("teamName").value = "";
+    document.getElementById("teamDesignation").value = "";
+    document.getElementById("teamImage").value = "";
+    preview.innerHTML = "";
 
-                    </div>
-                </div>
-            </div>
+    if (action === "add") {
+      modalTitle.innerText = "Add Team Member";
+      form.action = "/admin/team-members/add";
+      submitBtn.innerText = "Add Member";
+    } else {
+      modalTitle.innerText = "Edit Team Member";
+      form.action = "/admin/team-members/edit/" + id;
+      submitBtn.innerText = "Save Changes";
 
-            <script>
-                function openTeamModal(action, id = "", name = "", designation = "", imagePath = "") {
-                    const modalTitle = document.getElementById("teamModalTitle");
-                    const form = document.getElementById("teamForm");
-                    const preview = document.getElementById("teamImagePreview");
+      // Populate fields
+      document.getElementById("teamName").value = name;
+      document.getElementById("teamDesignation").value = designation;
 
-                    if (!action) return; // ❌ prevent accidental calls
+      if (image) {
+        preview.innerHTML = `<img src="${image}" class="img-thumbnail mt-2" width="100">`;
+      }
+    }
 
-                    if (action === "add") {
-                        modalTitle.innerText = "Add Member";
-                        form.action = "/admin/team-members/add";
-                        document.getElementById("teamName").value = "";
-                        document.getElementById("teamDesignation").value = "";
-                        preview.innerHTML = "";
-                    } else {
-                        modalTitle.innerText = "Edit Member";
-                        form.action = "/admin/team-members/edit/" + id;
-                        document.getElementById("teamName").value = name;
-                        document.getElementById("teamDesignation").value = designation;
-                        preview.innerHTML = imagePath ? `<img src="${imagePath}" class="img-thumbnail mt-2" width="100">` : "";
-                    }
+    const modal = new bootstrap.Modal(document.getElementById("teamModal"));
+    modal.show();
+  }
 
-                    const modal = new bootstrap.Modal(document.getElementById("teamModal"));
-                    modal.show();
-                }
-
-            </script>
+  // Image preview on file change
+  document.getElementById("teamImage").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById("teamImagePreview");
+    if (file) {
+      preview.innerHTML = `<img src="${URL.createObjectURL(file)}" class="img-thumbnail mt-2" width="100">`;
+    } else {
+      preview.innerHTML = "";
+    }
+  });
+</script>
 
             <div class="content">
                 <div class="page-header">
@@ -1310,10 +1890,372 @@
             </div>
 
 
+            <div class="content-section" id="contact-us">
+                <div class="section-header">
+                    <h2 class="section-title">Contact Us / Get In Touch</h2>
+                </div>
+
+                <form action="/admin/contact-us/save" method="POST">
+                    <div class="form-group">
+                        <label for="contactHeading" class="form-label">Heading</label>
+                        <input type="text" id="contactHeading" name="heading" class="form-input"
+                            value="<%= contactUs && contactUs.heading ? contactUs.heading : '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactDescription" class="form-label">Description</label>
+                        <textarea id="contactDescription" name="description" class="form-input" rows="4"
+                            required><%= contactUs && contactUs.description ? contactUs.description : '' %></textarea>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Contact Us</button>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="content-section" id="contact-details">
+                <div class="section-header">
+                    <h2 class="section-title">Contact Details</h2>
+                </div>
+                <form action="/admin/contactus/contact-details/save" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Location Heading</label>
+                        <input type="text" class="form-input" name="location_heading"
+                            value="<%= (contactDetails && contactDetails.location_heading) ? contactDetails.location_heading : '' %>" " required>
+                    </div>
+                    <div class=" form-group">
+                        <label class="form-label">Location Text</label>
+                        <input type="text" class="form-input" name="location_text"
+                            value="<%= contactDetails?.location_text || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Heading</label>
+                        <input type="text" class="form-input" name="phone_heading"
+                            value="<%= contactDetails?.phone_heading || '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-input" name="phone_number"
+                            value="<%= contactDetails?.phone_number || '' %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Heading</label>
+                        <input type="text" class="form-input" name="email_heading"
+                            value="<%= contactDetails?.email_heading || '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" name="email_address"
+                            value="<%= contactDetails?.email_address || '' %>" required>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary">Save Contact Details</button>
+                    </div>
+                </form>
+            </div>
+
 
             <footer class="dashboard-footer">
                 <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
             </footer>
+
+            <div class="modal-overlay" id="credentialsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Change Admin Credentials</h2>
+                <button class="modal-close" id="closeCredentialsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="credentialsMessage" style="display: none;" class="alert"></div>
+
+                <form id="changeCredentialsForm">
+                    <div class="form-group">
+                        <label for="newUsername">Username</label>
+                        <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword"
+                            placeholder="Enter current password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword"
+                            placeholder="Confirm new password" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel" id="cancelCredentialsChange">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Credentials</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        /* Show modal */
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* Modal box */
+        .modal {
+            background-color: #fff;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Header */
+        .modal-header {
+            padding: 16px 24px;
+            background-color: #4A90E2;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Body */
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        /* Form groups */
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .form-group input {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #4A90E2;
+            outline: none;
+            box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+        }
+
+        /* Footer buttons */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #4A90E2;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #357ABD;
+        }
+
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background-color: #ddd;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const credentialsModal = document.getElementById('credentialsModal');
+            const userProfileBtn = document.getElementById('userProfileBtn');
+            const closeCredentialsModal = document.getElementById('closeCredentialsModal');
+            const cancelCredentialsChange = document.getElementById('cancelCredentialsChange');
+            const credentialsMessage = document.getElementById('credentialsMessage');
+            const changeCredentialsForm = document.getElementById('changeCredentialsForm');
+
+            // Open modal
+            if (userProfileBtn && credentialsModal) {
+                userProfileBtn.addEventListener('click', () => {
+                    credentialsModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    if (credentialsMessage) credentialsMessage.style.display = 'none';
+                });
+            }
+
+            // Close modal
+            function closeModal() {
+                if (!credentialsModal) return;
+                credentialsModal.classList.remove('active');
+                document.body.style.overflow = '';
+                if (credentialsMessage) credentialsMessage.style.display = 'none';
+                if (document.getElementById('currentPassword')) document.getElementById('currentPassword').value = '';
+                if (document.getElementById('newPassword')) document.getElementById('newPassword').value = '';
+                if (document.getElementById('confirmNewPassword')) document.getElementById('confirmNewPassword').value = '';
+            }
+
+            if (closeCredentialsModal) closeCredentialsModal.addEventListener('click', closeModal);
+            if (cancelCredentialsChange) cancelCredentialsChange.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside modal content
+            if (credentialsModal) {
+                credentialsModal.addEventListener('click', function (e) {
+                    if (e.target === credentialsModal) closeModal();
+                });
+            }
+
+            // AJAX form submit
+            if (changeCredentialsForm) {
+                changeCredentialsForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    const newUsername = document.getElementById('newUsername').value;
+                    const currentPassword = document.getElementById('currentPassword').value;
+                    const newPassword = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                    if (newPassword !== confirmPassword) {
+                        credentialsMessage.textContent = 'New passwords do not match!';
+                        credentialsMessage.className = 'alert alert-danger';
+                        credentialsMessage.style.display = 'block';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/admin/change-credentials', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({
+                                newUsername,
+                                currentPassword,
+                                newPassword,
+                                confirmNewPassword: confirmPassword
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            credentialsMessage.textContent = result.message;
+                            credentialsMessage.className = 'alert alert-success';
+                            credentialsMessage.style.display = 'block';
+
+                            // Redirect to dashboard after short delay
+                            setTimeout(() => {
+                                window.location.href = '/admin/dashboard';
+                            }, 1500);
+                        } else if (result.error) {
+                            credentialsMessage.textContent = result.error;
+                            credentialsMessage.className = 'alert alert-danger';
+                            credentialsMessage.style.display = 'block';
+                        }
+                    } catch (err) {
+                        credentialsMessage.textContent = 'Server error. Try again.';
+                        credentialsMessage.className = 'alert alert-danger';
+                        credentialsMessage.style.display = 'block';
+                        console.error(err);
+                    }
+                });
+            }
+        });
+    </script>
+
+            
 
 
 </body>

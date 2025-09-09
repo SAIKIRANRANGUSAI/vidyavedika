@@ -702,6 +702,7 @@
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- /<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script> -->
 
 </head>
 
@@ -818,144 +819,401 @@
 
             <!-- Courses Section -->
             <div class="container">
-                <div class="content-section">
-                    <div class="section-header d-flex justify-content-between align-items-center">
-                        <h2 class="section-title">Courses</h2>
-                        <button type="button" class="btn btn-primary" onclick="openCourseModal('add')">
-                            Add New Course
-                        </button>
-                    </div>
+  <div class="content-section">
+    <div class="section-header d-flex justify-content-between align-items-center">
+      <h2 class="section-title">Courses</h2>
+      <button type="button" class="btn btn-primary" onclick="openCourseModal('add')">
+        Add New Course
+      </button>
+    </div>
 
-                    <div class="table-responsive">
-                        <table class="data-table table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Heading</th>
-                                    <th>Description</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (courses && courses.length> 0) { %>
-                                    <% courses.forEach(course=> { %>
-                                        <tr>
-                                            <td>
-                                                <% if (course.image) { %>
-                                                    <img src="<%= course.image %>" width="80">
-                                                    <% } else { %>
-                                                        <span class="text-muted">N/A</span>
-                                                        <% } %>
-                                            </td>
-                                            <td>
-                                                <%= course.heading %>
-                                            </td>
-                                            <td>
-                                                <%= course.description %>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-primary"
-                                                    onclick='openCourseModal("edit", "<%= course.id %>", <%- JSON.stringify(course.heading) %>, <%- JSON.stringify(course.description) %>, <%- JSON.stringify(course.image || "") %>)'>
-                                                    Edit
-                                                </button>
-                                                <form action="/admin/course/delete/<%= course.id %>" method="POST"
-                                                    style="display:inline;">
-                                                    <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Are you sure?')">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <% }) %>
-                                            <% } else { %>
-                                                <tr>
-                                                    <td colspan="4" class="text-center">No courses available.</td>
-                                                </tr>
-                                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <div class="table-responsive">
+      <table class="data-table table table-bordered">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Heading</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (courses && courses.length> 0) { %>
+            <% courses.forEach(course => { %>
+              <tr>
+                <td>
+                  <% if (course.image) { %>
+                    <img src="<%= course.image %>" width="80">
+                  <% } else { %>
+                    <span class="text-muted">N/A</span>
+                  <% } %>
+                </td>
+                <td><%= course.heading %></td>
+                <td><%= course.description %></td>
+                <td>
+                  <button class="btn btn-sm btn-primary"
+                    data-id="<%= course.id %>"
+                    data-heading="<%- course.heading %>"
+                    data-description="<%- course.description %>"
+                    data-image="<%= course.image || '' %>"
+                    onclick="openCourseModal('edit', this)">
+                    Edit
+                  </button>
+                  <form action="/admin/course/delete/<%= course.id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="4" class="text-center">No courses available.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-            <!-- Course Modal -->
-            <!-- Course Modal -->
-            <div class="modal fade" id="courseModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-md">
-                    <div class="modal-content shadow-lg rounded-3 border-0">
-                        <form id="courseForm" method="POST" enctype="multipart/form-data">
-                            <div class="modal-header bg-primary text-white">
-                                <h5 class="modal-title" id="courseModalTitle">Add Course</h5>
-                                <button type="button" class="btn-close btn-close-white"
-                                    data-bs-dismiss="modal"></button>
-                            </div>
+<!-- Course Modal -->
+<div class="modal fade" id="courseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content shadow-lg rounded-3 border-0">
+      <form id="courseForm" method="POST" enctype="multipart/form-data">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="courseModalTitle">Add Course</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
 
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="modalCourseHeading" class="form-label">Course Heading</label>
-                                    <input type="text" class="form-control" id="modalCourseHeading" name="heading"
-                                        required>
-                                </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="modalCourseHeading" class="form-label">Course Heading</label>
+            <input type="text" class="form-control" id="modalCourseHeading" name="heading" required>
+          </div>
 
-                                <div class="mb-3">
-                                    <label for="modalCourseDescription" class="form-label">Course Description</label>
-                                    <textarea class="form-control" id="modalCourseDescription" name="description"
-                                        rows="5" required></textarea>
-                                </div>
+          <div class="mb-3">
+            <label for="modalCourseDescription" class="form-label">Course Description</label>
+            <textarea class="form-control" id="modalCourseDescription" name="description" rows="5" required></textarea>
+          </div>
 
-                                <div class="mb-3">
-                                    <label for="modalCourseImage" class="form-label">Upload Image</label>
-                                    <input type="file" class="form-control" id="modalCourseImage" name="image">
-                                    <div id="modalCourseImagePreview" class="mt-2"></div>
-                                </div>
-                            </div>
+          <div class="mb-3">
+            <label for="modalCourseImage" class="form-label">Upload Image</label>
+            <input type="file" class="form-control" id="modalCourseImage" name="image">
+            <div id="modalCourseImagePreview" class="mt-2"></div>
+          </div>
+        </div>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" id="courseModalSubmit" class="btn btn-primary">Save</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="courseModalSubmit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-            <!-- JS -->
-            <script>
-                function openCourseModal(action, id = "", heading = "", description = "", image = "") {
-                    const modalTitle = document.getElementById("courseModalTitle");
-                    const form = document.getElementById("courseForm");
-                    const preview = document.getElementById("modalCourseImagePreview");
-                    const submitBtn = document.getElementById("courseModalSubmit");
+<!-- JS for Course Modal -->
+<script>
+  function openCourseModal(action, el = null) {
+    const modalTitle = document.getElementById("courseModalTitle");
+    const form = document.getElementById("courseForm");
+    const preview = document.getElementById("modalCourseImagePreview");
+    const submitBtn = document.getElementById("courseModalSubmit");
 
-                    // Reset fields
-                    document.getElementById("modalCourseHeading").value = "";
-                    document.getElementById("modalCourseDescription").value = "";
-                    document.getElementById("modalCourseImage").value = "";
-                    preview.innerHTML = "";
+    // reset
+    document.getElementById("modalCourseHeading").value = "";
+    document.getElementById("modalCourseDescription").value = "";
+    document.getElementById("modalCourseImage").value = "";
+    preview.innerHTML = "";
 
-                    if (action === "add") {
-                        modalTitle.innerText = "Add Course";
-                        form.action = "/admin/course/add";
-                        submitBtn.innerText = "Add Course";
-                    } else {
-                        modalTitle.innerText = "Edit Course";
-                        form.action = "/admin/course/edit/" + id;
-                        submitBtn.innerText = "Save Changes";
+    if (action === "add") {
+      modalTitle.innerText = "Add Course";
+      form.action = "/admin/course/add";
+      submitBtn.innerText = "Add Course";
+    } else {
+      modalTitle.innerText = "Edit Course";
+      form.action = "/admin/course/edit/" + el.dataset.id;
+      submitBtn.innerText = "Save Changes";
 
-                        // Populate fields
-                        document.getElementById("modalCourseHeading").value = heading;
-                        document.getElementById("modalCourseDescription").value = description;
+      document.getElementById("modalCourseHeading").value = el.dataset.heading;
+      document.getElementById("modalCourseDescription").value = el.dataset.description;
 
-                        if (image) {
-                            preview.innerHTML = `<img src="${image}" class="img-thumbnail mt-2" width="100">`;
-                        }
-                    }
+      if (el.dataset.image) {
+        preview.innerHTML = `<img src="${el.dataset.image}" class="img-thumbnail mt-2" width="100">`;
+      }
+    }
 
-                    const modal = new bootstrap.Modal(document.getElementById("courseModal"));
-                    modal.show();
-                }
-            </script>
+    new bootstrap.Modal(document.getElementById("courseModal")).show();
+  }
+</script>
+
+<!-- ================== COURSE VIEWS (Replace this entire section) ================== -->
+<div class="container">
+  <div class="content-section">
+    <div class="section-header d-flex justify-content-between align-items-center">
+      <h2 class="section-title">Course Details / View</h2>
+      <button type="button" class="btn btn-primary" onclick="openCourseViewModal('add')">
+        Add / Edit Course View
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table table table-bordered">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Banner Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (courseViews && courseViews.length > 0) { %>
+            <% courseViews.forEach(cv => { %>
+              <tr>
+                <td><%= cv.course_heading %></td>
+                <td>
+                  <% if (cv.banner_image) { %>
+                    <img src="<%= cv.banner_image %>" width="80" alt="banner">
+                  <% } else { %>
+                    <span class="text-muted">N/A</span>
+                  <% } %>
+                </td>
+                <td>
+                  <!-- use data-* attrs to avoid escaping issues -->
+                  <button
+                    class="btn btn-sm btn-primary"
+                    data-id="<%= cv.id %>"
+                    data-course="<%= cv.course_id %>"
+                    data-banner="<%= cv.banner_image || '' %>"
+                    data-content="<%- encodeURIComponent(cv.content || '') %>"
+                    onclick="openCourseViewModal('edit', this)">
+                    Edit
+                  </button>
+
+                  <form action="/admin/course/view/delete/<%= cv.id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="3" class="text-center">No course views found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Course View Modal -->
+<div class="modal fade" id="courseViewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow-lg rounded-3 border-0">
+      <form id="courseViewForm" method="POST" enctype="multipart/form-data">
+        <input type="hidden" id="existingBanner" name="existing_banner" value="">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="courseViewModalTitle">Add / Edit Course View</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="courseSelect" class="form-label">Select Course</label>
+            <select id="courseSelect" name="course_id" class="form-control" required>
+              <% courses.forEach(course => { %>
+                <option value="<%= course.id %>"><%= course.heading %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="courseBannerImage" class="form-label">Banner Image</label>
+            <input type="file" class="form-control" id="courseBannerImage" name="banner_image" accept="image/*">
+            <div id="courseBannerImagePreview" class="mt-2"></div>
+          </div>
+
+          <div class="mb-3">
+            <label for="courseContent" class="form-label">Course Content (CKEditor)</label>
+            <!-- remove 'required' attribute if you prefer server-side validation;
+                 we do client-side validation below after syncing editor content -->
+            <textarea class="form-control" id="courseContent" name="content" rows="10"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" id="courseViewSubmit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ensure CKEditor script is present once on the page -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+<script>
+  let courseEditor = null;
+  let pendingCourseContent = null; // used when editor not ready at time of opening modal
+
+  // create editor and apply a pending value if present
+  function initCourseEditor() {
+    if (courseEditor) return;
+    const el = document.querySelector('#courseContent');
+    if (!el) return;
+    ClassicEditor.create(el, {
+      toolbar: [
+        'heading', '|',
+        'bold', 'italic', 'underline', 'strikethrough', '|',
+        'fontColor', 'fontBackgroundColor', '|',
+        'link', 'bulletedList', 'numberedList', '|',
+        'blockQuote', 'insertTable', '|',
+        'undo', 'redo'
+      ]
+    })
+    .then(editor => {
+      courseEditor = editor;
+      if (pendingCourseContent) {
+        editor.setData(pendingCourseContent);
+        // also make sure textarea (fallback) is set
+        document.getElementById('courseContent').value = pendingCourseContent;
+        pendingCourseContent = null;
+      }
+    })
+    .catch(err => {
+      console.error('CKEditor init error:', err);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initCourseEditor();
+
+    // Image preview
+    document.getElementById('courseBannerImage').addEventListener('change', function () {
+      const file = this.files[0];
+      const preview = document.getElementById('courseBannerImagePreview');
+      preview.innerHTML = '';
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail mt-2" width="150">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Ensure editor content is synced before native form submit
+    document.getElementById('courseViewForm').addEventListener('submit', function (e) {
+      // sync content
+      syncEditorContent();
+
+      // Simple validation: make sure course_id exists and content not empty
+      const courseSelect = document.getElementById('courseSelect');
+      const contentValue = document.getElementById('courseContent').value || '';
+
+      if (!courseSelect.value) {
+        e.preventDefault();
+        alert('Please select a course.');
+        return;
+      }
+
+      // if you want content to be required, enforce here:
+      // if (contentValue.trim().length === 0) { e.preventDefault(); alert('Please add course content.'); return; }
+
+      // allow normal submit to proceed (multipart/form-data)
+    });
+  });
+
+  // sync CKEditor data to textarea with fallbacks
+  function syncEditorContent() {
+    const textarea = document.getElementById('courseContent');
+
+    // primary: CKEditor API
+    if (courseEditor && typeof courseEditor.getData === 'function') {
+      textarea.value = courseEditor.getData();
+      return;
+    }
+
+    // fallback: if CKEditor not ready, try to read editable DOM inside modal
+    const editable = document.querySelector('#courseViewModal .ck-editor__editable') || document.querySelector('.ck-editor__editable');
+    if (editable) {
+      textarea.value = editable.innerHTML;
+      return;
+    }
+
+    // final fallback: leave textarea as-is (maybe user edited the original textarea)
+  }
+
+  // action: 'add' or 'edit'; el is either null (for add) or the button element (for edit)
+  function openCourseViewModal(action, el = null) {
+    const modalTitle = document.getElementById('courseViewModalTitle');
+    const form = document.getElementById('courseViewForm');
+    const preview = document.getElementById('courseBannerImagePreview');
+    const submitBtn = document.getElementById('courseViewSubmit');
+    const selectCourse = document.getElementById('courseSelect');
+    const existingBanner = document.getElementById('existingBanner');
+
+    // don't use form.reset() (can clear things unexpectedly). Clear fields manually:
+    selectCourse.selectedIndex = 0;
+    document.getElementById('courseBannerImage').value = '';
+    preview.innerHTML = '';
+    document.getElementById('courseContent').value = '';
+    existingBanner.value = '';
+
+    // ensure editor is initialized (or will be shortly)
+    initCourseEditor();
+
+    if (action === 'add') {
+      modalTitle.innerText = 'Add Course View';
+      form.action = '/admin/course/view/add';
+      submitBtn.innerText = 'Add';
+      // editor cleared already above
+      pendingCourseContent = null;
+    } else {
+      // edit mode: el is the clicked button
+      modalTitle.innerText = 'Edit Course View';
+      const id = el.dataset.id;
+      form.action = '/admin/course/view/edit/' + id;
+      submitBtn.innerText = 'Save';
+
+      // restore select
+      if (el.dataset.course) selectCourse.value = el.dataset.course;
+
+      // banner preview & hidden existingBanner
+      if (el.dataset.banner) {
+        preview.innerHTML = `<img src="${el.dataset.banner}" class="img-thumbnail mt-2" width="150">`;
+        existingBanner.value = el.dataset.banner;
+      }
+
+      // content: decode and set into editor if ready, otherwise store pending
+      let decodedContent = '';
+      try {
+        decodedContent = decodeURIComponent(el.dataset.content || '');
+      } catch (err) {
+        // if decode fails, fallback to raw value
+        decodedContent = el.dataset.content || '';
+      }
+
+      // set both pending and textarea fallback
+      if (courseEditor && typeof courseEditor.setData === 'function') {
+        courseEditor.setData(decodedContent);
+        document.getElementById('courseContent').value = decodedContent;
+      } else {
+        pendingCourseContent = decodedContent;
+        document.getElementById('courseContent').value = decodedContent;
+      }
+    }
+
+    new bootstrap.Modal(document.getElementById('courseViewModal')).show();
+  }
+</script>
 
             <footer class="dashboard-footer">
                 <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>

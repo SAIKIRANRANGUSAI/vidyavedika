@@ -65,13 +65,12 @@ exports.isAuthenticated = (req, res, next) => {
 
 exports.getDashboard = async (req, res) => {
     try {
-        // Fetch Contact Us
-        const [rows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
-        const contactUs = rows[0] || {};
+        const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
+        const contactUs = contactRows[0] || {};
 
-        // Fetch Contact Details
-        const [rows1] = await db.query("SELECT * FROM contact_details LIMIT 1");
-        const contactDetails = rows1[0] || {};
+        const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
+        const contactDetails = detailsRows[0] || {};
+
         const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
         res.render("dashboard", {
@@ -79,16 +78,13 @@ exports.getDashboard = async (req, res) => {
             contactUs,
             contactDetails,
             messages
+            // No need to pass logo explicitly if middleware sets res.locals.logo
         });
-        //res.render("dashboard", { contactUs, contactDetails });
-
     } catch (err) {
         console.error("Error loading dashboard:", err);
         res.status(500).send("Server error");
     }
 };
-
-
 
 // Middleware to check authentication
 exports.isAuthenticated = (req, res, next) => {

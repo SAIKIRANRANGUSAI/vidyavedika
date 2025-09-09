@@ -1,22 +1,45 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const db = require('../config/db'); // your MySQL connection
+const db = require("../config/db"); // adjust path if needed
 
-router.get('/', async (req, res) => {
-    try {
-        // Fetch course sections from DB
-        const [sections] = await db.query("SELECT * FROM course_section ORDER BY id ASC");
+// ✅ List all courses
+router.get("/", async (req, res) => {
+  try {
+    const [courses] = await db.query("SELECT * FROM courses ORDER BY id ASC");
 
-        // Optional: fetch other data like CTA or counters if needed
-        const [cta] = await db.query("SELECT * FROM cta_table LIMIT 1"); 
-        const [counters] = await db.query("SELECT * FROM counters_table");
-
-        // Pass all data to index.ejs
-        res.render('index', { sections, cta: cta[0], counters });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Server Error");
-    }
+    res.render("courses", { courses }); // create courses.ejs
+  } catch (err) {
+    console.error("Error fetching courses:", err);
+    res.status(500).send("Server Error");
+  }
 });
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // fetch course info
+    const [rows] = await db.query("SELECT * FROM courses WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      return res.status(404).send("Course not found");
+    }
+    const course = rows[0];
+
+    // fetch course view
+    const [views] = await db.query(
+      "SELECT * FROM course_view WHERE course_id = ? LIMIT 1",
+      [id]
+    );
+    const courseView = views.length > 0 ? views[0] : null;
+
+    console.log('Course:', course.heading);
+    console.log('CourseView:', courseView);
+
+    res.render("course-view", { course, courseView });
+  } catch (err) {
+    console.error("Error fetching course details:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
 
 module.exports = router;

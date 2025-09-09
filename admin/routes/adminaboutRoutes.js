@@ -270,4 +270,37 @@ router.post('/accreditations-achievements', upload.single('image'), async (req, 
         res.status(500).send('Error updating Accreditations & Achievements');
     }
 });
+
+// --- Middleware: fetch logo for all admin pages ---
+router.use(async (req, res, next) => {
+    try {
+        const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+        res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+    } catch (err) {
+        console.error("Error fetching logo:", err);
+        res.locals.logo = "/admin/static/images/logo.png"; // fallback
+    }
+    next();
+});
+
+
+// --- Admin Settings Page (upload logo) ---
+router.get("/settings", async (req, res) => {
+    const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+    const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+    res.render("admin/settings", { logo });
+});
+
+// --- Update Logo ---
+router.post("/settings/update-logo", upload.single("logo"), async (req, res) => {
+    try {
+        const logoPath = "/uploads/" + req.file.filename;
+        await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
+        res.redirect("/admin/settings");
+    } catch (err) {
+        console.error("Error updating logo:", err);
+        res.status(500).send("Error updating logo");
+    }
+});
+
 module.exports = router;

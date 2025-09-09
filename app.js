@@ -7,6 +7,7 @@ const app = express();
 const path = require("path");
 
 app.set("view engine", "ejs");
+app.use(express.static("public"));
 
 // Add both main views and admin views
 app.set("views", [
@@ -37,11 +38,12 @@ app.use('/public/images', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 // Top of app.js
-
 const adminAcademicsRoutes = require("./admin/routes/adminacademics");
 app.use("/admin/academics", adminAcademicsRoutes);
-const adminCourseRoutes = require("./admin/routes/admincourse");
-app.use("/admin/course", adminCourseRoutes);
+
+
+
+// const adminCourseRoutes = require("./admin/routes/admincourse");
 const adminStudentLifeRoutes = require("./admin/routes/adminstudent-life");
 app.use("/admin/student-life", adminStudentLifeRoutes);
 
@@ -143,6 +145,8 @@ app.get("/admin/logout", (req, res) => {
     res.redirect("/admin/login");
 });
 // ----------------------------------------------------------- //
+const footerRoute = require("./routes/footerRoute");
+app.use("/", footerRoute);
 
 // Mount admin routes
 app.use("/admin", adminRoutes);
@@ -150,60 +154,23 @@ app.use("/admin", adminRoutes);
 // -------------------- PUBLIC ROUTES -------------------- //
 app.get("/", (req, res) => res.render("index"));
 app.get("/about", (req, res) => res.render("about"));
-app.get("/student-life", (req, res) => res.render("student-life"));
+//app.get("/student-life", (req, res) => res.render("student-life"));
 app.get("/gallery", (req, res) => res.render("gallery"));
 app.get("/contact", (req, res) => res.render("contact"));
-app.get("/academics", (req, res) => res.render("academics"));
+//app.get("/academics", (req, res) => res.render("academics"));
+const academicsRoutes = require("./routes/academicsRoutes");
+app.use("/", academicsRoutes);
 
-// Courses page
-app.get("/courses", async (req, res) => {
-    try {
-        const [courses] = await db.query(
-            `SELECT c.id, c.name, c.slug, c.short_desc,
-                    IFNULL(i.file_path, ?) AS icon
-             FROM courses c
-             LEFT JOIN other_images i ON c.icon_image_id = i.id`,
-            [DEFAULT_IMAGE]
-        );
-        res.render("courses", { courses });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error fetching courses");
-    }
-});
+// -------------------- COURSE ROUTES -------------------- //
+const courseRoutes = require("./routes/courseRoutes");
+app.use("/courses", courseRoutes);
 
-// Single course by slug
-app.get("/courses/:slug", async (req, res) => {
-    try {
-        const { slug } = req.params;
-        const [courseRows] = await db.query(
-            `SELECT c.id, c.name, c.slug, c.short_desc, c.full_content,
-                    IFNULL(b.file_path, ?) AS banner
-             FROM courses c
-             LEFT JOIN other_images b ON c.banner_image_id = b.id
-             WHERE c.slug = ?`,
-            [DEFAULT_IMAGE, slug]
-        );
-        if (courseRows.length === 0) return res.status(404).send("Course not found");
-        const course = courseRows[0];
 
-        const [related] = await db.query(
-            `SELECT c.id, c.name, c.slug, c.short_desc,
-                    IFNULL(i.file_path, ?) AS icon
-             FROM courses c
-             LEFT JOIN other_images i ON c.icon_image_id = i.id
-             WHERE c.slug != ?
-             LIMIT 6`,
-            [DEFAULT_IMAGE, slug]
-        );
-        res.render("course-view", { course, related });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error fetching course details");
-    }
-});
+const adminCourseRoutes = require("./admin/routes/admincourse");
+app.use("/admin/course", adminCourseRoutes);   // singular
 
-// DB test route
+
+
 app.get("/test-db", async (req, res) => {
     try {
         const [results] = await db.query("SELECT 1 + 1 AS result");
@@ -218,12 +185,12 @@ app.get('/test-image', (req, res) => {
     res.send('<img src="/images/1756986237536-160805489.png">');
 });
 
+const studentLifeRoutes = require("./routes/student-lifeRoutes");
+app.use("/student-life", studentLifeRoutes);
 
-const courseRoutes = require('./routes/courseRoutes');
-app.use('/', courseRoutes);
+app.get('/course-view', (req, res) => {
+  res.render('course-view');
+});
 
-
-
-// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));

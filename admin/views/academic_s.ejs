@@ -789,8 +789,7 @@
                     <h2 class="section-title">Academics Section</h2>
                 </div>
 
-                <form action="/admin/academics/save-section" method="POST" enctype="multipart/form-data">
-
+                <form action="/admin/academics/academics/save" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="heading" class="form-label">Heading</label>
                         <input type="text" class="form-input" id="heading" name="heading"
@@ -805,15 +804,13 @@
 
                     <div class="form-group">
                         <label class="form-label">Current Image</label>
-                        <div class="image-preview-container">
-                            <% if (academics.image) { %>
-                                <img src="<%= academics.image %>" alt="Current Image" class="image-preview">
-                                <p class="mt-2">Image URL: <%= academics.image %>
-                                </p>
-                                <% } else { %>
-                                    <p>No image uploaded yet.</p>
-                                    <% } %>
-                        </div>
+                        <% if (academics.image) { %>
+                            <img src="<%= academics.image %>" alt="Current Image" class="image-preview">
+                            <p class="mt-2">Image URL: <%= academics.image %>
+                            </p>
+                            <% } else { %>
+                                <p>No image uploaded yet.</p>
+                                <% } %>
                     </div>
 
                     <div class="form-group">
@@ -834,51 +831,83 @@
                 </form>
             </div>
 
+            <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
+            <script>
+                ClassicEditor.create(document.querySelector('#listEditor')).catch(error => console.error(error));
+            </script>
+
             <!-- Academic Calendar Section -->
-            <div class="content-section">
+            <div class="content-section mb-5 p-4 border rounded bg-light">
                 <div class="section-header">
                     <h2 class="section-title">Academic Calendar Section</h2>
                 </div>
 
-                <form action="/admin/academics/save-section" method="POST" enctype="multipart/form-data">
+                <form action="/admin/academics/calendar/save" method="POST">
 
-
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label for="calendarHeading" class="form-label">Heading</label>
-                        <input type="text" class="form-input" id="calendarHeading" name="heading"
+                        <input type="text" id="calendarHeading" name="heading" class="form-input"
                             value="<%= calendar.heading || '' %>" required>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label for="calendarDescription" class="form-label">Description</label>
-                        <textarea class="form-textarea" id="calendarDescription" name="description"
+                        <textarea id="calendarDescription" name="description" class="form-textarea"
                             rows="3"><%= calendar.description || '' %></textarea>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label for="calendarContent" class="form-label">Calendar Details</label>
-                        <textarea name="content" id="calendarContent" class="form-textarea ck-content"
+                        <textarea id="calendarContent" name="content" class="form-textarea ck-content"
                             rows="6"><%= calendar.content || '' %></textarea>
                     </div>
 
                     <div class="form-footer">
-                        <button type="submit" class="btn btn-primary">Save Academic Calendar</button>
+                        <button type="submit" class="btn btn-primary">Save Calendar</button>
                     </div>
+
                 </form>
-
-
             </div>
 
+            <!-- CKEditor 5 only -->
+            <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+            <script>
+                ClassicEditor
+                    .create(document.querySelector('#calendarContent'), {
+                        toolbar: [
+                            'heading', '|',
+                            'bold', 'italic', 'underline', '|',
+                            'numberedList', 'bulletedList', '|',
+                            'outdent', 'indent', '|',
+                            'link', 'insertTable', '|',
+                            'undo', 'redo'
+                        ],
+                    })
+                    .catch(error => console.error(error));
+            </script>
+
+            <style>
+                /* Fix bullets visibility */
+                .ck-content ul {
+                    list-style-type: disc;
+                    padding-left: 25px;
+                    /* ensure bullets are visible */
+                }
+
+                .ck-content ol {
+                    list-style-type: decimal;
+                    padding-left: 25px;
+                }
+            </style>
+
+            <!-- Examination Section -->
             <div class="content">
                 <div class="page-header">
                     <h1 class="page-title">Examination & Evaluation System</h1>
                 </div>
 
                 <div class="content-section mb-5 p-4 border rounded bg-light">
-                    <form action="/admin/academics/save-section" method="POST" enctype="multipart/form-data">
-
-
-                        <!-- Main Section -->
+                    <form action="/admin/academics/exam/save" method="POST" enctype="multipart/form-data">
                         <h3>Exam Section</h3>
 
                         <div class="form-group mb-3">
@@ -899,17 +928,14 @@
                                 class="form-textarea"><%= section.final_description || '' %></textarea>
                         </div>
 
-                        <!-- Items -->
-                        <% for (let i=1; i <=5; i++) { %>
+                        <% for (let i=1; i<=5; i++) { %>
                             <hr>
                             <div class="form-group mb-3">
                                 <h4>Item <%= i %>
                                 </h4>
-
                                 <label>Title</label>
                                 <input type="text" name="item<%= i %>_title" class="form-input"
                                     value="<%= section['item' + i + '_title'] || '' %>">
-
                                 <label>Description</label>
                                 <textarea name="item<%= i %>_description"
                                     class="form-textarea"><%= section['item' + i + '_description'] || '' %></textarea>
@@ -926,85 +952,80 @@
                 </div>
             </div>
 
-
-
-
+            <!-- Admissions Section -->
             <div class="content">
-                <div class="page-header">
-                    <h1 class="page-title">Admissions Section</h1>
-                </div>
-
-                <div class="content-section mb-5 p-4 border rounded bg-light">
-                    <form action="/admin/academics/admissions/save" method="POST" enctype="multipart/form-data">
-
-                        <!-- Heading -->
-                        <h3>Main Heading</h3>
-                        <input type="text" name="heading" class="form-input" value="<%= admissions.heading || '' %>"
-                            required>
-
-                        <!-- Description (CKEditor) -->
-                        <h3>Description</h3>
-                        <textarea name="description" class="form-textarea"
-                            id="editor"><%= admissions.description || '' %></textarea>
-
-                        <!-- Images -->
-                        <% for (let i=1; i <=3; i++) { %>
-                            <hr>
-                            <h4>Image <%= i %>
-                            </h4>
-                            <% if (admissions['image' + i]) { %>
-                                <img src="<%= admissions['image' + i] %>" width="100" class="mb-2"><br>
-                                <% } %>
-                                    <input type="file" name="image<%= i %>" class="form-input">
-                                    <% } %>
-
-                                        <button type="submit" class="btn btn-primary mt-3">Save Admissions</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- CKEditor -->
-            <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
-            <script>
-                CKEDITOR.replace('editor');
-            </script>
-
-
-        </div>
-        <footer class="dashboard-footer">
-            <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
-        </footer>
+    <div class="page-header">
+        <h1 class="page-title">Admissions Section</h1>
     </div>
 
-    <!-- CKEditor 5 -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script>
-        const editorConfig = {
-            toolbar: [
-                'heading', '|',
-                'bold', 'italic', 'underline', '|',
-                'numberedList', 'bulletedList', '|',
-                'outdent', 'indent', '|',
-                'link', 'insertTable', '|',
-                'undo', 'redo'
-            ],
-        };
+    <div class="content-section mb-5 p-4 border rounded bg-light">
+        <form action="/admin/academics/admissions/save" method="POST" enctype="multipart/form-data">
 
-        ClassicEditor.create(document.querySelector('#calendarContent'), editorConfig)
-            .catch(error => console.error(error));
-    </script>
+            <div class="form-group mb-3">
+                <label>Main Heading</label>
+                <input type="text" name="heading" class="form-input" value="<%= admissions.heading || '' %>" required>
+            </div>
 
-    <style>
-        .ck-content ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
+            <div class="form-group mb-3">
+                <label>Description</label>
+                <textarea name="description" class="form-textarea" id="admissionsEditor"><%= admissions.description || '' %></textarea>
+            </div>
 
-        .ck-content ol {
-            list-style-type: decimal;
-            padding-left: 20px;
-        }
-    </style>
+            <% for (let i=1; i<=3; i++) { %>
+                <hr>
+                <div class="form-group mb-3">
+                    <h4>Image <%= i %></h4>
+                    <% if (admissions['image' + i]) { %>
+                        <img src="<%= admissions['image' + i] %>" width="100" class="mb-2"><br>
+                    <% } %>
+                    <input type="file" name="image<%= i %>" class="form-input">
+                </div>
+            <% } %>
+
+            <button type="submit" class="btn btn-primary mt-3">Save Admissions</button>
+        </form>
+    </div>
+</div>
+
+<!-- CKEditor 5 only -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    // Initialize CKEditor 5 for Admissions description
+    ClassicEditor.create(document.querySelector('#admissionsEditor'), {
+        toolbar: [
+            'heading', '|',
+            'bold', 'italic', 'underline', '|',
+            'numberedList', 'bulletedList', '|',
+            'outdent', 'indent', '|',
+            'link', 'insertTable', '|',
+            'undo', 'redo'
+        ],
+    }).catch(error => console.error(error));
+
+    // // If you have Calendar editor too, initialize separately
+    // ClassicEditor.create(document.querySelector('#calendarContent'), {
+    //     toolbar: [
+    //         'heading', '|',
+    //         'bold', 'italic', 'underline', '|',
+    //         'numberedList', 'bulletedList', '|',
+    //         'outdent', 'indent', '|',
+    //         'link', 'insertTable', '|',
+    //         'undo', 'redo'
+    //     ],
+    // }).catch(error => console.error(error));
+</script>
+
+<style>
+    .ck-content ul {
+        list-style-type: disc;
+        padding-left: 25px;
+    }
+    .ck-content ol {
+        list-style-type: decimal;
+        padding-left: 25px;
+    }
+</style>
+
 </body>
 
 </html>

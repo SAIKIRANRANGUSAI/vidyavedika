@@ -1,192 +1,135 @@
-    <%- include('partials/header') %>
+<%- include('partials/header') %>
 
-      <div class="no-bottom no-top" id="content">
-           <section id="subheader" class="breadcrumb-section text-center" style="background: linear-gradient(
+    <div class="no-bottom no-top" id="content">
+        <section id="subheader" class="breadcrumb-section text-center"
+            style="background: linear-gradient(
                 rgba(0, 0, 0, 0.6), 
                 rgba(0, 0, 0, 0.4)
               ),url('images/breadcrumb-img.jpg'); background-size: cover; background-position: center center; min-height: 300px; display: flex; align-items: center;">
-                <div class="container relative z-2">
-                    <div class="row align-items-center">
-                        <div class="col-lg-12">
-                            <h1 class="wow fadeInUp">Academics</h1>
-                            <ul class="crumb wow fadeInDown">
-                                <li><a href="/index">Home</a></li>
-                                <li class="active">Academics</li>
+            <div class="container relative z-2">
+                <div class="row align-items-center">
+                    <div class="col-lg-12">
+                        <h1 class="wow fadeInUp">Academics</h1>
+                        <ul class="crumb wow fadeInDown">
+                            <li><a href="/index">Home</a></li>
+                            <li class="active">Academics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="academics">
+            <div class="container">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-7">
+                        <div class="relative">
+                            <div class="w-100 pe-5 pb-5 wow scaleIn sai">
+                                <img src="<%= academics?.image %>" class="w-100 rounded-1" alt="">
+                            </div>
+                            <div class="bg-color rounded-1 text-light w-50 p-4 abs end-0 bottom-0 z-2 soft-shadow wow scaleIn"
+                                data-wow-delay=".2s" alt="">
+                                <i class="fa fa-quote-left fs-32 abs"></i>
+                                <h4 class="ps-50">
+                                    <%= academics?.sub_heading %>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="ps-lg-3">
+                            <div class="subtitle id-color wow fadeInUp" data-wow-delay=".2s">Academics</div>
+                            <h2 class="wow fadeInUp" data-wow-delay=".4s">
+                                <%= academics?.heading %>
+                            </h2>
+                            <ul>
+                                <%- academics?.list_content %> <!-- Render HTML from DB -->
                             </ul>
                         </div>
                     </div>
                 </div>
-            </section>
+        </section>
 
-              <section class="academics">
-                <div class="container">
-                    <div class="row g-4 align-items-center">
-                        <div class="col-lg-7">
-                            <div class="relative">
-                                <div class="w-100 pe-5 pb-5 wow scaleIn">
-                                    <img src="images/academics-img-1.png" class="w-100 rounded-1" alt="">
-                                </div>                                
-                                <div class="bg-color rounded-1 text-light w-50 p-4 abs end-0 bottom-0 z-2 soft-shadow wow scaleIn" data-wow-delay=".2s" alt="">
-                                    <i class="fa fa-quote-left fs-32 abs"></i>
-                                    <h4 class="ps-50">Vidya Vedika – Nurturing Knowledge, Igniting Success.</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-5">
-                            <div class="ps-lg-3">
-                                <div class="subtitle id-color wow fadeInUp" data-wow-delay=".2s">Academics</div>
-                                <h2 class="wow fadeInUp" data-wow-delay=".4s">Beyond Books, Toward Brilliances</h2>
-                                <ul>
-                                    <li>Courses Offered (MPC, BiPc, MBipc, IIT JEE, NEET)</li>
-                                    <li>Curriculum & Syllabus – We can explain in details – Contact Us</li>
-                                    <li>Faculty Profiles </li>
-                                </ul>
-                            </div>
+        <section class="bg-dark text-light">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="subtitle id-color wow fadeInUp" data-wow-delay=".0s">Academic Calendar</div>
+                        <h2 class="wow fadeInUp" data-wow-delay=".2s">
+                            <%= calendar?.heading %>
+                        </h2>
+                        <div class="wow fadeInUp">
+                            <%- calendar?.description %>
                         </div>
                     </div>
-                    
-            </section>
-
-            
-            <section class="bg-dark text-light">
-                <div class="container">
-                    <div class="row g-4">
-                        <div class="col-lg-5">
-                            <div class="subtitle id-color wow fadeInUp" data-wow-delay=".0s">Academic Calendar </div>
-                            <h2 class="wow fadeInUp" data-wow-delay=".2s">Why Choose Our Cosmetic Dental Services?</h2>
-                            <p>At Vidya Vedika IIT & NEET Academy, our academic calendar is carefully designed to balance curriculum coverage, exam readiness, and holistic student development.</p>
-                        </div>
-
-                        <div class="col-lg-7">
-                            <ul class="ul-check fs-500">
-                              <li>
-                                <strong>Intermediate Curriculum</strong> – Classes are scheduled systematically to complete Board syllabus well in advance, 
-                                ensuring ample time for revision, model exams, and practice sessions.
-                              </li>
-                              <li>
-                                <strong>IIT & NEET Coaching </strong> – Parallel to the Board syllabus, intensive subject-focused sessions, problem-solving classes, and doubt-clearing discussions are conducted throughout the year.
-                              </li>
-                              <li>
-                                <strong>  Periodic Assessments  </strong> – Weekly tests, unit-wise evaluations, and mock exams are integrated into the calendar to track progress and strengthen preparation.
-                              </li>
-                              <li>
-                                <strong> Special Focus Sessions  </strong> – Time is allocated for workshops, motivational seminars, and mentoring programs to enhance student confidence and exam temperament.
-                              </li>
-                              <li>
-                                <strong> Revisions & Final Preparation</strong> – Dedicated revision slots and grand tests are planned before final examinations and competitive exams for maximum performance.
-                              </li>
-                               
-                            </ul>      
-                            <p>Our well-structured calendar ensures students progress smoothly, stay exam-ready, and achieve success in both Board and competitive examinations.</p>                  
+                    <div class="col-lg-7">
+                        <div class="ul-check fs-500">
+                            <%- calendar?.content %> <!-- Render HTML from DB -->
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-               <section>
-                <div class="container">
-                    <div class="row g-4 justify-content-center">
-                        <div class="col-lg-8 text-center mb-4">
-                            <div class="subtitle wow fadeInUp mb-3">Evaluating Excellence</div>
-                            <h2 class="wow fadeInUp" data-wow-delay=".2s">Examination & Evaluation System </h2>
-                            <p>At Vidya Vedika IIT & NEET Academy, we follow a well-structured examination and evaluation system designed to monitor progress, strengthen concepts, and prepare students for competitive excellence. Our evaluation pattern ensures continuous learning through:</p>
-                        </div>
+        <section>
+            <div class="container">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-lg-8 text-center mb-4">
+                        <div class="subtitle wow fadeInUp mb-3">Evaluating Excellence</div>
+                        <h2 class="wow fadeInUp" data-wow-delay=".2s">Examination & Evaluation System</h2>
                     </div>
+                </div>
 
-                    <div class="row g-4 mb-3 justify-content-center">
-                        <div class="col-lg-4 col-md-6">
+                <div class="row g-4 mb-3 justify-content-center">
+                    <% if (section) { %>
+                        <% for (let i=1; i <=5; i++) { if (section['item'+i+'_title']) { %>
+                            <div class="col-lg-4 col-md-6">
                                 <div class="border-gray p-20 rounded-1">
                                     <div class="relative wow fadeInUp">
-                                        <img src="images/examination-icon-1.png" width="50" class="mb-2" alt="">
-                                        <h4> Regular Assessments </h4>
+                                        <img src="<%= section['item'+i+'_image'] %>" width="50" class="mb-2" alt="">
+                                        <h4>
+                                            <%= section['item'+i+'_title'] %>
+                                        </h4>
                                         <p class="mb-0">
-                                             Weekly and monthly tests to track performance and reinforce understanding.
+                                            <%= section['item'+i+'_description'] %>
                                         </p>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-lg-4 col-md-6">
-                                <div class="border-gray p-20 rounded-1">
-                                    <div class="relative wow fadeInUp">
-                                         <img src="images/examination-icon-2.png" width="50" class="mb-2" alt="">
-                                        <h4> Unit & Cumulative Tests </h4>
-                                        <p class="mb-0"> Subject-wise unit tests and combined assessments for holistic preparation.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6">
-                                <div class="border-gray p-20 rounded-1">
-                                    <div class="relative wow fadeInUp">
-                                         <img src="images/examination-icon-3.png" width="50" class="mb-2" alt="">
-                                        <h4> Grand/Mock Tests </h4>
-                                        <p class="mb-0"> Simulated IIT-JEE and NEET exams under real-time conditions to build exam temperament.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6">
-                                <div class="border-gray p-20 rounded-1">
-                                    <div class="relative wow fadeInUp">
-                                         <img src="images/examination-icon-4.png" width="50" class="mb-2" alt="">
-                                        <h4>Feedback & Mentorship </h4>
-                                        <p class="mb-0">Detailed performance analysis with personalized guidance to address areas of improvement.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6">
-                                <div class="border-gray p-20 rounded-1">
-                                    <div class="relative wow fadeInUp">
-                                         <img src="images/examination-icon-5.png" width="50" class="mb-2" alt="">
-                                        <h4> Parent Interaction </h4>
-                                        <p class="mb-0">Periodic reports and meetings to keep parents informed of their child’s academic progress.</p>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-
-                    <p>This systematic approach not only builds confidence but also equips students with the discipline, accuracy, and resilience needed to excel in competitive examinations.</p>
+                            <% } } %>
+                                <% } %>
                 </div>
-            </section>
+            </div>
+        </section>
 
-             <section class="admissions-section">
-                <div class="container">
-                    <div class="row g-4 align-items-center">
-                        <div class="col-lg-6">
-                            <div class="pe-lg-3">
-                                <div class="subtitle id-color wow fadeInUp" data-wow-delay=".2s">Admissions</div>
-                                <h2 class="wow fadeInUp" data-wow-delay=".4s">Admissions Made Simple</h2>
-                                <p class="mb-0 wow fadeInUp" data-wow-delay=".6s">Admission Process & Criteria: admissions are open for Intermediate, IIT, and NEET programs. We welcome aspiring students who are passionate about learning and committed to achieving excellence.</p>
-                                <ul>
-                                    <li><strong>Eligibility</strong> – Students seeking admission must meet the prescribed academic requirements for the chosen course (Intermediate / IIT-JEE / NEET).</li>
-                                    <li> <strong>Admission Procedure</strong> – Interested candidates can <b>contact us directly or fill out the online enquiry form</b> available on our website. Our team will guide you through counseling, course details, and fee structure.</li>
-                                    <li><strong>Scholarships</strong> – Eligible students may also apply for scholarships or fee concessions based on merit and performance.</li>
-                                </ul>
-                                <p>For more details, feel free to reach out to our admissions team—we are here to help you every step of the way.</p>
-                                <ul>
-                                    <li> Online Application Form</li>
-                                    <li>Fee Structure</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="row align-items-center">
-                                <div class="col-6">
-                                    <img src="images/admission-img-1.png" class="w-100 rounded-1 mb-4" alt="">
-                                    <img src="images/admission-img-2.png" class="w-100 rounded-1" alt="">
-                                </div>
-                                <div class="col-6">
-                                    <img src="images/admission-img-3.png" class="w-100 rounded-1" alt="">
-                                </div>
+        <section class="admissions-section">
+            <div class="container">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-6">
+                        <div class="pe-lg-3">
+                            <div class="subtitle id-color wow fadeInUp" data-wow-delay=".2s">Admissions</div>
+                            <h2 class="wow fadeInUp" data-wow-delay=".4s">
+                                <%= admissions?.heading %>
+                            </h2>
+                            <div class="wow fadeInUp" data-wow-delay=".6s">
+                                <%- admissions?.description %> <!-- Render HTML from DB -->
+                                    <%- admissions?.list_content || admissions?.additional_info %>
                             </div>
                         </div>
                     </div>
- 
-
+                    <div class="col-lg-6">
+                        <div class="row align-items-center">
+                            <% for (let i=1; i <=3; i++) { %>
+                                <div class="col-6">
+                                    <img src="<%= admissions['image'+i] %>" class="w-100 rounded-1 mb-4" alt="">
+                                </div>
+                                <% } %>
+                        </div>
+                    </div>
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
+
+
+    </div>
     <%- include('partials/footer') %>

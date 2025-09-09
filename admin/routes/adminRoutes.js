@@ -8,6 +8,9 @@ const adminController = require('../controllers/adminController');
 const db = require("../../config/db");
 const contactUsRoute = require("./admincontactus");
 const { isAuthenticated } = adminController;
+// Place this at the very top of adminRoutes.js
+
+
 
 // Configure Multer for file uploads
 
@@ -24,6 +27,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+router.use(async (req, res, next) => {
+    try {
+        const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+        res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+    } catch (err) {
+        console.error("Error fetching logo:", err);
+        res.locals.logo = "/admin/static/images/logo.png";
+    }
+    next();
+});
+
 // Use logo middleware for all admin routes
 router.use(adminController.getAdminLogo);
 
@@ -34,9 +48,28 @@ router.get("/login", adminController.getLogin);
 router.post("/login", adminController.postLogin);
 
 // Dashboard (protected)
-router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboard);
+//router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboard);
 router.use("/contact-us", adminController.isAuthenticated, contactUsRoute);
-// --- Home editor (GET) ---
+// router.post("/contact-us/save", isAuthenticated, async (req, res) => {
+//     try {
+//         const { heading, description } = req.body;
+
+//         const [rows] = await db.query("SELECT id FROM get_in_touch LIMIT 1");
+
+//         if (rows.length > 0) {
+//             await db.query("UPDATE get_in_touch SET heading = ?, description = ? WHERE id = ?", 
+//                 [heading, description, rows[0].id]);
+//         } else {
+//             await db.query("INSERT INTO get_in_touch (heading, description) VALUES (?, ?)", 
+//                 [heading, description]);
+//         }
+
+//         res.redirect("/admin/dashboard"); // ✅ Redirect, do not render
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send("Database error");
+//     }
+// });
 // --- Home editor (GET) ---
 // --- Home editor (GET) ---
 router.get("/home", adminController.isAuthenticated, async (req, res) => {
@@ -597,10 +630,142 @@ router.post("/social-links", adminController.isAuthenticated, async (req, res) =
 
 // GET Dashboard with Social Links
 // Dashboard page (GET)
-router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboardWithSocial);
+//router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboardWithSocial);
 // Update social links (POST)
 router.post("/update-social", adminController.isAuthenticated, adminController.postSocialSettings);
 // GET dashboard messages
 
+
+
+
+// --- Middleware: fetch logo for all admin pages ---
+
+
+// --- Middleware to load logo in all admin views ---
+// Middleware to load logo in all admin views
+// Must be at the top of adminRoutes.js
+
+
+// router.post("/dashboard/update-logo", isAuthenticated, upload.single("logo"), async (req, res) => {
+//     try {
+//         if (!req.file) {
+//             req.session.logoError = "Please select a file";
+//             return res.redirect("/admin/dashboard");
+//         }
+
+//         const logoPath = "/images/" + req.file.filename; // matches public/images
+//         await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
+
+//         req.session.logoSuccess = "Logo updated successfully!";
+//         res.redirect("/admin/dashboard");
+//     } catch (err) {
+//         console.error("Error updating logo:", err);
+//         req.session.logoError = "Failed to update logo";
+//         res.redirect("/admin/dashboard");
+//     }
+// });
+
+
+
+// --- Dashboard page ---
+router.get("/dashboard", isAuthenticated, async (req, res) => {
+    try {
+        const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
+        const contactUs = contactRows[0] || {};
+
+        const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
+        const contactDetails = detailsRows[0] || {};
+
+        const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
+
+        res.render("dashboard", {
+            username: req.session.username || "Admin User",
+            contactUs,
+            contactDetails,
+            messages
+            // logo is automatically available via middleware
+        });
+    } catch (err) {
+        console.error("Error loading dashboard:", err);
+        res.status(500).send("Server error");
+    }
+});
+
+// --- Update logo ---
+router.post("/dashboard/update-logo", isAuthenticated, upload.single("logo"), async (req, res) => {
+    try {
+        if (!req.file) {
+            req.session.logoError = "Please select a file";
+            return res.redirect("/admin/dashboard");
+        }
+
+        const logoPath = "/images/" + req.file.filename; // matches public/images
+        await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
+
+        req.session.logoSuccess = "Logo updated successfully!";
+        res.redirect("/admin/dashboard");
+    } catch (err) {
+        console.error("Error updating logo:", err);
+        req.session.logoError = "Failed to update logo";
+        res.redirect("/admin/dashboard");
+    }
+});
+
+// --- Save Contact Us ---
+router.post("/contact-us/save", isAuthenticated, async (req, res) => {
+    try {
+        const { heading, description } = req.body;
+
+        const [rows] = await db.query("SELECT id FROM get_in_touch LIMIT 1");
+
+        if (rows.length > 0) {
+            await db.query(
+                "UPDATE get_in_touch SET heading = ?, description = ? WHERE id = ?",
+                [heading, description, rows[0].id]
+            );
+        } else {
+            await db.query(
+                "INSERT INTO get_in_touch (heading, description) VALUES (?, ?)",
+                [heading, description]
+            );
+        }
+
+        // ✅ Redirect to dashboard instead of rendering
+        res.redirect("/admin/dashboard/contact-us");
+    } catch (err) {
+        console.error("Error saving Contact Us:", err);
+        res.status(500).send("Database error");
+    }
+});
+
+// --- Save Contact Details ---
+router.post("/contactus/contact-details/save", isAuthenticated, async (req, res) => {
+    try {
+        const { location_heading, location_text, phone_heading, phone_number, email_heading, email_address } = req.body;
+
+        const [rows] = await db.query("SELECT id FROM contact_details LIMIT 1");
+
+        if (rows.length > 0) {
+            await db.query(
+                `UPDATE contact_details 
+                 SET location_heading=?, location_text=?, phone_heading=?, phone_number=?, email_heading=?, email_address=? 
+                 WHERE id=?`,
+                [location_heading, location_text, phone_heading, phone_number, email_heading, email_address, rows[0].id]
+            );
+        } else {
+            await db.query(
+                `INSERT INTO contact_details 
+                 (location_heading, location_text, phone_heading, phone_number, email_heading, email_address) 
+                 VALUES (?, ?, ?, ?, ?, ?)`,
+                [location_heading, location_text, phone_heading, phone_number, email_heading, email_address]
+            );
+        }
+
+        res.redirect("/admin/dashboard");
+    } catch (err) {
+        console.error("Error saving Contact Details:", err);
+        res.status(500).send("Database error");
+    }
+});
 
 module.exports = router;

@@ -886,48 +886,45 @@
                             <button type="submit" class="btn btn-primary mt-3">Save Hostel Section</button>
                 </form>
             </div>
+<div class="content-section mb-5 p-4 border rounded bg-light">
+    <h2>Library & Labs</h2>
 
-            <!-- LIBRARY & LABS -->
-            <div class="content-section mb-5 p-4 border rounded bg-light">
-                <h2>Library & Labs</h2>
+    <form action="/admin/student-life/save-library" method="POST">
+        <!-- Heading -->
+        <div class="form-group mb-3">
+            <label>Heading</label>
+            <input type="text" name="heading" class="form-input" value="<%= lb.heading || '' %>" required>
+        </div>
 
-                <form action="/admin/student-life/save-library" method="POST">
-                    <!-- Heading -->
-                    <div class="form-group mb-3">
-                        <label>Heading</label>
-                        <input type="text" name="heading" class="form-input" value="<%= lb.heading || '' %>" required>
-                    </div>
+        <!-- Short Description (plain text) -->
+        <div class="form-group mb-3">
+            <label>Description</label>
+            <textarea name="description" id="description" class="form-textarea"><%= lb.description || '' %></textarea>
+        </div>
 
-                    <!-- Normal Description -->
-                    <div class="form-group mb-3">
-                        <label>Description</label>
-                        <textarea name="description" id="description"
-                            class="form-textarea"><%= lb.description || '' %></textarea>
-                    </div>
+        <!-- Long Description (rich text with CKEditor) -->
+        <div class="form-group mb-3">
+            <label>Long Description</label>
+            <textarea name="long_description" id="long_description" class="form-textarea"><%= lb.long_description || '' %></textarea>
+        </div>
 
-                    <!-- Long Description with bullet points -->
-                    <div class="form-group mb-3">
-                        <label>Long Description</label>
-                        <textarea name="long_description" id="long_description"
-                            class="form-textarea"><%= lb.long_description || '' %></textarea>
-                    </div>
+        <button type="submit" class="btn btn-primary mt-3">Save Library & Labs</button>
+    </form>
+</div>
 
-                    <button type="submit" class="btn btn-primary mt-3">Save Library & Labs</button>
-                </form>
-            </div>
+<script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+<script>
+    // Plain text editor (optional, could just be normal textarea)
+    // Commented out since description is plain
+    // ClassicEditor.create(document.querySelector('#description')).catch(error => console.error(error));
 
-            <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
-            <script>
-                // Normal description editor (plain text)
-                ClassicEditor.create(document.querySelector('#description'))
-                    .catch(error => console.error(error));
+    // Rich text editor for long_description
+    ClassicEditor.create(document.querySelector('#long_description'), {
+        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+    }).catch(error => console.error(error));
+</script>
 
-                // Long description editor with bullet points, numbered lists enabled
-                ClassicEditor.create(document.querySelector('#long_description'), {
-                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-                })
-                    .catch(error => console.error(error));
-            </script>
+
 
 
             <div class="content-section mb-5 p-4 border rounded bg-light">

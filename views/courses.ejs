@@ -1,49 +1,60 @@
 <%- include('partials/header') %>
 
-<div class="no-bottom no-top" id="content">
-  <section id="subheader" class="breadcrumb-section text-center" style="background: linear-gradient(
+
+  <div class="no-bottom no-top" id="content">
+    <section id="subheader" class="breadcrumb-section text-center"
+      style="background: linear-gradient(
                 rgba(0, 0, 0, 0.6), 
                 rgba(0, 0, 0, 0.4)
               ),url('images/breadcrumb-img.jpg'); background-size: cover; background-position: center center; min-height: 300px; display: flex; align-items: center;">
-    <div class="container relative z-2">
-      <div class="row align-items-center">
-        <div class="col-lg-12">
-          <h1 class="wow fadeInUp">Academics</h1>
-          <ul class="crumb wow fadeInDown">
-            <li><a href="/index">Home</a></li>
-            <li class="active">Academics</li>
-          </ul>
+      <div class="container relative z-2">
+        <div class="row align-items-center">
+          <div class="col-lg-12">
+            <h1 class="wow fadeInUp">Academics</h1>
+            <ul class="crumb wow fadeInDown">
+              <li><a href="/index">Home</a></li>
+              <li class="active">Academics</li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section>
-    <div class="container">
-      <div class="row">
-        <% courses.forEach(course => { %>
-          <div class="col-md-3">
-            <div class="hover course-list">
-              <div class="bg-white h-100 p-20 rounded-1">
-                <img src="<%= course.icon %>" 
-                     onerror="this.src='/images/default.png'" 
-                     class="w-70px mb-3 wow scaleIn" 
-                     alt="<%= course.title %>">
-                <div class="relative mt-2 wow fadeInUp">
-                  <h4><%= course.title %></h4>
-                  <p><%= course.short_desc ? course.short_desc.substring(0, 100) : 'Description coming soon...' %></p>
-                  <a class="btn-plus" href="/courses/<%= course.slug %>">
-                    <i class="fa fa-plus"></i>
-                    <span>Read more</span>
-                  </a>
+    <section>
+      <div class="container">
+        <div class="row">
+          <% courses.forEach(course=> { %>
+            <div class="col-md-3">
+              <div class="hover course-list">
+                <div class="bg-white h-100 p-20 rounded-1">
+                  <!-- Image -->
+                  <img src="<%= course.image %>" onerror="this.src='/images/default.png'"
+                    class="w-70px mb-3 wow scaleIn" alt="<%= course.heading %>">
+
+                  <!-- Content -->
+                  <div class="relative mt-2 wow fadeInUp">
+                    <h4>
+                      <%= course.heading %>
+                    </h4>
+                    <p>
+                      <%= course.description ? course.description.substring(0, 100) + '...'
+                        : 'Description coming soon...' %>
+                    </p>
+
+                    <!-- Link to details page -->
+                    <a class="btn-plus" href="/courses/<%= course.id %>">
+                      <i class="fa fa-plus"></i>
+                      <span>Read more</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        <% }) %>
+            <% }) %>
+        </div>
       </div>
-    </div>
-  </section>
-</div>
+    </section>
 
-<%- include('partials/footer') %>
+  </div>
+
+  <%- include('partials/footer') %>

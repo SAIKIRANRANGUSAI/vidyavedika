@@ -55,18 +55,22 @@ router.get("/", async (req, res) => {
     const [counterRows] = await db.query("SELECT * FROM counters");
     let counters = counterRows || [];
 
+    const [sections] = await db.query("SELECT * FROM course_section ORDER BY id ASC");
+     const [courses] = await db.query("SELECT * FROM courses ORDER BY id ASC");
+
     const [galleryRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
     
     let galleryContent = galleryRows[0] || {
       heading: "Default Gallery Heading",
       description: "Default gallery description.",
     };
+    
 
     console.log("👉 CTA Content from DB:", ctaContent);
     console.log("👉 Counters from DB:", counters);
 
     // --- Pass both into EJS ---
-    res.render("index", { homeContent, ctaContent, counters, galleryContent, galleryImages, testimonialContent, testimonials, whyChooseUs });
+    res.render("index", { homeContent, ctaContent, counters, galleryContent, galleryImages, testimonialContent, testimonials, whyChooseUs,sections, courses });
 
   } catch (err) {
     console.error("Error in homepage route:", err);
