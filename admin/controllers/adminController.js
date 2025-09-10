@@ -1,7 +1,7 @@
 const path = require("path");
 const db = require("../../config/db");
 // const bcrypt = require("bcrypt");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 //const db = require("../config/db");
 
 // Middleware to get logo for all admin pages
