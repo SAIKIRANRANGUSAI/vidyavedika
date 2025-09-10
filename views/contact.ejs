@@ -24,51 +24,31 @@
                 <div class="row g-4">
                     <div class="col-lg-6">
                         <div class="subtitle">Get In Touch</div>
-                        <h2 class="wow fadeInUp"><%- getInTouch.heading
-                                || "We are always ready to help you and answer your questions" %></h2>
+                        <h2 class="wow fadeInUp"><%- getInTouch.heading || "We are always ready to help you and answer your questions" %></h2>
 
-                        <p><%- getInTouch.description
-                                || "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using"
-                                %></p>
+                        <p><%- getInTouch.description || "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using" %></p>
 
                         <div class="row g-4 gx-5">
+
+
                             <div class="col-lg-6">
-                                <div class="fw-bold text-dark">
-                                    <i class="icofont-location-pin me-2 id-color-2"></i>
-                                    <%= (contactDetails && contactDetails.location_heading) ?
-                                        contactDetails.location_heading : "Clinic Location" %>
-                                </div>
-                                <%= (contactDetails && contactDetails.location_text) ? contactDetails.location_text
-                                    : "Vizag, India." %>
+                                <div class="fw-bold text-dark"><i
+                                        class="icofont-location-pin me-2 id-color-2"></i>Clinic Location</div>
+                                Vizag , India.
                             </div>
 
                             <div class="col-lg-6">
-                                <div class="fw-bold text-dark">
-                                    <i class="icofont-phone me-2 id-color-2"></i>
-                                    <%= (contactDetails && contactDetails.phone_heading) ? contactDetails.phone_heading
-                                        : "Call Us Directly" %>
-                                </div>
-                                <a
-                                    href="tel:<%= (contactDetails && contactDetails.phone_number) ? contactDetails.phone_number : '+91 98765 43210' %>">
-                                    <%= (contactDetails && contactDetails.phone_number) ? contactDetails.phone_number
-                                        : "+91 98765 43210" %>
-                                </a>
+                                <div class="fw-bold text-dark"><i class="icofont-phone me-2 id-color-2"></i>Call Us
+                                    Directly</div>
+                                <a href="tel:  +91 98765 43210"> +91 98765 43210</a>
                             </div>
 
                             <div class="col-lg-6">
-                                <div class="fw-bold text-dark">
-                                    <i class="icofont-envelope me-2 id-color-2"></i>
-                                    <%= (contactDetails && contactDetails.email_heading) ? contactDetails.email_heading
-                                        : "Send a Message" %>
-                                </div>
-                                <a
-                                    href="mailto:<%= (contactDetails && contactDetails.email_address) ? contactDetails.email_address : 'info@vidyavedika.com' %>">
-                                    <%= (contactDetails && contactDetails.email_address) ? contactDetails.email_address
-                                        : "info@vidyavedika.com" %>
-                                </a>
+                                <div class="fw-bold text-dark"><i class="icofont-envelope me-2 id-color-2"></i>Send a
+                                    Message</div>
+                                <a href="mailto:info@vidyavedika.com">info@vidyavedika.com</a>
                             </div>
                         </div>
-
 
 
 
