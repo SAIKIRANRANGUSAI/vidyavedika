@@ -1,4 +1,6 @@
 const express = require("express");
+const adminController = require("../controllers/adminController");
+
 const router = express.Router();
 const db = require("../../config/db");
 const multer = require("multer");
@@ -17,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-router.get("/about-us", async (req, res) => {
+router.get("/about-us", adminController.isAuthenticated, async (req, res) => {
     try {
         const [aboutRows] = await db.query("SELECT * FROM about_us WHERE id = 1");
         const [vmRows] = await db.query("SELECT * FROM vision_mission WHERE id = 1");
@@ -28,10 +30,10 @@ router.get("/about-us", async (req, res) => {
         const [rows] = await db.query('SELECT * FROM accreditations_achievements WHERE id = 1');
         const [whyChooseUsRows] = await db.query("SELECT * FROM why_choose_us WHERE id = 1");
 
-        res.render("about_us", { 
-            about: aboutRows.length ? aboutRows[0] : { heading: "", paragraph1: "", paragraph2: "" }, 
-            vm: vmRows.length ? vmRows[0] : { vision_heading: "", vision_text: "", mission_heading: "", mission_text: "" },   
-            team: teamRows.length ? teamRows[0] : { heading: "", description: "" },  
+        res.render("about_us", {
+            about: aboutRows.length ? aboutRows[0] : { heading: "", paragraph1: "", paragraph2: "" },
+            vm: vmRows.length ? vmRows[0] : { vision_heading: "", vision_text: "", mission_heading: "", mission_text: "" },
+            team: teamRows.length ? teamRows[0] : { heading: "", description: "" },
             members: memberRows,
             message: mdRows.length ? mdRows[0] : {},
             journey: journeyRows.length ? journeyRows[0] : {},
@@ -48,7 +50,7 @@ router.get("/about-us", async (req, res) => {
 
 // POST About Us update
 router.post(
-    "/about-us",
+    "/about-us",adminController.isAuthenticated,
     upload.fields([{ name: "image1" }, { name: "image2" }]),
     async (req, res) => {
         try {
@@ -85,7 +87,7 @@ router.post(
    POST Vision & Mission Update
 ====================== */
 router.post(
-    "/vision-mission",
+    "/vision-mission",adminController.isAuthenticated,
     upload.fields([{ name: "vision_image" }, { name: "mission_image" }]),
     async (req, res) => {
         try {
@@ -119,7 +121,7 @@ router.post(
     }
 );
 // POST Team Section (update or insert if missing)
-router.post("/team-section", async (req, res) => {
+router.post("/team-section",adminController.isAuthenticated, async (req, res) => {
     try {
         console.log("POST /admin/team-section body:", req.body);
 
@@ -151,58 +153,58 @@ router.post("/team-section", async (req, res) => {
 
 // Add Member
 router.post("/team-members/add", upload.single("image"), async (req, res) => {
-  try {
-    const { name, designation } = req.body;
-    const imagePath = req.file ? "/images/" + req.file.filename : null;
+    try {
+        const { name, designation } = req.body;
+        const imagePath = req.file ? "/images/" + req.file.filename : null;
 
-    await db.query(
-      "INSERT INTO team_members (name, designation, image_path) VALUES (?, ?, ?)",
-      [name, designation, imagePath]
-    );
+        await db.query(
+            "INSERT INTO team_members (name, designation, image_path) VALUES (?, ?, ?)",
+            [name, designation, imagePath]
+        );
 
-    res.redirect("/admin/about-us"); // reload page
-  } catch (err) {
-    console.error("Error adding member:", err);
-    res.status(500).send("Error adding team member");
-  }
+        res.redirect("/admin/about-us"); // reload page
+    } catch (err) {
+        console.error("Error adding member:", err);
+        res.status(500).send("Error adding team member");
+    }
 });
 
 // Edit Member
 router.post("/team-members/edit/:id", upload.single("image"), async (req, res) => {
-  try {
-    const { name, designation } = req.body;
-    const { id } = req.params;
+    try {
+        const { name, designation } = req.body;
+        const { id } = req.params;
 
-    // Only replace image if a new file is uploaded
-    const imagePath = req.file ? "/images/" + req.file.filename : null;
+        // Only replace image if a new file is uploaded
+        const imagePath = req.file ? "/images/" + req.file.filename : null;
 
-    await db.query(
-      `UPDATE team_members 
+        await db.query(
+            `UPDATE team_members 
        SET name = ?, designation = ?, image_path = COALESCE(?, image_path)
        WHERE id = ?`,
-      [name, designation, imagePath, id]
-    );
+            [name, designation, imagePath, id]
+        );
 
-    res.redirect("/admin/about-us");
-  } catch (err) {
-    console.error("Error editing member:", err);
-    res.status(500).send("Error editing team member");
-  }
+        res.redirect("/admin/about-us");
+    } catch (err) {
+        console.error("Error editing member:", err);
+        res.status(500).send("Error editing team member");
+    }
 });
 
 // Delete Member
 router.post("/team-members/delete/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    await db.query("DELETE FROM team_members WHERE id = ?", [id]);
-    res.redirect("/admin/about-us");
-  } catch (err) {
-    console.error("Error deleting member:", err);
-    res.status(500).send("Error deleting team member");
-  }
+    try {
+        const { id } = req.params;
+        await db.query("DELETE FROM team_members WHERE id = ?", [id]);
+        res.redirect("/admin/about-us");
+    } catch (err) {
+        console.error("Error deleting member:", err);
+        res.status(500).send("Error deleting team member");
+    }
 });
 
-router.post("/md-message", async (req, res) => {
+router.post("/md-message",adminController.isAuthenticated, async (req, res) => {
     try {
         const { title, subtitle, greeting, content, director_name, designation, institute_name } = req.body;
 
@@ -220,7 +222,7 @@ router.post("/md-message", async (req, res) => {
     }
 });
 
-router.post('/journey-history', upload.fields([{ name: 'image1' }, { name: 'image2' }]), async (req, res) => {
+router.post('/journey-history',adminController.isAuthenticated, upload.fields([{ name: 'image1' }, { name: 'image2' }]), async (req, res) => {
     try {
         const { heading, description1, description2 } = req.body;
         const images = req.files;
@@ -248,7 +250,7 @@ router.post('/journey-history', upload.fields([{ name: 'image1' }, { name: 'imag
 });
 
 
-router.post('/accreditations-achievements', upload.single('image'), async (req, res) => {
+router.post('/accreditations-achievements',adminController.isAuthenticated, upload.single('image'), async (req, res) => {
     try {
         const { heading, description } = req.body;
         const imagePath = req.file ? '/images/' + req.file.filename : null;
@@ -285,7 +287,7 @@ router.use(async (req, res, next) => {
 
 
 // --- Admin Settings Page (upload logo) ---
-router.get("/settings", async (req, res) => {
+router.get("/settings",adminController.isAuthenticated, async (req, res) => {
     const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
     const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
     res.render("admin/settings", { logo });

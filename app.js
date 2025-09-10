@@ -60,6 +60,16 @@ app.use(express.json());
 const DEFAULT_IMAGE = "/images/default.png";
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+
+app.use(
+  session({
+    secret: "your_secret_key", // change to a strong secret
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }, // set secure: true if using https
+  })
+);
+
 const aboutusRoutes = require("./routes/aboutusRoutes"); 
 app.use("/", aboutusRoutes);
 
@@ -100,11 +110,11 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 // Session setup
-app.use(session({
-    secret: process.env.SESSION_SECRET || "your_secret_key",
-    resave: false,
-    saveUninitialized: true
-}));
+// app.use(session({
+//     secret: process.env.SESSION_SECRET || "your_secret_key",
+//     resave: false,
+//     saveUninitialized: true
+// }));
 const websiteContactRoutes = require("./routes/websiteContact");
 app.use(express.urlencoded({ extended: true })); // parse form data
 app.use(express.json());

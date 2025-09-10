@@ -40,7 +40,7 @@ const upload = multer({ storage });
 
 // Use logo middleware for all admin routes
 // router.use(adminController.getAdminLogo);
-router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
+router.post("/dashboard/update-logo",adminController.isAuthenticated, upload.single("logo"), async (req, res) => {
   try {
     if (!req.file) {
       res.locals.logoError = "Please select a file";
@@ -492,7 +492,7 @@ router.post("/change-credentials", isAuthenticated, adminController.postChangeCr
 
 // 📌 UPLOAD Gallery Images
 // =========================
-router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (req, res) => {
+router.post("/home/gallery/upload",adminController.isAuthenticated, upload.array("gallery_images", 10), async (req, res) => {
   try {
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
@@ -511,7 +511,7 @@ router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (r
 // =========================
 // 📌 DELETE Gallery Image
 // =========================
-router.get("/home/gallery/delete-image/:id", async (req, res) => {
+router.get("/home/gallery/delete-image/:id",adminController.isAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -679,7 +679,7 @@ router.post("/update-social", isAuthenticated, async (req, res) => {
 
 
 // --- Dashboard page ---
-router.get("/dashboard", isAuthenticated, async (req, res) => {
+router.get("/dashboard", adminController.isAuthenticated, async (req, res) => {
   try {
     // Existing queries
     const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
@@ -709,7 +709,7 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
 });
 
 // --- Update logo ---
-router.post("/dashboard/update-logo", isAuthenticated, upload.single("logo"), async (req, res) => {
+router.post("/dashboard/update-logo", adminController.isAuthenticated, upload.single("logo"), async (req, res) => {
   try {
     if (!req.file) {
       req.session.logoError = "Please select a file";
