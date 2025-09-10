@@ -58,7 +58,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const DEFAULT_IMAGE = "/images/default.png";
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const session = require("express-session");
 
