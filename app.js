@@ -63,7 +63,7 @@ const session = require("express-session");
 
 app.use(
   session({
-    secret: "your_secret_key", // change to a strong secret
+    secret: "sai123456", // change to a strong secret
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }, // set secure: true if using https
@@ -243,5 +243,6 @@ app.get('/course-view', (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+module.exports = app;
