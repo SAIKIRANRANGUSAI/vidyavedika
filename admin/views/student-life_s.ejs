@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Management | VidyaVedika</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/static/css/admin.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 2em;
+        }
+
+        .section-subtitle {
+            color: #555;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+        }
+
+        .table-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .table-actions .btn {
+            margin-right: 5px;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 1rem;
+        }
+    </style>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background: #f1f5f9;
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            padding: 10px 20px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .menu-item span {
+            flex: 1;
+        }
+
+        .menu-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .user-details span {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            margin-right: 16px;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 16px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            width: 300px;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-action {
+            position: relative;
+            cursor: pointer;
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .breadcrumb i {
+            margin: 0 8px;
+            font-size: 12px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-action {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-action i {
+            margin-left: 6px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d93757;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8fafc;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dashboard-footer {
+            background: white;
+            padding: 16px 24px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .modal-sm {
+            max-width: 400px;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 71, 111, 0.8);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-delete {
+            opacity: 1;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-box {
+                display: none;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+           <img src="<%= logo %>" alt="Logo">
+
+
+
+
+
+            <h2>VidyaVedika Admin</h2>
+        </div>
+
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="/admin/dashboard" class="menu-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/admin/home" class="menu-item">
+                <i class="fas fa-house-user"></i>
+                <span>Home</span>
+            </a>
+
+            <div class="menu-label">Content</div>
+            <a href="/admin/about-us" class="menu-item">
+                <i class="fas fa-info-circle"></i>
+                <span>About Us</span>
+            </a>
+            <a href="/admin/academics" class="menu-item">
+                <i class="fas fa-book-open"></i>
+                <span>Academics</span>
+            </a>
+            <a href="/admin/course" class="menu-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Courses</span>
+            </a>
+            <a href="/admin/student-life" class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Student Life</span>
+            </a>
+            <a href="/admin/logout" class="menu-item text-danger">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+    </a>
+
+        </div>
+
+
+        <!-- <div class="sidebar-footer">
+            <div class="user-info">
+                <img src="https://placehold.co/40x40" alt="User">
+                <div class="user-details">
+                    <h4>Admin User</h4>
+                    <span>Content Manager</span>
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                
+                
+            </div>
+
+            <div class="header-right">
+                <div class="user-profile" id="userProfileBtn">
+                    <img src="<%= logo %>" alt="User">
+                    <span>Admin User</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">student-life Page Management</h1>
+                <div class="breadcrumb">
+                    <a href="#">Home</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Home Page</span>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="page-header">
+                    <h1 class="page-title">Hostel & Accommodation</h1>
+                </div>
+
+                <div class="content-section mb-5 p-4 border rounded bg-light">
+                    <form action="/admin/student-life/save" method="POST" enctype="multipart/form-data">
+
+
+                        <!-- Main Section -->
+                        <h3>Main Section</h3>
+
+                        <div class="form-group mb-3">
+                            <label>Main Heading</label>
+                            <input type="text" name="main_heading" class="form-input"
+                                value="<%= hostel.main_heading || '' %>" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Main Description</label>
+                            <textarea name="main_description"
+                                class="form-textarea"><%= hostel.main_description || '' %></textarea>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label>Final Description</label>
+                            <textarea name="final_description"
+                                class="form-textarea"><%= hostel.final_description || '' %></textarea>
+                        </div>
+
+                        <!-- Items -->
+                        <% for (let i=1; i<=5; i++) { %>
+                            <hr>
+                            <div class="form-group mb-3">
+                                <h4>Item <%= i %>
+                                </h4>
+
+                                <label>Heading</label>
+                                <input type="text" name="item<%= i %>_heading" class="form-input"
+                                    value="<%= hostel['item'+i+'_heading'] || '' %>">
+
+                                <label>Description</label>
+                                <textarea name="item<%= i %>_description"
+                                    class="form-textarea"><%= hostel['item'+i+'_description'] || '' %></textarea>
+
+                                <% if (hostel['item'+i+'_image']) { %>
+                                    <img src="<%= hostel['item'+i+'_image'] %>" width="80" class="mb-2"><br>
+                                    <% } %>
+                                        <input type="file" name="item<%= i %>_image" class="form-input">
+                            </div>
+                            <% } %>
+
+                                <button type="submit" class="btn btn-primary mt-3">Save Section</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <!-- HOSTEL & ACCOMMODATION -->
+            <div class="content-section mb-5 p-4 border rounded bg-light">
+                <h2>Hostel & Accommodation</h2>
+                <form action="/admin/hostel/save" method="POST" enctype="multipart/form-data">
+                    <div class="form-group mb-3">
+                        <label>Main Heading</label>
+                        <input type="text" name="main_heading" class="form-input"
+                            value="<%= hostel.main_heading || '' %>" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Main Description</label>
+                        <textarea name="main_description"
+                            class="form-textarea"><%= hostel.main_description || '' %></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Final Description</label>
+                        <textarea name="final_description"
+                            class="form-textarea"><%= hostel.final_description || '' %></textarea>
+                    </div>
+
+                    <% for (let i=1; i<=5; i++) { %>
+                        <hr>
+                        <div class="form-group mb-3">
+                            <h4>Item <%= i %>
+                            </h4>
+                            <label>Heading</label>
+                            <input type="text" name="item<%= i %>_heading" class="form-input"
+                                value="<%= hostel['item'+i+'_heading'] || '' %>">
+
+                            <label>Description</label>
+                            <textarea name="item<%= i %>_description"
+                                class="form-textarea"><%= hostel['item'+i+'_description'] || '' %></textarea>
+
+                            <% if (hostel['item'+i+'_image']) { %>
+                                <img src="<%= hostel['item'+i+'_image'] %>" width="80" class="mb-2"><br>
+                                <% } %>
+                                    <input type="file" name="item<%= i %>_image" class="form-input">
+                        </div>
+                        <% } %>
+
+                            <button type="submit" class="btn btn-primary mt-3">Save Hostel Section</button>
+                </form>
+            </div>
+<div class="content-section mb-5 p-4 border rounded bg-light">
+    <h2>Library & Labs</h2>
+
+    <form action="/admin/student-life/save-library" method="POST">
+        <!-- Heading -->
+        <div class="form-group mb-3">
+            <label>Heading</label>
+            <input type="text" name="heading" class="form-input" value="<%= lb.heading || '' %>" required>
+        </div>
+
+        <!-- Short Description (plain text) -->
+        <div class="form-group mb-3">
+            <label>Description</label>
+            <textarea name="description" id="description" class="form-textarea"><%= lb.description || '' %></textarea>
+        </div>
+
+        <!-- Long Description (rich text with CKEditor) -->
+        <div class="form-group mb-3">
+            <label>Long Description</label>
+            <textarea name="long_description" id="long_description" class="form-textarea"><%= lb.long_description || '' %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Save Library & Labs</button>
+    </form>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+<script>
+    // Plain text editor (optional, could just be normal textarea)
+    // Commented out since description is plain
+    // ClassicEditor.create(document.querySelector('#description')).catch(error => console.error(error));
+
+    // Rich text editor for long_description
+    ClassicEditor.create(document.querySelector('#long_description'), {
+        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+    }).catch(error => console.error(error));
+</script>
+
+
+
+
+            <div class="content-section mb-5 p-4 border rounded bg-light">
+                <h2>Sports & Extracurriculars</h2>
+
+                <form action="/admin/student-life/save-sports" method="POST" enctype="multipart/form-data">
+                    <div class="form-group mb-3">
+                        <label>Heading</label>
+                        <input type="text" name="heading" class="form-input" value="<%= section.heading || '' %>"
+                            required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Description</label>
+                        <textarea name="description" id="description"
+                            class="form-textarea"><%= section.description || '' %></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Image 1</label><br>
+                        <% if(section.image1){ %>
+                            <img src="<%= section.image1 %>" width="100" class="mb-2"><br>
+                            <% } %>
+                                <input type="file" name="image1" class="form-input">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Image 2</label><br>
+                        <% if(section.image2){ %>
+                            <img src="<%= section.image2 %>" width="100" class="mb-2"><br>
+                            <% } %>
+                                <input type="file" name="image2" class="form-input">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Save Sports Section</button>
+                </form>
+            </div>
+
+            <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+            <script>
+                ClassicEditor.create(document.querySelector('#description'))
+                    .catch(error => console.error(error));
+            </script>
+
+
+            <div class="content-section mb-5 p-4 border rounded bg-light">
+                <h2>Cultural Activities</h2>
+
+                <form action="/admin/student-life/save-cultural" method="POST" enctype="multipart/form-data">
+                    <div class="form-group mb-3">
+                        <label>Heading</label>
+                        <input type="text" name="activity_heading" class="form-input"
+                            value="<%= cultural.activity_heading || '' %>" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Description</label>
+                        <textarea name="activity_description" id="activity_description"
+                            class="form-textarea"><%= cultural.activity_description || '' %></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Image 1</label><br>
+                        <% if(cultural.activity_image1){ %>
+                            <img src="<%= cultural.activity_image1 %>" width="100" class="mb-2"><br>
+                            <% } %>
+                                <input type="file" name="activity_image1" class="form-input">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Image 2</label><br>
+                        <% if(cultural.activity_image2){ %>
+                            <img src="<%= cultural.activity_image2 %>" width="100" class="mb-2"><br>
+                            <% } %>
+                                <input type="file" name="activity_image2" class="form-input">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Save Cultural Activities</button>
+                </form>
+            </div>
+
+            <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+            <script>
+                ClassicEditor.create(document.querySelector('#activity_description'))
+                    .catch(error => console.error(error));
+            </script>
+
+
+            <footer class="dashboard-footer">
+                <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
+            </footer>
+
+
+</body>
+
+</html>

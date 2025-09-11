@@ -1,0 +1,239 @@
+<!-- footer begin -->
+<footer class="section-dark">
+  <div class="container">
+    <div class="row gx-5">
+      <div class="col-lg-5 col-sm-6">
+        <img width="90" src="<%= logo %>" class="logo-footer" alt="" />
+        <div class="spacer-20"></div>
+        <!-- Footer Description -->
+        <p>
+          <% if (footerData && footerData.contact && footerData.contact.description) { %>
+            <%= footerData.contact.description %>
+              <% } else { %>
+                It is a long established fact that a reader will be distracted by the readable content of a page when
+                looking at its layout.
+                <% } %>
+        </p>
+
+        <!-- Social Links -->
+        <div class="social-icons mb-sm-30">
+          <% if (footerData && footerData.social) { %>
+            <% if (footerData.social.facebook) { %>
+              <a href="<%= footerData.social.facebook %>"><i class="fa-brands fa-facebook-f"></i></a>
+              <% } else { %>
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <% } %>
+
+                  <% if (footerData.social.twitter) { %>
+                    <a href="<%= footerData.social.twitter %>"><i class="fa-brands fa-x-twitter"></i></a>
+                    <% } else { %>
+                      <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                      <% } %>
+
+                        <% if (footerData.social.whatsapp) { %>
+                          <a href="<%= footerData.social.whatsapp %>"><i class="fa-brands fa-whatsapp"></i></a>
+                          <% } else { %>
+                            <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                            <% } %>
+
+                              <% if (footerData.social.instagram) { %>
+                                <a href="<%= footerData.social.instagram %>"><i class="fa-brands fa-instagram"></i></a>
+                                <% } else { %>
+                                  <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                                  <% } %>
+
+                                    <% if (footerData.social.youtube) { %>
+                                      <a href="<%= footerData.social.youtube %>"><i
+                                          class="fa-brands fa-youtube"></i></a>
+                                      <% } else { %>
+                                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                                        <% } %>
+                                          <% } else { %>
+                                            <!-- Default static icons if social data missing -->
+                                            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                                            <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                                            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                                            <% } %>
+        </div>
+
+      </div>
+      <div class="col-lg-4 col-sm-12 order-lg-1 order-sm-2">
+        <div class="row">
+          <div class="col-lg-6 col-sm-6">
+            <div class="widget">
+              <h5>Company</h5>
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/academics">Academics</a></li>
+                <li><a href="/student-life">Student Life</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-6 col-sm-6">
+            <div class="widget">
+              <h5>Our Courses</h5>
+              <ul>
+                <li><a href="/courses/5">MPC</a></li>
+                <li><a href="/courses/6">BiPc</a></li>
+                <li><a href="/courses/7">MBiPC</a></li>
+                <li><a href="/courses/8">IIT JEE</a></li>
+                <li><a href="/courses/11">NEET</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-sm-6 order-lg-2 order-sm-1">
+        <div class="widget">
+          <h5>Contact Us</h5>
+
+          <div class="fw-bold text-white">
+            <i class="icofont-location-pin me-2 id-color"></i>
+            <% if (footerData && footerData.contact && footerData.contact.location_heading) { %>
+              <%= footerData.contact.location_heading %>
+                <% } else { %>
+                  Location
+                  <% } %>
+          </div>
+          <% if (footerData && footerData.contact && footerData.contact.location_text) { %>
+            <%= footerData.contact.location_text %>
+              <% } else { %>
+                Vizag, India.
+                <% } %>
+
+                  <div class="spacer-20"></div>
+
+                  <div class="fw-bold text-white">
+                    <i class="icofont-phone me-2 id-color"></i>
+                    <% if (footerData && footerData.contact && footerData.contact.phone_heading) { %>
+                      <%= footerData.contact.phone_heading %>
+                        <% } else { %>
+                          Call Us
+                          <% } %>
+                  </div>
+                  <a
+                    href="tel:<%= footerData && footerData.contact ? footerData.contact.phone_number : '+91 123456789' %>">
+                    <%= footerData && footerData.contact ? footerData.contact.phone_number : '+91 123456789' %>
+                  </a>
+
+                  <div class="spacer-20"></div>
+
+                  <div class="fw-bold text-white">
+                    <i class="icofont-envelope me-2 id-color"></i>
+                    <% if (footerData && footerData.contact && footerData.contact.email_heading) { %>
+                      <%= footerData.contact.email_heading %>
+                        <% } else { %>
+                          Email Us
+                          <% } %>
+                  </div>
+                  <a
+                    href="mailto:<%= footerData && footerData.contact ? footerData.contact.email_address : 'info@vidyavedika.com' %>">
+                    <%= footerData && footerData.contact ? footerData.contact.email_address : 'info@vidyavedika.com' %>
+                  </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="subfooter">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="mb-0 text-center">
+            Copyright 2025 | vidyavedika | All Rights Reserved | Design and Developed by
+            <a href="https://thecolourmoon.com/" target="_blank">Colourmoon</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- footer end -->
+</div>
+
+<!-- overlay content begin -->
+<div id="extra-wrap" class="text-light d-none">
+  <div id="btn-close">
+    <span></span>
+    <span></span>
+  </div>
+
+  <div id="extra-content">
+    <img width="100" src="images/logo.png" class="w-150px" alt="" />
+
+    <div class="spacer-30-line"></div>
+
+    <h5>Our Courses</h5>
+    <ul class="ul-check">
+      <li><a href="/courses/mpc">MPC</a></li>
+      <li><a href="/courses/bipc">BiPc</a></li>
+      <li><a href="/courses/mbipc">MBiPC</a></li>
+      <li><a href="/courses/iit">IIT</a></li>
+      <li><a href="/courses/jee">JEE</a></li>
+      <li><a href="/courses/neet">NEET</a></li>
+    </ul>
+
+    <div class="spacer-30-line"></div>
+
+    <h5>Contact Us</h5>
+    <div>
+      <i class="icofont-location-pin me-2 op-5"></i>Vizag, India.
+    </div>
+    <div>
+      <i class="icofont-envelope me-2 op-5"></i>info@vidyavedika.com
+    </div>
+
+    <div class="spacer-30-line"></div>
+
+    <h5>About Us</h5>
+    <p>
+      We are delighted to welcome you to our official website! At Vidya Vedika IIT & NEET Academy, we believe in
+      empowering young minds with knowledge, discipline, and confidence to excel in academics and life. Our institution
+      is dedicated to providing student-focused, quality education that prepares learners for Intermediate Boards,
+      IIT-JEE, NEET, and beyond.
+    </p>
+
+    <div class="social-icons">
+      <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href=""><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#"><i class="fa-brands fa-youtube"></i></a>
+      <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- Javascript Files
+================================================== -->
+<script src="/js/plugins.js"></script>
+<script src="/js/designesia.js"></script>
+<script src="/js/swiper.js"></script>
+<script src="/js/custom-swiper-1.js"></script>
+<script src="/js/custom-marquee.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $(".items-carousel").owlCarousel({
+      loop: true,
+      margin: 10,
+      nav: true,
+      dots: true,
+      autoplay: true,
+      autoplayTimeout: 3000,
+      responsive: {
+        0: { items: 1 },
+        600: { items: 2 },
+        1000: { items: 4 }
+      }
+    });
+  });
+</script>
+</body>
+
+
+</html>
+

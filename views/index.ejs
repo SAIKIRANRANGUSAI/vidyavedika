@@ -1,0 +1,404 @@
+<%- include('partials/header') %>
+  <!-- content begin -->
+  <div class="no-bottom no-top" id="content">
+    <div id="top"></div>
+
+    <section id="section-intro" class="text-light no-top no-bottom relative overflow-hidden">
+      <div class="relative">
+        <div class="abs abs-centered w-100 z-2">
+          <div class="container">
+            <div class="row g-4 align-items-center justify-content-between">
+              <div class="col-lg-6">
+                <div class="spacer-single sm-hide"></div>
+                <div class="subtitle">
+                  <%= homeContent.heading %>
+                </div>
+                <h1>
+                  <%= homeContent.sub_heading %>
+                </h1>
+                <p>
+                  <%= homeContent.description %>
+                </p>
+                <a class="btn-main btn-line fx-slide" href="/contact"><span>Enquiry Now</span></a>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="mh-800 mobile-height">
+          <div class="swiper wow scaleIn">
+            <div class="swiper-wrapper">
+              <% if (homeContent.banner_image_paths && homeContent.banner_image_paths.length> 0) { %>
+                <% homeContent.banner_image_paths.forEach((imagePath)=> { %>
+                  <div class="swiper-slide">
+                    <div class="swiper-inner"
+                      style="background: url('<%= imagePath %>') center center / cover no-repeat;">
+                      <div class="sw-overlay op-5"></div>
+                      <div class="gradient-edge-left z-2"></div>
+                    </div>
+                  </div>
+                  <% }) %>
+                    <% } else { %>
+                      <div class="swiper-slide">
+                        <div class="swiper-inner"
+                          style="background: url('/images/default.png') center center / cover no-repeat;">
+                          <div class="sw-overlay op-5"></div>
+                          <div class="gradient-edge-left z-2"></div>
+                        </div>
+                      </div>
+                      <% } %>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+  </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row g-4 gx-5 align-items-center">
+        <div class="col-lg-6">
+          <div class="row g-4">
+            <div class="col-6">
+              <div class="row g-4">
+                <div class="col-lg-12">
+                  <div class="rounded-1 overflow-hidden wow zoomIn">
+                    <img src="images/about-img-1.png" class="w-100 wow scaleIn" alt="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="row g-4">
+                <div class="spacer-single sm-hide"></div>
+                <div class="col-lg-12">
+                  <div class="rounded-1 overflow-hidden wow zoomIn" data-wow-delay=".3s">
+                    <img src="images/about-img-2.png" class="w-100 wow scaleIn" alt="" data-wow-delay=".3s" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class=" home-about-content">
+            <div class="subtitle s2 mb-3 wow fadeInUp" data-wow-delay=".0s">
+              About Us
+            </div>
+            <h2 class="wow fadeInUp" data-wow-delay=".2s">
+              Welcome to Vidya Vedika IIT & NEET Academy
+            </h2>
+            <p class="wow fadeInUp" data-wow-delay=".4s">
+              We are delighted to welcome you to our official website! At Vidya Vedika IIT & NEET Academy, we believe
+              in empowering young minds with knowledge, discipline, and confidence to excel in academics and life. Our
+              institution is dedicated to providing student-focused, quality education that prepares learners for
+              Intermediate Boards, IIT-JEE, NEET, and beyond.
+            </p>
+            <p class="wow fadeInUp" data-wow-delay=".4s">Through our committed faculty, innovative teaching methods,
+              and supportive environment, we aim to shape not just achievers, but responsible and value-driven
+              individuals. We invite you to explore our website, discover our programs and facilities, and join us in
+              this journey of learning, growth, and success.</p>
+
+            <div class="text-center text-md-left">
+              <a class="btn-main fx-slide wow fadeInUp" data-wow-delay=".8s" href="/about"><span>Read More</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section class="subscritpion-section">
+    <div class="container">
+      <div class="inner-basic-div">
+        <div class="row de-flex align-items-center">
+          <div class="col-md-4">
+            <div class="register-img">
+              <img width="320" src="<%= ctaContent.cta_image_path %>" alt="">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="register-content">
+              <h4>
+                <%= ctaContent.cta_heading %>
+              </h4>
+              <p>
+                <%= ctaContent.cta_text %>
+              </p>
+
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="text-center text-md-left">
+              <a class="btn-main fx-slide" href="/contact"><span>Enquiry Now</span></a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!--subscription-section-->
+
+
+  <section class="bg-color-op-1">
+    <div class="container">
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-8 text-center">
+          <div class="subtitle wow fadeInUp mb-3">Our Courses</div>
+
+          <% if (sections && sections.length> 0) { %>
+            <% sections.forEach(section=> { %>
+              <h2 class="wow fadeInUp" data-wow-delay=".2s">
+                <%= section.main_heading %>
+              </h2>
+              <p class="col-lg-8 offset-lg-2 mb-0 wow fadeInUp">
+                <%= section.main_description %>
+              </p>
+              <div class="spacer-single"></div>
+              <div class="spacer-half"></div>
+              <% }) %>
+                <% } else { %>
+                  <p>No courses available at the moment.</p>
+                  <% } %>
+
+        </div>
+      </div>
+
+
+
+      <!-- Carousel -->
+      <div class="items-carousel owl-carousel owl-theme">
+        <% if (courses && courses.length> 0) { %>
+          <% courses.forEach(course=> { %>
+            <div class="item">
+              <div class="hover">
+                <div class="bg-white h-100 p-20 rounded-1">
+                  <img src="<%= course.image %>" class="w-70px mb-3 wow scaleIn" alt="<%= course.heading %>">
+                  <div class="relative mt-2 wow fadeInUp">
+                    <h4>
+                      <%= course.heading %>
+                    </h4>
+                    <p>
+                      <%= course.description %>
+                    </p>
+                    <a class="btn-plus" href="/courses/<%= course.id %>">
+                      <i class="fa fa-plus"></i>
+                      <span>Read more</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <p>No courses available at the moment.</p>
+                <% } %>
+      </div>
+
+
+    </div>
+  </section>
+
+
+  <section class="bg-dark text-light pt-60 pb-60">
+    <div class="container">
+      <div class="row g-4">
+        <% counters.forEach((counter, index)=> { %>
+          <div class="col-md-3 col-sm-6 text-center">
+            <div class="de_count wow fadeInRight" data-wow-delay=".<%= index * 2 %>s">
+              <h3 class="fs-40 mb-0">
+                <span class="timer" data-to="<%= counter.value %>" data-speed="3000">0</span>+
+              </h3>
+              <%= counter.label %>
+            </div>
+          </div>
+          <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row gy-4 gx-5 align-items-center">
+
+        <!-- LEFT COLUMN: TEXT -->
+        <div class="col-lg-6">
+          <div class="subtitle id-color wow fadeInUp" data-wow-delay=".0s">
+            <%= whyChooseUs.main_heading %>
+          </div>
+          <h2 class="wow fadeInUp" data-wow-delay=".2s">
+            <%= whyChooseUs.heading_2 %>
+          </h2>
+          <p class="wow fadeInUp" data-wow-delay=".4s">
+            <%= whyChooseUs.main_description %>
+          </p>
+
+          <div class="border-bottom mb-4"></div>
+
+          <div class="row g-4">
+            <% for(let i=1; i <=4; i++) { %>
+              <div class="col-sm-6">
+                <div class="h-100">
+                  <div class="relative wow fadeInUp">
+                    <h5 class="mb-1">
+                      <%= whyChooseUs['sub_heading_' + i] %>
+                    </h5>
+                    <p class="mb-0">
+                      <%= whyChooseUs['description_' + i] %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <% } %>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: IMAGES -->
+        <div class="col-lg-6">
+          <div class="row g-4 align-items-center">
+
+            <div class="col-6 text-end">
+              <div class="w-80 rounded-1 overflow-hidden mb-25 wow zoomIn d-inline-block">
+                <% if(whyChooseUs.image_1){ %>
+                  <img src="<%= whyChooseUs.image_1 %>" class="w-100 wow scaleIn" alt="Image 1" />
+                  <% } %>
+              </div>
+              <div class="w-100 rounded-1 overflow-hidden mb-25 wow zoomIn d-inline-block">
+                <% if(whyChooseUs.image_3){ %>
+                  <img src="<%= whyChooseUs.image_3 %>" class="w-100 wow scaleIn" alt="Image 3" />
+                  <% } %>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="w-100 rounded-1 overflow-hidden mb-25 wow zoomIn d-inline-block">
+                <% if(whyChooseUs.image_2){ %>
+                  <img src="<%= whyChooseUs.image_2 %>" class="w-100 wow scaleIn" alt="Image 2" />
+                  <% } %>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+
+  <section class="galler-section">
+    <div class="container">
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-8 text-center">
+          <div class="subtitle wow fadeInUp mb-1">Our Gallery</div>
+          <h2 class="wow fadeInUp mb-2" data-wow-delay=".2s">
+            <%= galleryContent.heading %>
+          </h2>
+          <p class="col-lg-8 offset-lg-2 mb-0 wow fadeInUp">
+            <%= galleryContent.description %>
+          </p>
+          <div class="spacer-single"></div>
+          <div class="spacer-half"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <% if (typeof galleryImages !=="undefined" && galleryImages.length> 0) { %>
+          <% galleryImages.slice(0, 8).forEach(img=> { %>
+            <div class="col-md-3 col-sm-6 col-12 mb-4 item facilities">
+              <a href="<%= img.file_path %>" class="image-popup d-block hover">
+                <div class="relative overflow-hidden rounded-1">
+                  <div class="absolute start-0 w-100 hover-op-1 p-5 abs-middle z-2 text-center text-white z-3">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </div>
+                  <div class="absolute start-0 w-100 h-100 overlay-black-5 hover-op-1 z-2"></div>
+                  <img src="<%= img.file_path %>" class="w-100 hover-scale-1-2" alt="Gallery Image">
+                </div>
+              </a>
+            </div>
+            <% }) %>
+              <% } else { %>
+                <p>No gallery images uploaded yet.</p>
+                <% } %>
+      </div>
+
+
+
+
+    </div>
+  </section>
+  <section class="bg-color-op-1">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 offset-lg-3 text-center">
+          <div class="subtitle wow fadeInUp mb-3">Testimonials</div>
+          <h2 class="wow fadeInUp" data-wow-delay=".2s">
+            <%= testimonialContent.heading %>
+          </h2>
+          <p class="wow fadeInUp">
+            <%= testimonialContent.description %>
+          </p>
+          <div class="spacer-single"></div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="owl-carousel owl-theme wow fadeInUp four-cols-center-dots text-center">
+          <% if (testimonials && testimonials.length> 0) { %>
+            <% testimonials.forEach(testimonial=> { %>
+              <div class="item">
+                <div class="gradient-white-top p-40 py-4 rounded-1">
+                  <blockquote>
+                    <i class="fs-32 icofont-quote-left absolute start-0 mt-2 p-0 id-color"></i>
+                    <div class="de_testi_by">
+                      <img class="circle" alt="<%= testimonial.name %>" src="<%= testimonial.image_path %>" />
+                      <div>
+                        <%= testimonial.name %><span>
+                            <%= testimonial.role %>
+                          </span>
+                      </div>
+                    </div>
+                    <p class="mt-4 mb-0 text-dark op-6">
+                      <%= testimonial.description %>
+                    </p>
+                  </blockquote>
+                </div>
+              </div>
+              <% }) %>
+                <% } else { %>
+                  <p>No testimonials available yet.</p>
+                  <% } %>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="bg-color text-light pt-40 pb-40">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-9">
+          <h3 class="mb-0 fs-25">
+            Get in Touch for Your Admission Enquiry Today
+          </h3>
+        </div>
+        <div class="col-lg-3 text-lg-end">
+          <a class="btn-main btn-line fx-slide" href="/contact"><span>Enquiry Now</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+  <!-- content end -->
+
+  <%- include('partials/footer') %>

@@ -1,0 +1,325 @@
+<%- include('partials/header') %>
+
+  <!-- content begin -->
+  <div class="no-bottom no-top" id="content">
+
+    <div id="top"></div>
+
+    <section id="subheader" class="breadcrumb-section text-center"
+      style="background: linear-gradient(
+                rgba(0, 0, 0, 0.6), 
+                rgba(0, 0, 0, 0.4)
+              ),url('images/breadcrumb-img.jpg'); background-size: cover; background-position: center center; min-height: 300px; display: flex; align-items: center;">
+      <div class="container relative z-2">
+        <div class="row align-items-center">
+          <div class="col-lg-12">
+            <h1 class="wow fadeInUp">About Us</h1>
+            <ul class="crumb wow fadeInDown">
+              <li><a href="/index">Home</a></li>
+              <li class="active">About Us</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section>
+      <div class="container">
+        <div class="row g-4 gx-5 align-items-center">
+          <div class="col-lg-6">
+            <div class="row g-4">
+              <div class="col-6">
+                <div class="row g-4">
+                  <div class="col-lg-12">
+                    <div class="rounded-1 overflow-hidden wow zoomIn">
+                      <img src="<%= about.image1 || 'images/about-img-1.png' %>" class="w-100 wow scaleIn" alt="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="row g-4">
+                  <div class="spacer-single sm-hide"></div>
+                  <div class="col-lg-12">
+                    <div class="rounded-1 overflow-hidden wow zoomIn" data-wow-delay=".3s">
+                      <img src="<%= about.image2 || 'images/about-img-2.png' %>" class="w-100 wow scaleIn" alt="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class=" home-about-content">
+              <div class="subtitle s2 mb-3 wow fadeInUp" data-wow-delay=".0s">
+                About Us
+              </div>
+              <h2 class="wow fadeInUp" data-wow-delay=".2s">
+                <%= about.heading || "Welcome to Vidya Vedika IIT & NEET Academy" %>
+              </h2>
+              <p class="wow fadeInUp" data-wow-delay=".4s">
+                <%= about.paragraph1 %>
+              </p>
+              <p class="wow fadeInUp" data-wow-delay=".4s">
+                <%= about.paragraph2 %>.
+              </p>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="vision-mission pb-5 pt-0">
+      <div class="container">
+        <div class="row g-4 gx-5 align-items-center">
+          <div class="col-lg-6">
+            <img src="<%= vm.vision_image || 'images/opportunity.png' %>" width="70" alt="">
+            <div class="home-about-content mt-4">
+
+              <div class="subtitle s2 mb-3 wow fadeInUp" data-wow-delay=".0s">
+                <%= vm.vision_heading || "Our Vision" %>
+              </div>
+              <p class="wow fadeInUp" data-wow-delay=".4s">
+                <%= vm.vision_text
+                  || "To be a dynamic institution that delivers student- and parent-oriented quality education, guided by strong ethics and values, empowering learners to achieve excellence in academics, IIT, NEET, and responsible citizenship"
+                  %>
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <img src="<%= vm.mission_image || 'images/target.png' %>" width="70" alt="">
+            <div class="home-about-content mt-4">
+
+              <div class="subtitle s2 mb-3 wow fadeInUp" data-wow-delay=".0s">
+                <%= vm.mission_heading || "Our Mission" %>
+              </div>
+              <p class="wow fadeInUp" data-wow-delay=".4s">
+                <%= vm.mission_text
+                  || "To empower students with the knowledge, skills, and character to lead meaningful lives and shape a better Nation"
+                  %>
+              </p>
+            </div>
+    </section>
+
+
+    <section class="bg-color-op-1">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 offset-lg-3 text-center">
+            <div class="subtitle wow fadeInUp mb-3">Meet Our Team</div>
+            <h2 class="wow fadeInUp" data-wow-delay=".2s">
+              <%= team.heading %>
+            </h2>
+            <p class="wow fadeInUp">
+              <%= team.description %>
+            </p>
+            <div class="spacer-single"></div>
+          </div>
+        </div>
+        <div class="row g-4">
+          <% members.forEach(member=> { %>
+            <div class="col-lg-3">
+              <div class="relative rounded-1 overflow-hidden">
+                <div class="rounded-1 overflow-hidden wow fadeIn zoomIn">
+                  <img src="<%= member.image_path || 'images/default-team.png' %>" class="w-100 wow scaleIn" alt="">
+                </div>
+
+                <div class="abs w-100 start-0 bottom-0 z-3">
+                  <div class="p-2 rounded-10 m-3 text-center bg-white wow fadeInDown">
+                    <h4 class="mb-0">
+                      <%= member.name %>
+                    </h4>
+                    <p class="mb-2">
+                      <%= member.designation %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="managing-section pb-0"
+      style="background : url('images/bg-img-2.png') no-repeat center; background-size: cover;">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <h3 class="text-center mb-4"><%= md.title %></h3>
+          </div>
+        </div><!--row-->
+        <h6><%= md.subtitle %></h6>
+        <h6><%= md.greeting %></h6>
+        <%- md.content %>
+
+        <p><b>Warm regards,</b> <br>
+          <b><%= md.director_name %> (<%= md.designation %>),</b> <br>
+          <b><%= md.institute_name %></b>
+        </p>
+
+      </div>
+    </section>
+
+
+    <section class="our-journey">
+      <div class="container">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-6">
+            <div class="relative">
+              <div class="w-100 pe-5 pb-5 wow scaleIn">
+                <img src="<%= journey.image1 || 'images/our-history.png' %>" class="w-100 rounded-1" alt="">
+              </div>
+              <img src="<%= journey.image2 || 'images/whychoouse-img-4.png' %>"
+                class="w-40 rounded-1 abs end-0 bottom-0 z-2 soft-shadow wow scaleIn" data-wow-delay=".2s" alt="">
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="ps-lg-3">
+              <h2 class="wow fadeInUp" data-wow-delay=".4s"><%= journey.heading || 'Our Journey / History' %></h2>
+              <ul>
+                <li><%= journey.description1 || 'Vidya Vedika IIT & NEET Academy was established with the vision...' %></li>
+                <li><%= journey.description2 || 'Over the years, our dedicated faculty...' %></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </section>
+
+
+    <section class="text-light bg-dark no-top no-bottom overflow-hidden">
+      <div class="container-fluid position-relative half-fluid">
+        <div class="container">
+          <div class="row">
+            <!-- Image -->
+            <div class="col-lg-6 position-lg-absolute right-half h-100">
+              <div class="triangle-bottomright-dark"></div>
+              <div class="image" data-bgimage="url(<%= accreditations.image %>) center"></div>
+            </div>
+            <!-- Text -->
+            <div class="col-lg-6">
+              <div class="me-lg-3">
+                <div class="py-5 my-5 me-lg-3">
+                  <h2 class="wow fadeInUp" data-wow-delay=".2s"><%= accreditations.heading %></h2>
+                  <p><%= accreditations.description %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="row gy-4 gx-5 align-items-center">
+          <div class="col-lg-6">
+            <div class="subtitle id-color wow fadeInUp" data-wow-delay=".0s">
+              <%= whyChooseUs.main_heading || "Why Choose Us" %>
+            </div>
+            <h2 class="wow fadeInUp" data-wow-delay=".2s">
+              <%= whyChooseUs.heading_2 || "Empowering Students for Future Success" %>
+            </h2>
+            <p class="wow fadeInUp" data-wow-delay=".4s">
+              <%= whyChooseUs.main_description
+                || "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout."
+                %>
+            </p>
+
+            <div class="border-bottom mb-4"></div>
+
+            <div class="row g-4">
+              <div class="col-sm-6">
+                <div class="h-100">
+                  <div class="relative  wow fadeInUp">
+                    <h5 class="mb-1">
+                      <%= whyChooseUs.sub_heading_1 || "Expert Faculty" %>
+                    </h5>
+                    <p class="mb-0">
+                      <%= whyChooseUs.description_1 || "with years of experience in IIT & NEET coaching." %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="h-100">
+                  <div class="relative wow fadeInUp">
+                    <h5 class="mb-1">
+                      <%= whyChooseUs.sub_heading_2 || "Comprehensive Study Material" %>
+                    </h5>
+                    <p class="mb-0">
+                      <%= whyChooseUs.description_2 || "that covers every concept in detail." %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="h-100">
+                  <div class="relative wow fadeInUp">
+                    <h5 class="mb-1">
+                      <%= whyChooseUs.sub_heading_3 || "Regular Tests & Assessments" %>
+                    </h5>
+                    <p class="mb-0">
+                      <%= whyChooseUs.description_3 || "to track progress and boost confidence." %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <div class="h-100">
+                  <div class="relative wow fadeInUp">
+                    <h5 class="mb-1">
+                      <%= whyChooseUs.sub_heading_4 || "Personalized Guidance" %>
+                    </h5>
+                    <p class="mb-0">
+                      <%= whyChooseUs.description_4 || "for every student’s unique learning journey." %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="row g-4 align-items-center">
+              <div class="col-6 text-end">
+                <div class="w-80 rounded-1 overflow-hidden mb-25 wow zoomIn d-inline-block">
+                  <img src="<%= whyChooseUs.image_1 || 'images/whychoouse-img-1.png' %>" class="w-100 wow scaleIn"
+                    alt="" />
+                </div>
+                <div class="w-100 rounded-1 overflow-hidden mb-25 wow zoomIn d-inline-block">
+                  <img src="<%= whyChooseUs.image_3 || 'images/whychoouse-img-3.png' %>" class="w-100 wow scaleIn"
+                    alt="" />
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="w-100 rounded-1 overflow-hidden mb-25 wow zoomIn d-inline-block">
+                  <img src="<%= whyChooseUs.image_2 || 'images/whychoouse-img-2.png' %>" class="w-100 wow scaleIn"
+                    alt="" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <!-- content end -->
+
+  <%- include('partials/footer') %>
