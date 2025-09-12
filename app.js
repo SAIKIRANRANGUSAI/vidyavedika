@@ -1,11 +1,13 @@
 require("dotenv").config();
 const express = require("express");
-
+const cookieParser = require("cookie-parser");
 //const path = require("path");
 const db = require("./config/db");
 const app = express();
 const path = require("path");
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
@@ -146,41 +148,44 @@ app.set("view engine", "ejs");
 
 // -------------------- LOGIN ROUTES -------------------- //
 // Dynamic Admin Login Page
-app.get("/admin/login", async (req, res) => {
-    try {
-        const [rows] = await db.query("SELECT logo FROM settings WHERE id=1");
-        const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-        res.render("login", { logo, error: null });   // ✅ just "login"
-    } catch (err) {
-        console.error("❌ Error fetching logo:", err);
-        res.render("login", { logo: "/admin/static/images/logo.png", error: null });
-    }
-});
+// app.get("/admin/login", async (req, res) => {
+//     try {
+//         const [rows] = await db.query("SELECT logo FROM settings WHERE id=1");
+//         const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+//         res.render("login", { logo, error: null });   // ✅ just "login"
+//     } catch (err) {
+//         console.error("❌ Error fetching logo:", err);
+//         res.render("login", { logo: "/admin/static/images/logo.png", error: null });
+//     }
+// });
 
 
 // Admin About Us routes
-app.use("/admin", adminAboutRoutes); 
+
 
 // Handle Login POST
-app.post("/admin/login", async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const [rows] = await db.query("SELECT * FROM admins WHERE username = ?", [username]);
-        if (rows.length === 0)
-            return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
+// app.post("/admin/login", async (req, res) => {
+//     const { username, password } = req.body;
+//     try {
+//         const [rows] = await db.query("SELECT * FROM admins WHERE username = ?", [username]);
+//         if (rows.length === 0)
+//             return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
 
-        const match = await bcrypt.compare(password, rows[0].password);
-        if (!match)
-            return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
+//         const match = await bcrypt.compare(password, rows[0].password);
+//         if (!match)
+//             return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
 
-        req.session.admin = { id: rows[0].id, username: rows[0].username };
-        res.redirect("/admin/dashboard");
-    } catch (err) {
-        console.error("❌ Login error:", err);
-        res.render("login", { logo: "/admin/static/images/logo.png", error: "Something went wrong" });
-    }
-});
+//         req.session.admin = { id: rows[0].id, username: rows[0].username };
+//         res.redirect("/admin/dashboard");
+//     } catch (err) {
+//         console.error("❌ Login error:", err);
+//         res.render("login", { logo: "/admin/static/images/logo.png", error: "Something went wrong" });
+//     }
+// });
 
+
+
+app.use("/admin", adminAboutRoutes); 
 
 // Admin routes
 

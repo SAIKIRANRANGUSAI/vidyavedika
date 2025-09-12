@@ -1,5 +1,6 @@
 const path = require("path");
 const db = require("../../config/db");
+const jwt = require("jsonwebtoken");
 
 const bcrypt = require("bcryptjs");
 //const db = require("../config/db");
@@ -15,6 +16,7 @@ const bcrypt = require("bcryptjs");
 //     }
 //     next();
 // };
+// middlewares
 
 // GET login page
 exports.getLogin = async (req, res) => {
@@ -45,7 +47,16 @@ exports.postLogin = async (req, res) => {
       return res.send("Invalid credentials");
     }
 
-    req.session.admin = true;
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+     "12345678",
+      { expiresIn: "1h" }
+    );
+
+    // Send JWT as cookie
+    res.cookie("token", token, { httpOnly: true, secure: true, sameSite: "strict" });
+
     res.redirect("/admin/dashboard");
   } catch (err) {
     console.error(err);
@@ -68,42 +79,63 @@ exports.postLogin = async (req, res) => {
 // GET dashboard page
 //const db = require("../../config/db");  // ✅ only once
 
-exports.getDashboard = async (req, res) => {
-  try {
-    const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
-    const contactUs = contactRows[0] || {};
+// exports.getDashboard = async (req, res) => {
+//   try {
+//     const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
+//     const contactUs = contactRows[0] || {};
 
-    const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
-    const contactDetails = detailsRows[0] || {};
+//     const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
+//     const contactDetails = detailsRows[0] || {};
 
-    const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
+//     const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
-    res.render("dashboard", {
-      username: req.session.admin?.username || "Admin User",
-      contactUs,
-      contactDetails,
-      messages
-    });
+//     res.render("dashboard", {
+//       username: req.session.admin?.username || "Admin User",
+//       contactUs,
+//       contactDetails,
+//       messages
+//     });
 
-  } catch (err) {
-    console.error("Error loading dashboard:", err);
-    res.status(500).send("Server error");
-  }
-};
+//   } catch (err) {
+//     console.error("Error loading dashboard:", err);
+//     res.status(500).send("Server error");
+//   }
+// };
 
 // Middleware to check authentication
 // adminController.js
+// exports.isAuthenticated = (req, res, next) => {
+//   if (req.session && req.session.admin) {
+//     return next();
+//   }
+
+//   // Allow login and static assets
+//   if (req.path === "/login" || req.path.startsWith("/static")) {
+//     return next();
+//   }
+
+//   return res.redirect("/admin/login");
+// };
+
 exports.isAuthenticated = (req, res, next) => {
-  if (req.session && req.session.admin) {
-    return next();
-  }
+  try {
+    const token = req.cookies?.token; // ✅ safer access
 
-  // Allow login and static assets
-  if (req.path === "/login" || req.path.startsWith("/static")) {
-    return next();
-  }
+    if (!token) {
+      return res.redirect("/admin/login");
+    }
 
-  return res.redirect("/admin/login");
+    // ✅ Verify with secret from .env
+    const decoded = jwt.verify(token, "12345678");
+
+    // Attach decoded user to request
+    req.user = decoded;
+
+    next();
+  } catch (err) {
+    console.error("Auth error:", err.message);
+    return res.redirect("/admin/login");
+  }
 };
 
 // GET change credentials page (optional if you render separately)
