@@ -4,13 +4,18 @@ const path = require("path");
 const fs = require("fs"); // Use promises version of fs
 const multer = require('multer');
 const adminController = require('../controllers/adminController');
-router.use(adminController.isAuthenticated);
+
 const db = require("../../config/db");
 const contactUsRoute = require("./admincontactus");
 //const { isAuthenticated } = adminController;
 // Place this at the very top of adminRoutes.js
 
+router.get("/login", adminController.getLogin);
 
+// Login form (POST)
+router.post("/login", adminController.postLogin);
+
+router.use(adminController.isAuthenticated);
 
 // Configure Multer for file uploads
 
@@ -68,10 +73,7 @@ router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) =>
 });
 
 // Login page (GET)
-router.get("/login", adminController.getLogin);
 
-// Login form (POST)
-router.post("/login", adminController.postLogin);
 
 // Dashboard (protected)
 //router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboard);

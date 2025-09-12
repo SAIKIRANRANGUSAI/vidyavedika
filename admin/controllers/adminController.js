@@ -98,12 +98,12 @@ exports.isAuthenticated = (req, res, next) => {
     return next();
   }
 
-  // ⚡ Only redirect if you are NOT already on /admin/login
-  if (req.path !== "/login") {
-    return res.redirect("/admin/login");
+  // Allow login and static assets
+  if (req.path === "/login" || req.path.startsWith("/static")) {
+    return next();
   }
 
-  next();
+  return res.redirect("/admin/login");
 };
 
 // GET change credentials page (optional if you render separately)
