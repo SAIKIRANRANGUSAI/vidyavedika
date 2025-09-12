@@ -320,7 +320,7 @@ router.post("/md-message", async (req, res) => {
 
             router.get("/settings", async (req, res) => {
 
-                const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+                const [rows] = await db.query("SELECT logo FROM settings LIMIT 2");
                 const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
                 res.render("admin/settings", { logo });
             });
