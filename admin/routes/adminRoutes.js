@@ -54,14 +54,14 @@ router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) =>
 
     // Remove old logo if exists and not default
     if (res.locals.logo && !res.locals.logo.includes("default")) {
-      const oldPath = path.join(__dirname, "../../public", res.locals.logo.replace("/", ""));
+      const oldPath = path.join(__dirname, "/images/", res.locals.logo.replace("/", ""));
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
     const newLogoPath = "/images/" + req.file.filename;
 
     // Update DB
-    await db.query("UPDATE settings SET logo=? WHERE id=1", [newLogoPath]);
+    await db.query("UPDATE settings SET logo=? WHERE id=2", [newLogoPath]);
 
     req.session.logoSuccess = "Logo updated successfully!";
     res.redirect("/admin/dashboard");
@@ -392,7 +392,7 @@ router.post('/home/testimonials/update-text', async (req, res) => {
 // --- Add new testimonial ---
 router.post("/home/testimonials/add", upload.single("testimonial_image"), async (req, res) => {
   const { name, role, description } = req.body;
-  const image_path = req.file ? `/images/testimonial/${req.file.filename}` : null;
+  const image_path = req.file ? `/images/${req.file.filename}` : null;
 
   if (!image_path) {
     req.session.errorMessage = "Image upload is required.";
@@ -454,7 +454,7 @@ router.post('/home/testimonials/edit/:id', upload.single('testimonial_image'), a
   try {
     // If new image uploaded, use it, else keep old
     if (req.file) {
-      image_path = `/images/testimonial/${req.file.filename}`;
+      image_path = `/images/${req.file.filename}`;
       // Optional: delete old image from /public/images/testimonial
       const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
       if (oldData.length && oldData[0].image_path) {
@@ -735,7 +735,7 @@ router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) =>
     }
 
     const logoPath = "/images/" + req.file.filename; // matches public/images
-    await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
+    await db.query("UPDATE settings SET logo = ? WHERE id = 2", [logoPath]);
 
     req.session.logoSuccess = "Logo updated successfully!";
     res.redirect("/admin/dashboard");
@@ -776,7 +776,12 @@ router.post("/contact-us/save", async (req, res) => {
 // --- Save Contact Details ---
 router.post("/contactus/contact-details/save", async (req, res) => {
   try {
-    const { location_heading, location_text, phone_heading, phone_number, email_heading, email_address } = req.body;
+    let { location_heading, location_text, phone_heading, phone_number, email_heading, email_address } = req.body;
+
+    // ✅ If multiple emails (from array), join them into a string
+    if (Array.isArray(email_address)) {
+      email_address = email_address.join(",");
+    }
 
     const [rows] = await db.query("SELECT id FROM contact_details LIMIT 1");
 

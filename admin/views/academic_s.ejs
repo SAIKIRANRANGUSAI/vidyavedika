@@ -715,7 +715,7 @@
 
         <div class="sidebar-menu">
             <div class="menu-label">Main</div>
-            <a href="/admin/dashboard" class="menu-item active">
+            <a href="/admin/dashboard" class="menu-item ">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
@@ -730,7 +730,7 @@
                 <i class="fas fa-info-circle"></i>
                 <span>About Us</span>
             </a>
-            <a href="/admin/academics" class="menu-item">
+            <a href="/admin/academics" class="menu-item active">
                 <i class="fas fa-book-open"></i>
                 <span>Academics</span>
             </a>
@@ -742,10 +742,12 @@
                 <i class="fas fa-users"></i>
                 <span>Student Life</span>
             </a>
-            <a href="/admin/logout" class="menu-item text-danger">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Logout</span>
-    </a>
+            <a href="/admin/logout" class="menu-item text-danger"
+   onclick="return confirm('Are you sure you want to logout?');">
+   <i class="fas fa-sign-out-alt"></i>
+   <span>Logout</span>
+</a>
+
 
         </div>
 
@@ -770,18 +772,18 @@
                 
             </div>
 
-            <div class="header-right">
+            <!-- <div class="header-right">
                 <div class="user-profile" id="userProfileBtn">
                     <img src="<%= logo %>" alt="User">
                     <span>Admin User</span>
                 </div>
-            </div>
+            </div> -->
         </div>
     <div class="content"> <!-- Single scrollable container -->
             <div class="page-header">
                 <h1 class="page-title">Academics Page Management</h1>
                 <div class="breadcrumb">
-                    <a href="#">Home</a>
+                    <a href="/admin/dashboard">dashboard</a>
                     <i class="fas fa-chevron-right"></i>
                     <span>Academics Page</span>
                 </div>

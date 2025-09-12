@@ -665,7 +665,7 @@
             <div class="menu-label">Content</div>
             <a href="/admin/about-us" class="menu-item">
                 <i class="fas fa-info-circle"></i>
-                <span>About Us</span>
+                <spa /admin/about-usn>About Us</span>
             </a>
             <a href="/admin/academics" class="menu-item">
                 <i class="fas fa-book-open"></i>
@@ -679,10 +679,12 @@
                 <i class="fas fa-users"></i>
                 <span>Student Life</span>
             </a>
-            <a href="/admin/logout" class="menu-item text-danger">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Logout</span>
-    </a>
+            <a href="/admin/logout" class="menu-item text-danger"
+                onclick="return confirm('Are you sure you want to logout?');">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+
 
         </div>
 
@@ -720,7 +722,7 @@
             <div class="page-header">
                 <h1 class="page-title">Dashboard</h1>
                 <div class="breadcrumb">
-                    <a href="#">Home</a>
+                    <a href="admin/dashboard">dashboard</a>
                     <i class="fas fa-chevron-right"></i>
                     <span>Dashboard</span>
                 </div>
@@ -772,9 +774,11 @@
                                         <td>
                                             <div class="table-actions">
                                                 <form action="/admin/contactus/messages/delete/<%= msg.id %>"
-                                                    method="POST" style="display:inline;">
+                                                    method="POST" style="display:inline;"
+                                                    onsubmit="return confirm('Are you sure you want to delete this message?');">
                                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                 </form>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -850,10 +854,13 @@
                             value="<%= contactDetails?.email_heading || '' %>" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" name="email_address"
-                            value="<%= contactDetails?.email_address || '' %>" required>
+                        <label class="form-label">Email Address(es)</label>
+                        <input type="text" class="form-input" name="email_address"
+                            value="<%= contactDetails?.email_address || '' %>"
+                            placeholder="Enter multiple emails separated by commas" required>
+
                     </div>
+
 
                     <div class="form-footer">
                         <button type="submit" class="btn btn-primary">Save Contact Details</button>
@@ -868,47 +875,47 @@
                 <div id="socialMessage" class="alert" style="display:none;"></div>
 
                 <!-- Social Links Form -->
-                <form id="socialLinksForm">
-                    <% const socialData=typeof social !=='undefined' ? social : {}; %>
+<form id="socialLinksForm" method="POST" action="/update-social">
 
-                        <div class="form-group mb-3">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" class="form-input w-full p-2 border rounded"
-                                rows="3"><%= socialData.description || '' %></textarea>
-                        </div>
+    <div class="form-group mb-3">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" class="form-input w-full p-2 border rounded"
+            rows="3" placeholder="Enter description"></textarea>
+    </div>
 
-                        <div class="form-group mb-3">
-                            <label for="facebook">Facebook</label>
-                            <input type="text" id="facebook" name="facebook"
-                                class="form-input w-full p-2 border rounded" value="<%= socialData.facebook || '' %>">
-                        </div>
+    <div class="form-group mb-3">
+        <label for="facebook">Facebook URL</label>
+        <input type="text" id="facebook" name="facebook" class="form-input w-full p-2 border rounded"
+            placeholder="Enter Facebook URL">
+    </div>
 
-                        <div class="form-group mb-3">
-                            <label for="twitter">Twitter (X)</label>
-                            <input type="text" id="twitter" name="twitter" class="form-input w-full p-2 border rounded"
-                                value="<%= socialData.twitter || '' %>">
-                        </div>
+    <div class="form-group mb-3">
+        <label for="twitter">Twitter (X) URL</label>
+        <input type="text" id="twitter" name="twitter" class="form-input w-full p-2 border rounded"
+            placeholder="Enter Twitter URL">
+    </div>
 
-                        <div class="form-group mb-3">
-                            <label for="instagram">Instagram</label>
-                            <input type="text" id="instagram" name="instagram"
-                                class="form-input w-full p-2 border rounded" value="<%= socialData.instagram || '' %>">
-                        </div>
+    <div class="form-group mb-3">
+        <label for="instagram">Instagram URL</label>
+        <input type="text" id="instagram" name="instagram" class="form-input w-full p-2 border rounded"
+            placeholder="Enter Instagram URL">
+    </div>
 
-                        <div class="form-group mb-3">
-                            <label for="youtube">YouTube</label>
-                            <input type="text" id="youtube" name="youtube" class="form-input w-full p-2 border rounded"
-                                value="<%= socialData.youtube || '' %>">
-                        </div>
+    <div class="form-group mb-3">
+        <label for="youtube">YouTube URL</label>
+        <input type="text" id="youtube" name="youtube" class="form-input w-full p-2 border rounded"
+            placeholder="Enter YouTube URL">
+    </div>
 
-                        <div class="form-group mb-3">
-                            <label for="whatsapp">WhatsApp</label>
-                            <input type="text" id="whatsapp" name="whatsapp"
-                                class="form-input w-full p-2 border rounded" value="<%= socialData.whatsapp || '' %>">
-                        </div>
+    <div class="form-group mb-3">
+        <label for="whatsapp">WhatsApp Number/Link</label>
+        <input type="text" id="whatsapp" name="whatsapp" class="form-input w-full p-2 border rounded"
+            placeholder="Enter WhatsApp link or number">
+    </div>
 
-                        <button type="submit" class="btn btn-primary mt-2">Update Social Links</button>
-                </form>
+    <button type="submit" class="btn btn-primary mt-2">Update Social Links</button>
+</form>
+
             </section>
             <script>
                 const socialForm = document.getElementById('socialLinksForm');
@@ -947,25 +954,32 @@
             </script>
 
             <div class="card p-4 mb-4">
-  <h4>Current Logo</h4>
-  <img src="<%= logo %>" alt="Current Logo" class="img-fluid mb-3" style="max-width:200px;">
+                <h4>Current Logo</h4>
+                <img src="<%= logo %>" alt="Current Logo" class="img-fluid mb-3" style="max-width:200px;">
 
-  <% if (locals.logoError) { %>
-    <div class="alert alert-danger"><%= locals.logoError %></div>
-  <% } %>
+                <% if (locals.logoError) { %>
+                    <div class="alert alert-danger">
+                        <%= locals.logoError %>
+                    </div>
+                    <% } %>
 
-  <% if (locals.logoSuccess) { %>
-    <div class="alert alert-success"><%= locals.logoSuccess %></div>
-  <% } %>
+                        <% if (locals.logoSuccess) { %>
+                            <div class="alert alert-success">
+                                <%= locals.logoSuccess %>
+                            </div>
+                            <% } %>
 
-  <form action="/admin/dashboard/update-logo" method="POST" enctype="multipart/form-data">
-    <div class="mb-3">
-      <label for="logo" class="form-label">Upload New Logo</label>
-      <input type="file" name="logo" id="logo" class="form-control" accept="image/*" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Update Logo</button>
-  </form>
-</div>
+                                <form action="/admin/dashboard/update-logo" method="POST" enctype="multipart/form-data"
+                                    onsubmit="return confirm('Are you sure you want to change the logo?');">
+                                    <div class="mb-3">
+                                        <label for="logo" class="form-label">Upload New Logo</label>
+                                        <input type="file" name="logo" id="logo" class="form-control" accept="image/*"
+                                            required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Logo</button>
+                                </form>
+
+            </div>
 
         </div>
 

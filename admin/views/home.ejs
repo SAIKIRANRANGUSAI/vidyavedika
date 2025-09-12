@@ -717,12 +717,12 @@
 
         <div class="sidebar-menu">
             <div class="menu-label">Main</div>
-            <a href="/admin/dashboard" class="menu-item active">
+            <a href="/admin/dashboard" class="menu-item ">
                 <i class="fas fa-home"></i>
                 <span>Dashboard</span>
             </a>
 
-            <a href="/admin/home" class="menu-item">
+            <a href="/admin/home" class="menu-item active">
                 <i class="fas fa-house-user"></i>
                 <span>Home</span>
             </a>
@@ -744,10 +744,12 @@
                 <i class="fas fa-users"></i>
                 <span>Student Life</span>
             </a>
-            <a href="/admin/logout" class="menu-item text-danger">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </a>
+            <a href="/admin/logout" class="menu-item text-danger"
+   onclick="return confirm('Are you sure you want to logout?');">
+   <i class="fas fa-sign-out-alt"></i>
+   <span>Logout</span>
+</a>
+
 
         </div>
 
@@ -772,12 +774,12 @@
 
             </div>
 
-            <div class="header-right">
+            <!-- <div class="header-right">
                 <div class="user-profile" id="userProfileBtn">
                     <img src="<%= logo %>" alt="User">
                     <span>Admin User</span>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="content">
@@ -1354,12 +1356,12 @@
             </footer>
         </div>
 
-        <div class="modal-overlay" id="profileModal">
+        <!-- <div class="modal-overlay" id="profileModal">
             <div class="modal modal-sm">
                 <div class="modal-header">
                     <h2 class="modal-title">User Profile</h2>
-                    <button class="modal-close" id="closeProfileModalBtn">&times;</button>
-                </div>
+                    <!-- <button class="modal-close" id="closeProfileModalBtn">&times;</button> -->
+                <!-- </div>
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Username</label>
@@ -1383,7 +1385,7 @@
                     <button class="btn btn-primary" id="saveChanges">Save Changes</button>
                 </div>
             </div>
-        </div>
+        </div> --> -->
 
         <div class="modal-overlay" id="editCourseModal">
             <div class="modal">
@@ -1519,298 +1521,7 @@
                 </form>
             </div>
         </div> -->
-        <div class="modal-overlay" id="credentialsModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h2 class="modal-title">Change Admin Credentials</h2>
-                    <button class="modal-close" id="closeCredentialsModal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="credentialsMessage" style="display: none;" class="alert"></div>
-
-                    <form id="changeCredentialsForm">
-                        <div class="form-group">
-                            <label for="newUsername">Username</label>
-                            <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username"
-                                required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="currentPassword">Current Password</label>
-                            <input type="password" id="currentPassword" name="currentPassword"
-                                placeholder="Enter current password" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="newPassword">New Password</label>
-                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password"
-                                required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirmNewPassword">Confirm New Password</label>
-                            <input type="password" id="confirmNewPassword" name="confirmNewPassword"
-                                placeholder="Confirm new password" required>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-cancel" id="cancelCredentialsChange">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Update Credentials</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <style>
-            /* Modal overlay */
-            .modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                display: none;
-                justify-content: center;
-                align-items: center;
-                z-index: 9999;
-            }
-
-            /* Show modal */
-            .modal-overlay.active {
-                display: flex;
-            }
-
-            /* Modal box */
-            .modal {
-                background-color: #fff;
-                width: 400px;
-                max-width: 90%;
-                border-radius: 12px;
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-                overflow: hidden;
-                animation: fadeIn 0.3s ease;
-            }
-
-            /* Header */
-            .modal-header {
-                padding: 16px 24px;
-                background-color: #4A90E2;
-                color: #fff;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .modal-header .modal-title {
-                margin: 0;
-                font-size: 1.25rem;
-            }
-
-            .modal-close {
-                background: none;
-                border: none;
-                color: #fff;
-                font-size: 1.5rem;
-                cursor: pointer;
-            }
-
-            /* Body */
-            .modal-body {
-                padding: 20px 24px;
-            }
-
-            /* Form groups */
-            .form-group {
-                margin-bottom: 16px;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .form-group label {
-                font-weight: 500;
-                margin-bottom: 6px;
-                color: #333;
-            }
-
-            .form-group input {
-                padding: 10px 12px;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-                font-size: 1rem;
-                transition: all 0.2s;
-            }
-
-            .form-group input:focus {
-                border-color: #4A90E2;
-                outline: none;
-                box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
-            }
-
-            /* Footer buttons */
-            .modal-footer {
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-                margin-top: 10px;
-            }
-
-            .btn {
-                padding: 10px 18px;
-                border-radius: 6px;
-                border: none;
-                font-size: 1rem;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-
-            .btn-primary {
-                background-color: #4A90E2;
-                color: #fff;
-            }
-
-            .btn-primary:hover {
-                background-color: #357ABD;
-            }
-
-            .btn-cancel {
-                background-color: #f0f0f0;
-                color: #333;
-            }
-
-            .btn-cancel:hover {
-                background-color: #ddd;
-            }
-
-            /* Alerts */
-            .alert {
-                padding: 10px 12px;
-                border-radius: 6px;
-                margin-bottom: 12px;
-                font-size: 0.95rem;
-            }
-
-            .alert-danger {
-                background-color: #f8d7da;
-                color: #842029;
-            }
-
-            .alert-success {
-                background-color: #d1e7dd;
-                color: #0f5132;
-            }
-
-            /* Animations */
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        </style>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const credentialsModal = document.getElementById('credentialsModal');
-                const userProfileBtn = document.getElementById('userProfileBtn');
-                const closeCredentialsModal = document.getElementById('closeCredentialsModal');
-                const cancelCredentialsChange = document.getElementById('cancelCredentialsChange');
-                const credentialsMessage = document.getElementById('credentialsMessage');
-                const changeCredentialsForm = document.getElementById('changeCredentialsForm');
-
-                // Open modal
-                if (userProfileBtn && credentialsModal) {
-                    userProfileBtn.addEventListener('click', () => {
-                        credentialsModal.classList.add('active');
-                        document.body.style.overflow = 'hidden';
-                        if (credentialsMessage) credentialsMessage.style.display = 'none';
-                    });
-                }
-
-                // Close modal
-                function closeModal() {
-                    if (!credentialsModal) return;
-                    credentialsModal.classList.remove('active');
-                    document.body.style.overflow = '';
-                    if (credentialsMessage) credentialsMessage.style.display = 'none';
-                    if (document.getElementById('currentPassword')) document.getElementById('currentPassword').value = '';
-                    if (document.getElementById('newPassword')) document.getElementById('newPassword').value = '';
-                    if (document.getElementById('confirmNewPassword')) document.getElementById('confirmNewPassword').value = '';
-                }
-
-                if (closeCredentialsModal) closeCredentialsModal.addEventListener('click', closeModal);
-                if (cancelCredentialsChange) cancelCredentialsChange.addEventListener('click', closeModal);
-
-                // Close modal when clicking outside modal content
-                if (credentialsModal) {
-                    credentialsModal.addEventListener('click', function (e) {
-                        if (e.target === credentialsModal) closeModal();
-                    });
-                }
-
-                // AJAX form submit
-                if (changeCredentialsForm) {
-                    changeCredentialsForm.addEventListener('submit', async function (e) {
-                        e.preventDefault();
-
-                        const newUsername = document.getElementById('newUsername').value;
-                        const currentPassword = document.getElementById('currentPassword').value;
-                        const newPassword = document.getElementById('newPassword').value;
-                        const confirmPassword = document.getElementById('confirmNewPassword').value;
-
-                        if (newPassword !== confirmPassword) {
-                            credentialsMessage.textContent = 'New passwords do not match!';
-                            credentialsMessage.className = 'alert alert-danger';
-                            credentialsMessage.style.display = 'block';
-                            return;
-                        }
-
-                        try {
-                            const response = await fetch('/admin/change-credentials', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: new URLSearchParams({
-                                    newUsername,
-                                    currentPassword,
-                                    newPassword,
-                                    confirmNewPassword: confirmPassword
-                                })
-                            });
-
-                            const result = await response.json();
-
-                            if (result.success) {
-                                credentialsMessage.textContent = result.message;
-                                credentialsMessage.className = 'alert alert-success';
-                                credentialsMessage.style.display = 'block';
-
-                                // Redirect to dashboard after short delay
-                                setTimeout(() => {
-                                    window.location.href = '/admin/dashboard';
-                                }, 1500);
-                            } else if (result.error) {
-                                credentialsMessage.textContent = result.error;
-                                credentialsMessage.className = 'alert alert-danger';
-                                credentialsMessage.style.display = 'block';
-                            }
-                        } catch (err) {
-                            credentialsMessage.textContent = 'Server error. Try again.';
-                            credentialsMessage.className = 'alert alert-danger';
-                            credentialsMessage.style.display = 'block';
-                            console.error(err);
-                        }
-                    });
-                }
-            });
-        </script>
-
-
+        
 </body>
 
 </html>
