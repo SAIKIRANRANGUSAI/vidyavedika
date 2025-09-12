@@ -1,6 +1,6 @@
 const path = require("path");
 const db = require("../../config/db");
-// const bcrypt = require("bcrypt");
+
 const bcrypt = require("bcryptjs");
 //const db = require("../config/db");
 
@@ -18,81 +18,94 @@ const bcrypt = require("bcryptjs");
 
 // GET login page
 exports.getLogin = async (req, res) => {
-    try {
-        const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
-        const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-        res.render("login", { logo });
-    } catch (err) {
-        console.error(err);
-        res.render("login", { logo: "/admin/static/images/logo.png" });
-    }
+  try {
+    const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+    const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+    res.render("login", { logo });
+  } catch (err) {
+    console.error(err);
+    res.render("login", { logo: "/admin/static/images/logo.png" });
+  }
 };
 
 // POST login
 exports.postLogin = async (req, res) => {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    try {
-        const [rows] = await db.query("SELECT * FROM admins WHERE username = ?", [username]);
+  try {
+    const [rows] = await db.query("SELECT * FROM admins WHERE username = ?", [username]);
 
-        if (rows.length === 0) {
-            return res.send("Invalid credentials");
-        }
-
-        const user = rows[0];
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) {
-            return res.send("Invalid credentials");
-        }
-
-        req.session.admin = true;
-        res.redirect("/admin/dashboard");
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Server error");
+    if (rows.length === 0) {
+      return res.send("Invalid credentials");
     }
+
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.send("Invalid credentials");
+    }
+
+    req.session.admin = true;
+    res.redirect("/admin/dashboard");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 };
 
 // Middleware to protect routes
-exports.isAuthenticated = (req, res, next) => {
-    if (req.session && req.session.admin) return next();
-    res.redirect("/admin/login");
-};
+// function isAuthenticated(req, res, next) {
+//   if (req.session && req.session.admin) {
+//     return next(); // ✅ logged in
+//   }
+//   return res.redirect("/admin/login"); // ❌ not logged in
+// }
+
+// module.exports = isAuthenticated;
+
 
 // GET dashboard page
 // GET dashboard page
 //const db = require("../../config/db");  // ✅ only once
 
 exports.getDashboard = async (req, res) => {
-    try {
-        const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
-        const contactUs = contactRows[0] || {};
+  try {
+    const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
+    const contactUs = contactRows[0] || {};
 
-        const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
-        const contactDetails = detailsRows[0] || {};
+    const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
+    const contactDetails = detailsRows[0] || {};
 
-        const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
+    const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
-        res.render("dashboard", {
-            username: req.session.username || "Admin User",
-            contactUs,
-            contactDetails,
-            messages
-            // No need to pass logo explicitly if middleware sets res.locals.logo
-        });
-    } catch (err) {
-        console.error("Error loading dashboard:", err);
-        res.status(500).send("Server error");
-    }
+    res.render("dashboard", {
+      username: req.session.admin?.username || "Admin User",
+      contactUs,
+      contactDetails,
+      messages
+    });
+
+  } catch (err) {
+    console.error("Error loading dashboard:", err);
+    res.status(500).send("Server error");
+  }
 };
 
 // Middleware to check authentication
+// adminController.js
 exports.isAuthenticated = (req, res, next) => {
-  if (!req.session.admin || !req.session.admin.id) {
+  if (req.session && req.session.admin) {
+    return next();
+  }
+
+  // ⚡ Only redirect if you are NOT already on /admin/login
+  if (req.path !== "/login") {
     return res.redirect("/admin/login");
   }
+
   next();
 };
+
 // GET change credentials page (optional if you render separately)
 exports.getChangeCredentials = async (req, res) => {
   try {
@@ -167,14 +180,14 @@ exports.postChangeCredentials = async (req, res) => {
 
 //     if (rows.length > 0) {
 //       await db.query(
-//         `UPDATE admin_social 
-//          SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=? 
+//         `UPDATE admin_social
+//          SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=?
 //          WHERE id=1`,
 //         [description, facebook, twitter, instagram, youtube, whatsapp]
 //       );
 //     } else {
 //       await db.query(
-//         `INSERT INTO admin_social (id, description, facebook, twitter, instagram, youtube, whatsapp) 
+//         `INSERT INTO admin_social (id, description, facebook, twitter, instagram, youtube, whatsapp)
 //          VALUES (1, ?, ?, ?, ?, ?, ?)`,
 //         [description, facebook, twitter, instagram, youtube, whatsapp]
 //       );

@@ -5,6 +5,7 @@ const fs = require("fs"); // Use promises version of fs
 const multer = require('multer');
 //const adminController = require("../controllers/adminController");
 const adminController = require('../controllers/adminController');
+router.use(adminController.isAuthenticated);
 const db = require("../../config/db");
 const contactUsRoute = require("./admincontactus");
 const { isAuthenticated } = adminController;
@@ -40,7 +41,7 @@ const upload = multer({ storage });
 
 // Use logo middleware for all admin routes
 // router.use(adminController.getAdminLogo);
-router.post("/dashboard/update-logo",adminController.isAuthenticated, upload.single("logo"), async (req, res) => {
+router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
   try {
     if (!req.file) {
       res.locals.logoError = "Please select a file";
@@ -49,7 +50,7 @@ router.post("/dashboard/update-logo",adminController.isAuthenticated, upload.sin
 
     // Remove old logo if exists and not default
     if (res.locals.logo && !res.locals.logo.includes("default")) {
-      const oldPath = path.join(__dirname, "../../public", res.locals.logo.replace("/",""));
+      const oldPath = path.join(__dirname, "../../public", res.locals.logo.replace("/", ""));
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
@@ -75,7 +76,7 @@ router.post("/login", adminController.postLogin);
 
 // Dashboard (protected)
 //router.get("/dashboard", adminController.isAuthenticated, adminController.getDashboard);
-router.use("/contact-us", adminController.isAuthenticated, contactUsRoute);
+router.use("/contact-us", contactUsRoute);
 // router.post("/contact-us/save", isAuthenticated, async (req, res) => {
 //     try {
 //         const { heading, description } = req.body;
@@ -98,7 +99,7 @@ router.use("/contact-us", adminController.isAuthenticated, contactUsRoute);
 // });
 // --- Home editor (GET) ---
 // --- Home editor (GET) ---
-router.get("/home", adminController.isAuthenticated, async (req, res) => {
+router.get("/home", async (req, res) => {
   try {
     // Query the database for the hero section content
     const [homeContentRows] = await db.query("SELECT * FROM home_page_content WHERE id = 1");
@@ -184,7 +185,7 @@ router.get("/home", adminController.isAuthenticated, async (req, res) => {
 });
 // --- Home hero section (POST) ---
 // --- Home hero section (POST) ---
-router.post("/home/hero", adminController.isAuthenticated, upload.array("banner_images"), async (req, res) => {
+router.post("/home/hero", upload.array("banner_images"), async (req, res) => {
   const { heading, sub_heading, description } = req.body;
   const newFiles = req.files || [];
 
@@ -213,7 +214,7 @@ router.post("/home/hero", adminController.isAuthenticated, upload.array("banner_
     // ... (error handling for file cleanup)
   }
 });// --- Home hero image delete (GET) ---
-router.get("/home/hero/delete-image", adminController.isAuthenticated, async (req, res) => {
+router.get("/home/hero/delete-image", async (req, res) => {
   const imagePath = req.query.path;
 
   if (!imagePath) {
@@ -237,7 +238,13 @@ router.get("/home/hero/delete-image", adminController.isAuthenticated, async (re
 
     // 4. Delete the file from the server
     const filePath = path.join(__dirname, "../../public", imagePath);
-    await fs.unlink(filePath);
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting image:", err);
+      } else {
+        console.log("Image deleted successfully");
+      }
+    });
 
     // 5. Redirect back to the home page
     res.redirect("/admin/home");
@@ -248,7 +255,7 @@ router.get("/home/hero/delete-image", adminController.isAuthenticated, async (re
 });
 
 // --- CTA update (POST) ---
-router.post("/home/cta", adminController.isAuthenticated, upload.single("cta_image"), async (req, res) => {
+router.post("/home/cta", upload.single("cta_image"), async (req, res) => {
   const { cta_heading, cta_text } = req.body;
   const newFile = req.file;
   let newImagePath = null;
@@ -263,7 +270,14 @@ router.post("/home/cta", adminController.isAuthenticated, upload.single("cta_ima
       newImagePath = `/images/${newFile.filename}`;
       if (currentImagePath) {
         const oldFilePath = path.join(__dirname, "../../public", currentImagePath);
-        await fs.unlink(oldFilePath).catch(err => console.error("Failed to delete old CTA image:", err));
+        // await fs.unlink(oldFilePath).catch(err => console.error("Failed to delete old CTA image:", err));
+        fs.unlink(oldFilePath, (err) => {
+  if (err) {
+  console.error("Error adding image:", err);
+  } else {
+    console.log("Image adding successfully");
+  }
+});
       }
     } else {
       // No new file, keep the old path
@@ -285,7 +299,7 @@ router.post("/home/cta", adminController.isAuthenticated, upload.single("cta_ima
     res.status(500).send("Server error occurred while updating the CTA section.");
   }
 });
-router.post("/home/counters", adminController.isAuthenticated, async (req, res) => {
+router.post("/home/counters", async (req, res) => {
   console.log("Counters POST body:", req.body); // ✅ debug
 
   try {
@@ -320,7 +334,7 @@ router.post("/home/counters", adminController.isAuthenticated, async (req, res) 
 
 
 // --- Update Gallery Content ---
-router.post("/home/gallery/update", adminController.isAuthenticated, async (req, res) => {
+router.post("/home/gallery/update", async (req, res) => {
   try {
     const { gallery_heading, gallery_description } = req.body;
 
@@ -338,7 +352,7 @@ router.post("/home/gallery/update", adminController.isAuthenticated, async (req,
 
 
 // GET route to display testimonials
-router.get('/home/testimonials', adminController.isAuthenticated, async (req, res) => {
+router.get('/home/testimonials', async (req, res) => {
   try {
     const [testimonialsContent] = await db.query('SELECT * FROM testimonial_content WHERE id = 1');
     const [testimonials] = await db.query('SELECT * FROM testimonials ORDER BY id');
@@ -359,7 +373,7 @@ router.get('/home/testimonials', adminController.isAuthenticated, async (req, re
 });
 
 // POST route to update the main testimonial heading and description
-router.post('/home/testimonials/update-text', adminController.isAuthenticated, async (req, res) => {
+router.post('/home/testimonials/update-text', async (req, res) => {
   const { testimonials_heading, testimonials_description } = req.body;
   try {
     await db.query('UPDATE testimonial_content SET heading = ?, description = ? WHERE id = 1', [testimonials_heading, testimonials_description]);
@@ -373,7 +387,7 @@ router.post('/home/testimonials/update-text', adminController.isAuthenticated, a
 });
 
 // --- Add new testimonial ---
-router.post("/home/testimonials/add", adminController.isAuthenticated, upload.single("testimonial_image"), async (req, res) => {
+router.post("/home/testimonials/add", upload.single("testimonial_image"), async (req, res) => {
   const { name, role, description } = req.body;
   const image_path = req.file ? `/images/testimonial/${req.file.filename}` : null;
 
@@ -395,7 +409,7 @@ router.post("/home/testimonials/add", adminController.isAuthenticated, upload.si
 
 
 // POST route to delete a testimonial card
-router.post('/home/testimonials/delete/:id', adminController.isAuthenticated, async (req, res) => {
+router.post('/home/testimonials/delete/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -429,7 +443,7 @@ router.post('/home/testimonials/delete/:id', adminController.isAuthenticated, as
 
 // POST route to edit an existing testimonial card
 // --- Update testimonial ---
-router.post('/home/testimonials/edit/:id', adminController.isAuthenticated, upload.single('testimonial_image'), async (req, res) => {
+router.post('/home/testimonials/edit/:id', upload.single('testimonial_image'), async (req, res) => {
   const { id } = req.params;
   const { name, role, description } = req.body;
   let image_path;
@@ -464,7 +478,7 @@ router.post('/home/testimonials/edit/:id', adminController.isAuthenticated, uplo
 
 // Change credentials (protected)
 // GET change credentials page
-router.get("/change-credentials", adminController.isAuthenticated, async (req, res) => {
+router.get("/change-credentials", async (req, res) => {
   try {
     const adminId = req.session.admin.id;
     const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
@@ -492,12 +506,12 @@ router.post("/change-credentials", isAuthenticated, adminController.postChangeCr
 
 // 📌 UPLOAD Gallery Images
 // =========================
-router.post("/home/gallery/upload",adminController.isAuthenticated, upload.array("gallery_images", 10), async (req, res) => {
+router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (req, res) => {
   try {
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
         // Save relative path for frontend use
-        const filePath = "/uploads/gallery/" + file.filename;
+        const filePath = "/images/" + file.filename;
         await db.query("INSERT INTO gallery_images (file_path) VALUES (?)", [filePath]);
       }
     }
@@ -511,7 +525,7 @@ router.post("/home/gallery/upload",adminController.isAuthenticated, upload.array
 // =========================
 // 📌 DELETE Gallery Image
 // =========================
-router.get("/home/gallery/delete-image/:id",adminController.isAuthenticated, async (req, res) => {
+router.get("/home/gallery/delete-image/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -555,7 +569,7 @@ router.get("/home/gallery/delete-image/:id",adminController.isAuthenticated, asy
 
 
 // POST route: update text and images
-router.post('/home/why-choose-us/update', adminController.isAuthenticated,
+router.post('/home/why-choose-us/update',
   upload.fields([
     { name: 'image_1', maxCount: 1 },
     { name: 'image_2', maxCount: 1 },
@@ -617,7 +631,7 @@ router.post('/home/why-choose-us/update', adminController.isAuthenticated,
     }
   });
 
-router.post("/update-social", isAuthenticated, async (req, res) => {
+router.post("/update-social", async (req, res) => {
   const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
 
   try {
@@ -679,7 +693,7 @@ router.post("/update-social", isAuthenticated, async (req, res) => {
 
 
 // --- Dashboard page ---
-router.get("/dashboard", adminController.isAuthenticated, async (req, res) => {
+router.get("/dashboard", async (req, res) => {
   try {
     // Existing queries
     const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
@@ -709,7 +723,7 @@ router.get("/dashboard", adminController.isAuthenticated, async (req, res) => {
 });
 
 // --- Update logo ---
-router.post("/dashboard/update-logo", adminController.isAuthenticated, upload.single("logo"), async (req, res) => {
+router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
   try {
     if (!req.file) {
       req.session.logoError = "Please select a file";
@@ -729,7 +743,7 @@ router.post("/dashboard/update-logo", adminController.isAuthenticated, upload.si
 });
 
 // --- Save Contact Us ---
-router.post("/contact-us/save", isAuthenticated, async (req, res) => {
+router.post("/contact-us/save", async (req, res) => {
   try {
     const { heading, description } = req.body;
 
@@ -756,7 +770,7 @@ router.post("/contact-us/save", isAuthenticated, async (req, res) => {
 });
 
 // --- Save Contact Details ---
-router.post("/contactus/contact-details/save", isAuthenticated, async (req, res) => {
+router.post("/contactus/contact-details/save", async (req, res) => {
   try {
     const { location_heading, location_text, phone_heading, phone_number, email_heading, email_address } = req.body;
 
