@@ -43,7 +43,7 @@ const upload = multer({ storage });
 router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
   try {
     if (!req.file) {
-      res.locals.logoError = "Please select a file";
+      req.session.logoError = "Please select a file";
       return res.redirect("/admin/dashboard");
     }
 
@@ -58,11 +58,11 @@ router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) =>
     // Update DB
     await db.query("UPDATE settings SET logo=? WHERE id=1", [newLogoPath]);
 
-    res.locals.logoSuccess = "Logo updated successfully!";
+    req.session.logoSuccess = "Logo updated successfully!";
     res.redirect("/admin/dashboard");
   } catch (err) {
     console.error(err);
-    res.locals.logoError = "Error updating logo";
+    req.session.logoError = "Error updating logo";
     res.redirect("/admin/dashboard");
   }
 });
@@ -213,6 +213,8 @@ router.post("/home/hero", upload.array("banner_images"), async (req, res) => {
     // ... (error handling for file cleanup)
   }
 });// --- Home hero image delete (GET) ---
+
+
 router.get("/home/hero/delete-image", async (req, res) => {
   const imagePath = req.query.path;
 
@@ -514,6 +516,7 @@ router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (r
         await db.query("INSERT INTO gallery_images (file_path) VALUES (?)", [filePath]);
       }
     }
+    req.session.logoError = "";
     res.redirect("/admin/home");
   } catch (err) {
     console.error("Error uploading gallery images:", err);

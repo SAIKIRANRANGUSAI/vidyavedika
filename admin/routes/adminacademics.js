@@ -4,7 +4,8 @@ const router = express.Router();
 const db = require("../../config/db");
 const multer = require("multer");
 const path = require("path");
-
+router.use(adminController.isAuthenticated);
+//router.use(adminController.isAuthenticated);
 // Multer setup
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(__dirname, '../../public/images')),
@@ -16,7 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Apply authentication middleware to all routes
-router.use(adminController.isAuthenticated);
+
 
 /* ===============================
    GET Academics Main Page
