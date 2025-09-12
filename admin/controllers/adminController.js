@@ -32,6 +32,7 @@ exports.getLogin = async (req, res) => {
 
 // POST login
 exports.postLogin = async (req, res) => {
+  console.log("1");
   const { username, password } = req.body;
 
   try {
@@ -117,23 +118,82 @@ exports.postLogin = async (req, res) => {
 //   return res.redirect("/admin/login");
 // };
 
+// exports.isAuthenticated = (req, res, next) => {
+//   console.log("Checking authentication for:", req.path);
+//   try {
+//     const token = req.cookies?.token; // ✅ safer access
+
+//     if (!token) {
+//       return res.redirect("/admin/login");
+//     }
+
+//     // ✅ Verify with secret from .env
+//     const decoded = jwt.verify(token, "12345678");
+
+//     // Attach decoded user to request
+//     req.user = decoded;
+
+//     next();
+//   } catch (err) {
+//     console.error("Auth error:", err.message);
+//     return res.redirect("/admin/login");
+//   }
+// };
+// exports.isAuthenticated = (req, res, next) => {
+//   const token = req.cookies.token;
+
+//   if (!token) {
+//     return res.redirect("/admin/login");
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded; // attach user data to request
+//     return next();
+//   } catch (err) {
+//     return res.redirect("/admin/login");
+//   }
+// };
+
+
+// exports.isAuthenticated = (req, res, next) => {
+  
+//   const token = req.cookies.token;
+//   console.log("2");
+//   if (!token) {
+//     return res.redirect("/admin/login");
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, "12345678");
+//     req.user = decoded; // attach user data to request
+//     return next();
+//   } catch (err) {
+//     return res.redirect("/admin/login");
+//   }
+// };
+
 exports.isAuthenticated = (req, res, next) => {
+  // Public routes that should bypass auth
+  if (
+    req.path === "/login" ||
+    req.path === "/logout" ||
+    req.path.startsWith("/static")
+  ) {
+    return next();
+  }
+
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.redirect("/admin/login");
+  }
+
   try {
-    const token = req.cookies?.token; // ✅ safer access
-
-    if (!token) {
-      return res.redirect("/admin/login");
-    }
-
-    // ✅ Verify with secret from .env
-    const decoded = jwt.verify(token, "12345678");
-
-    // Attach decoded user to request
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "12345678");
     req.user = decoded;
-
-    next();
+    return next();
   } catch (err) {
-    console.error("Auth error:", err.message);
     return res.redirect("/admin/login");
   }
 };

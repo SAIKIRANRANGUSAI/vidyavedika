@@ -197,6 +197,8 @@ app.use("/admin", adminAboutRoutes);
 
 // Logout route
 app.get("/admin/logout", (req, res) => {
+    res.clearCookie("token");
+    // res.redirect("/admin/login");
     req.session.destroy();
     res.redirect("/admin/login");
 });
