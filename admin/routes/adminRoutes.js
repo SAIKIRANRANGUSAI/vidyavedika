@@ -727,24 +727,24 @@ router.get("/dashboard", async (req, res) => {
 });
 
 // --- Update logo ---
-router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
-  try {
-    if (!req.file) {
-      req.session.logoError = "Please select a file";
-      return res.redirect("/admin/dashboard");
-    }
+// router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       req.session.logoError = "Please select a file";
+//       return res.redirect("/admin/dashboard");
+//     }
 
-    const logoPath = "/images/" + req.file.filename; // matches public/images
-    await db.query("UPDATE settings SET logo = ? WHERE id = 2", [logoPath]);
+//     const logoPath = "/images/" + req.file.filename; // matches public/images
+//     await db.query("UPDATE settings SET logo = ? WHERE id = 2", [logoPath]);
 
-    req.session.logoSuccess = "Logo updated successfully!";
-    res.redirect("/admin/dashboard");
-  } catch (err) {
-    console.error("Error updating logo:", err);
-    req.session.logoError = "Failed to update logo";
-    res.redirect("/admin/dashboard");
-  }
-});
+//     req.session.logoSuccess = "Logo updated successfully!";
+//     res.redirect("/admin/dashboard");
+//   } catch (err) {
+//     console.error("Error updating logo:", err);
+//     req.session.logoError = "Failed to update logo";
+//     res.redirect("/admin/dashboard");
+//   }
+// });
 
 // --- Save Contact Us ---
 router.post("/contact-us/save", async (req, res) => {
