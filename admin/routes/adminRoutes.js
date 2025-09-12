@@ -7,7 +7,7 @@ const adminController = require('../controllers/adminController');
 router.use(adminController.isAuthenticated);
 const db = require("../../config/db");
 const contactUsRoute = require("./admincontactus");
-const { isAuthenticated } = adminController;
+//const { isAuthenticated } = adminController;
 // Place this at the very top of adminRoutes.js
 
 
