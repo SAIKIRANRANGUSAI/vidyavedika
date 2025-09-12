@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const adminController = require("../controllers/adminController");
+router.use(adminController.isAuthenticated);
 
 
 // ------------------- Courses -------------------
@@ -21,7 +22,7 @@ const coursesStorage = multer.diskStorage({
 const uploadCourses = multer({ storage: coursesStorage });
 
 // GET Course page (admin)
-router.get("/",adminController.isAuthenticated, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM course_section LIMIT 1");
         const section = rows.length ? rows[0] : {};
@@ -41,7 +42,7 @@ router.get("/",adminController.isAuthenticated, async (req, res) => {
 });
 
 // Save course section
-router.post("/save",adminController.isAuthenticated, async (req, res) => {
+router.post("/save", async (req, res) => {
     try {
         const { main_heading, main_description } = req.body;
         const [rows] = await db.query("SELECT id FROM course_section LIMIT 1");
@@ -66,7 +67,7 @@ router.post("/save",adminController.isAuthenticated, async (req, res) => {
 });
 
 // Add new course
-router.post("/add",adminController.isAuthenticated, uploadCourses.single("image"), async (req, res) => {
+router.post("/add", uploadCourses.single("image"), async (req, res) => {
     try {
         const { heading, description } = req.body;
         const image = req.file ? "/uploads/courses/" + req.file.filename : null;
@@ -83,7 +84,7 @@ router.post("/add",adminController.isAuthenticated, uploadCourses.single("image"
 });
 
 // Edit course
-router.post("/edit/:id",adminController.isAuthenticated, uploadCourses.single("image"), async (req, res) => {
+router.post("/edit/:id", uploadCourses.single("image"), async (req, res) => {
     try {
         const { id } = req.params;
         const { heading, description } = req.body;
@@ -117,7 +118,7 @@ router.post("/edit/:id",adminController.isAuthenticated, uploadCourses.single("i
 });
 
 // Delete course
-router.post("/delete/:id",adminController.isAuthenticated, async (req, res) => {
+router.post("/delete/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const [rows] = await db.query("SELECT image FROM courses WHERE id=?", [id]);
@@ -147,7 +148,7 @@ const courseViewStorage = multer.diskStorage({
 const uploadCourseView = multer({ storage: courseViewStorage });
 
 // GET Course View admin page
-router.get("/view",adminController.isAuthenticated, async (req, res) => {
+router.get("/view", async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM course_section LIMIT 1");
         const section = rows.length ? rows[0] : {};
@@ -165,7 +166,7 @@ router.get("/view",adminController.isAuthenticated, async (req, res) => {
 });
 
 // Add Course View
-router.post("/view/add",adminController.isAuthenticated, uploadCourseView.single("banner_image"), async (req, res) => {
+router.post("/view/add", uploadCourseView.single("banner_image"), async (req, res) => {
     try {
         const { course_id, content } = req.body;
         const banner_image = req.file ? "/uploads/course-view/" + req.file.filename : null;
@@ -182,7 +183,7 @@ router.post("/view/add",adminController.isAuthenticated, uploadCourseView.single
 });
 
 // Edit Course View
-router.post("/view/edit/:id",adminController.isAuthenticated, uploadCourseView.single("banner_image"), async (req, res) => {
+router.post("/view/edit/:id", uploadCourseView.single("banner_image"), async (req, res) => {
     try {
         const { id } = req.params;
         const { course_id, content } = req.body;
@@ -216,7 +217,7 @@ router.post("/view/edit/:id",adminController.isAuthenticated, uploadCourseView.s
 });
 
 // Delete Course View
-router.post("/view/delete/:id",adminController.isAuthenticated, async (req, res) => {
+router.post("/view/delete/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const [rows] = await db.query("SELECT banner_image FROM course_view WHERE id=?", [id]);

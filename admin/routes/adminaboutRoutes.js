@@ -1,10 +1,16 @@
 const express = require("express");
+
 const adminController = require("../controllers/adminController");
+
 
 const router = express.Router();
 const db = require("../../config/db");
 const multer = require("multer");
 const path = require("path");
+
+
+//const adminController = require("../controllers/adminController");
+router.use(adminController.isAuthenticated);
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -19,7 +25,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-router.get("/about-us", adminController.isAuthenticated, async (req, res) => {
+
+router.get("/about-us", async (req, res) => {
+
     try {
         const [aboutRows] = await db.query("SELECT * FROM about_us WHERE id = 1");
         const [vmRows] = await db.query("SELECT * FROM vision_mission WHERE id = 1");
@@ -50,7 +58,11 @@ router.get("/about-us", adminController.isAuthenticated, async (req, res) => {
 
 // POST About Us update
 router.post(
-    "/about-us",adminController.isAuthenticated,
+
+    "/about-us",
+
+    
+
     upload.fields([{ name: "image1" }, { name: "image2" }]),
     async (req, res) => {
         try {
@@ -87,7 +99,11 @@ router.post(
    POST Vision & Mission Update
 ====================== */
 router.post(
-    "/vision-mission",adminController.isAuthenticated,
+
+    "/vision-mission",
+
+   
+
     upload.fields([{ name: "vision_image" }, { name: "mission_image" }]),
     async (req, res) => {
         try {
@@ -121,7 +137,10 @@ router.post(
     }
 );
 // POST Team Section (update or insert if missing)
-router.post("/team-section",adminController.isAuthenticated, async (req, res) => {
+
+router.post("/team-section", async (req, res) => {
+
+
     try {
         console.log("POST /admin/team-section body:", req.body);
 
@@ -204,7 +223,11 @@ router.post("/team-members/delete/:id", async (req, res) => {
     }
 });
 
-router.post("/md-message",adminController.isAuthenticated, async (req, res) => {
+
+
+
+router.post("/md-message", async (req, res) => {
+
     try {
         const { title, subtitle, greeting, content, director_name, designation, institute_name } = req.body;
 
@@ -222,40 +245,46 @@ router.post("/md-message",adminController.isAuthenticated, async (req, res) => {
     }
 });
 
-router.post('/journey-history',adminController.isAuthenticated, upload.fields([{ name: 'image1' }, { name: 'image2' }]), async (req, res) => {
-    try {
-        const { heading, description1, description2 } = req.body;
-        const images = req.files;
 
-        let updateQuery = 'UPDATE journey_history SET heading = ?, description1 = ?, description2 = ?';
-        const params = [heading, description1, description2];
+    router.post('/journey-history', upload.fields([{ name: 'image1' }, { name: 'image2' }]), async (req, res) => {
 
-        if (images?.image1) {
-            updateQuery += ', image1 = ?';
-            params.push('/images/' + images.image1[0].filename);
+        try {
+            const { heading, description1, description2 } = req.body;
+            const images = req.files;
+
+            let updateQuery = 'UPDATE journey_history SET heading = ?, description1 = ?, description2 = ?';
+            const params = [heading, description1, description2];
+
+            if (images?.image1) {
+                updateQuery += ', image1 = ?';
+                params.push('/images/' + images.image1[0].filename);
+            }
+            if (images?.image2) {
+                updateQuery += ', image2 = ?';
+                params.push('/images/' + images.image2[0].filename);
+            }
+
+            updateQuery += ' WHERE id = 1';
+            await db.query(updateQuery, params);
+
+            res.redirect('/admin/about-us');
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Error updating Journey / History');
         }
-        if (images?.image2) {
-            updateQuery += ', image2 = ?';
-            params.push('/images/' + images.image2[0].filename);
-        }
-
-        updateQuery += ' WHERE id = 1';
-        await db.query(updateQuery, params);
-
-        res.redirect('/admin/about-us');
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error updating Journey / History');
-    }
-});
+    });
 
 
-router.post('/accreditations-achievements',adminController.isAuthenticated, upload.single('image'), async (req, res) => {
-    try {
-        const { heading, description } = req.body;
-        const imagePath = req.file ? '/images/' + req.file.filename : null;
 
-        let query = `
+   
+
+        router.post('/accreditations-achievements', upload.single('image'), async (req, res) => {
+
+            try {
+                const { heading, description } = req.body;
+                const imagePath = req.file ? '/images/' + req.file.filename : null;
+
+                let query = `
             INSERT INTO accreditations_achievements (id, heading, description, image)
             VALUES (1, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
@@ -264,45 +293,48 @@ router.post('/accreditations-achievements',adminController.isAuthenticated, uplo
                 image = IF(VALUES(image) IS NOT NULL, VALUES(image), image)
         `;
 
-        await db.query(query, [heading, description, imagePath]);
+                await db.query(query, [heading, description, imagePath]);
 
-        res.redirect('/admin/about-us');
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error updating Accreditations & Achievements');
-    }
-});
+                res.redirect('/admin/about-us');
+            } catch (err) {
+                console.error(err);
+                res.status(500).send('Error updating Accreditations & Achievements');
+            }
+        });
 
-// --- Middleware: fetch logo for all admin pages ---
-router.use(async (req, res, next) => {
-    try {
-        const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
-        res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-    } catch (err) {
-        console.error("Error fetching logo:", err);
-        res.locals.logo = "/admin/static/images/logo.png"; // fallback
-    }
-    next();
-});
+        // --- Middleware: fetch logo for all admin pages ---
+        router.use(async (req, res, next) => {
+            try {
+                const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+                res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+            } catch (err) {
+                console.error("Error fetching logo:", err);
+                res.locals.logo = "/admin/static/images/logo.png"; // fallback
+            }
+            next();
+        });
 
 
-// --- Admin Settings Page (upload logo) ---
-router.get("/settings",adminController.isAuthenticated, async (req, res) => {
-    const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
-    const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-    res.render("admin/settings", { logo });
-});
+        // --- Admin Settings Page (upload logo) ---
 
-// --- Update Logo ---
-router.post("/settings/update-logo", upload.single("logo"), async (req, res) => {
-    try {
-        const logoPath = "/uploads/" + req.file.filename;
-        await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
-        res.redirect("/admin/settings");
-    } catch (err) {
-        console.error("Error updating logo:", err);
-        res.status(500).send("Error updating logo");
-    }
-});
 
-module.exports = router;
+            router.get("/settings", async (req, res) => {
+
+                const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+                const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+                res.render("admin/settings", { logo });
+            });
+
+            // --- Update Logo ---
+            router.post("/settings/update-logo", upload.single("logo"), async (req, res) => {
+                try {
+                    const logoPath = "/uploads/" + req.file.filename;
+                    await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
+                    res.redirect("/admin/settings");
+                } catch (err) {
+                    console.error("Error updating logo:", err);
+                    res.status(500).send("Error updating logo");
+                }
+            });
+
+            module.exports = router;

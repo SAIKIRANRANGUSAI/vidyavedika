@@ -3,7 +3,6 @@ const router = express.Router();
 const path = require("path");
 const fs = require("fs"); // Use promises version of fs
 const multer = require('multer');
-//const adminController = require("../controllers/adminController");
 const adminController = require('../controllers/adminController');
 router.use(adminController.isAuthenticated);
 const db = require("../../config/db");
@@ -499,10 +498,10 @@ router.get("/change-credentials", async (req, res) => {
 });
 
 // GET credentials (optional)
-router.get("/change-credentials", isAuthenticated, adminController.getChangeCredentials);
+router.get("/change-credentials", adminController.getChangeCredentials);
 
 // POST credentials
-router.post("/change-credentials", isAuthenticated, adminController.postChangeCredentials);
+router.post("/change-credentials", adminController.postChangeCredentials);
 
 // 📌 UPLOAD Gallery Images
 // =========================

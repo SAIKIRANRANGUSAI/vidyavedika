@@ -5,9 +5,9 @@ const adminController = require("../controllers/adminController");
 //const db = require("../../config/db");
 
 const db = require("../../config/db");
-
+router.use(adminController.isAuthenticated);
 // GET dashboard with both sections
-router.get("/",adminController.isAuthenticated, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
         const contactUs = contactRows[0] || {};
@@ -28,7 +28,7 @@ router.get("/",adminController.isAuthenticated, async (req, res) => {
 
 
 // POST save Contact Us heading & description
-router.post("/save",adminController.isAuthenticated, async (req, res) => {
+router.post("/save", async (req, res) => {
     try {
         const { heading, description } = req.body;
         const [existing] = await db.query("SELECT id FROM get_in_touch LIMIT 1");
@@ -53,7 +53,7 @@ router.post("/save",adminController.isAuthenticated, async (req, res) => {
 });
 
 // POST save Contact Details
-router.post("/contact-details/save",adminController.isAuthenticated, async (req, res) => {
+router.post("/contact-details/save", async (req, res) => {
     try {
         const data = {
             location_heading: req.body.location_heading,
@@ -95,7 +95,7 @@ router.post("/contact-details/save",adminController.isAuthenticated, async (req,
 // });
 
 // Save messages from website
-router.post("/contact-us/send",adminController.isAuthenticated, async (req, res) => {
+router.post("/contact-us/send", async (req, res) => {
     try {
         const { name, email, phone, message } = req.body;
 

@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
+router.use(adminController.isAuthenticated);
 
 const db = require("../config/db");
 
 // POST route
-router.post("/contact-us/send",adminController.isAuthenticated, async (req, res) => {
+router.post("/contact-us/send", async (req, res) => {
     try {
         const { name, email, phone, message } = req.body;
 

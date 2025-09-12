@@ -5,6 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const adminController = require("../controllers/adminController");
+router.use(adminController.isAuthenticated);
 
 
 // Multer setup for image uploads
@@ -47,7 +48,7 @@ const culturalStorage = multer.diskStorage({
 const uploadCultural = multer({ storage: culturalStorage });
 // ---------------- GET Hostel & Accommodation ----------------
 // GET Student Life page
-router.get("/",adminController.isAuthenticated, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         // Fetch Hostel & Accommodation
         const [hostelRows] = await db.query("SELECT * FROM hostel_accommodation LIMIT 1");
@@ -80,7 +81,7 @@ router.get("/",adminController.isAuthenticated, async (req, res) => {
 
 
 // ---------------- POST Save Section ----------------
-router.post("/save",adminController.isAuthenticated, upload.fields([
+router.post("/save", upload.fields([
     { name: "item1_image" },
     { name: "item2_image" },
     { name: "item3_image" },
@@ -122,7 +123,7 @@ router.post("/save",adminController.isAuthenticated, upload.fields([
 
 
 // ---------------- POST Library & Labs Save ----------------
-router.post("/save-library",adminController.isAuthenticated, async (req, res) => {
+router.post("/save-library", async (req, res) => {
     try {
         // Prepare data for Library & Labs
         const data = {
@@ -149,7 +150,7 @@ router.post("/save-library",adminController.isAuthenticated, async (req, res) =>
 });
 
 //POST Save Sports & Extracurriculars
-router.post("/save-sports",adminController.isAuthenticated, uploadSports.fields([
+router.post("/save-sports", uploadSports.fields([
     { name: "image1" },
     { name: "image2" }
 ]), async (req, res) => {
@@ -181,7 +182,7 @@ router.post("/save-sports",adminController.isAuthenticated, uploadSports.fields(
 });
 
 // POST Save Cultural Activities
-router.post("/save-cultural",adminController.isAuthenticated, uploadCultural.fields([
+router.post("/save-cultural", uploadCultural.fields([
     { name: "activity_image1" },
     { name: "activity_image2" }
 ]), async (req, res) => {

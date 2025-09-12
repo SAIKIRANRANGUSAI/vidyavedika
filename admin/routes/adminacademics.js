@@ -1,6 +1,5 @@
 const express = require("express");
 const adminController = require("../controllers/adminController");
-
 const router = express.Router();
 const db = require("../../config/db");
 const multer = require("multer");
@@ -16,10 +15,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// Apply authentication middleware to all routes
+router.use(adminController.isAuthenticated);
+
 /* ===============================
    GET Academics Main Page
 ================================= */
-router.get("/",adminController.isAuthenticated, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const [academicsRows] = await db.query("SELECT * FROM academics_section LIMIT 1");
         const academics = academicsRows[0] || {};
@@ -43,7 +45,7 @@ router.get("/",adminController.isAuthenticated, async (req, res) => {
 /* ===============================
    SAVE Academics Section
 ================================= */
-router.post("/academics/save",adminController.isAuthenticated, upload.single("image"), async (req, res) => {
+router.post("/academics/save", upload.single("image"), async (req, res) => {
     try {
         const { heading, sub_heading, list_content } = req.body;
         const imagePath = req.file ? "/images/" + req.file.filename : null;
@@ -75,7 +77,7 @@ router.post("/academics/save",adminController.isAuthenticated, upload.single("im
 /* ===============================
    SAVE Exam Section
 ================================= */
-router.post("/exam/save",adminController.isAuthenticated, upload.fields([
+router.post("/exam/save", upload.fields([
     { name: "item1_image" }, { name: "item2_image" },
     { name: "item3_image" }, { name: "item4_image" },
     { name: "item5_image" }
@@ -145,7 +147,7 @@ router.post("/exam/save",adminController.isAuthenticated, upload.fields([
 /* ===============================
    SAVE Admissions Section
 ================================= */
-router.post("/admissions/save",adminController.isAuthenticated, upload.fields([
+router.post("/admissions/save", upload.fields([
     { name: "image1" }, { name: "image2" }, { name: "image3" }
 ]), async (req, res) => {
     try {
@@ -185,7 +187,7 @@ router.post("/admissions/save",adminController.isAuthenticated, upload.fields([
 /* ===============================
    SAVE Academic Calendar
 ================================= */
-router.post("/calendar/save",adminController.isAuthenticated, async (req, res) => {
+router.post("/calendar/save", async (req, res) => {
     try {
         const { heading, description, content } = req.body;
 
