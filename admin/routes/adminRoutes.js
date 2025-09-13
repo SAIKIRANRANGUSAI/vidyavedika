@@ -48,7 +48,7 @@ const upload = multer({ storage });
 router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
   try {
     if (!req.file) {
-      req.session.logoError = "Please select a file";
+      res.cookie.logoError = "Please select a file";
       return res.redirect("/admin/dashboard");
     }
 
@@ -63,11 +63,11 @@ router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) =>
     // Update DB
     await db.query("UPDATE settings SET logo=? WHERE id=2", [newLogoPath]);
 
-    req.session.logoSuccess = "Logo updated successfully!";
+    res.cookie.logoSuccess = "Logo updated successfully!";
     res.redirect("/admin/dashboard");
   } catch (err) {
     console.error(err);
-    req.session.logoError = "Error updating logo";
+    res.cookie.logoError = "Error updating logo";
     res.redirect("/admin/dashboard");
   }
 });
@@ -361,12 +361,12 @@ router.get('/home/testimonials', async (req, res) => {
     const [testimonials] = await db.query('SELECT * FROM testimonials ORDER BY id');
 
     // Ensure success message is retrieved from a session or query parameter if coming from a redirect
-    const successMessage = req.session.successMessage || null;
-    const errorMessage = req.session.errorMessage || null;
+    const successMessage = res.cookie.successMessage || null;
+    const errorMessage = res.cookie.errorMessage || null;
 
     // Clear the messages from the session
-    delete req.session.successMessage;
-    delete req.session.errorMessage;
+    delete res.cookie.successMessage;
+    delete res.cookie.errorMessage;
 
     res.redirect("/admin/home");
   } catch (err) {
@@ -380,11 +380,11 @@ router.post('/home/testimonials/update-text', async (req, res) => {
   const { testimonials_heading, testimonials_description } = req.body;
   try {
     await db.query('UPDATE testimonial_content SET heading = ?, description = ? WHERE id = 1', [testimonials_heading, testimonials_description]);
-    req.session.successMessage = "Testimonial section text updated successfully!";
+    res.cookie.successMessage = "Testimonial section text updated successfully!";
     res.redirect('/admin/home/testimonials');
   } catch (err) {
     console.error('Error updating testimonial text:', err);
-    req.session.errorMessage = "Failed to update testimonial section text.";
+    res.cookie.errorMessage = "Failed to update testimonial section text.";
     res.redirect('/admin/home/testimonials');
   }
 });
@@ -395,17 +395,17 @@ router.post("/home/testimonials/add", upload.single("testimonial_image"), async 
   const image_path = req.file ? `/images/${req.file.filename}` : null;
 
   if (!image_path) {
-    req.session.errorMessage = "Image upload is required.";
+    res.cookie.errorMessage = "Image upload is required.";
     return res.redirect("/admin/home/testimonials");
   }
 
   try {
     await db.query("INSERT INTO testimonials (name, role, description, image_path) VALUES (?, ?, ?, ?)", [name, role, description, image_path]);
-    req.session.successMessage = "New testimonial added successfully!";
+    res.cookie.successMessage = "New testimonial added successfully!";
     res.redirect("/admin/home/testimonials");
   } catch (err) {
     console.error(err);
-    req.session.errorMessage = "Failed to add new testimonial.";
+    res.cookie.errorMessage = "Failed to add new testimonial.";
     res.redirect("/admin/home/testimonials");
   }
 });
@@ -435,11 +435,11 @@ router.post('/home/testimonials/delete/:id', async (req, res) => {
     }
 
     await db.query('DELETE FROM testimonials WHERE id = ?', [id]);
-    req.session.successMessage = "Testimonial deleted successfully!";
+    res.cookie.successMessage = "Testimonial deleted successfully!";
     res.redirect('/admin/home/testimonials');
   } catch (err) {
     console.error('Error deleting testimonial:', err);
-    req.session.errorMessage = "Failed to delete testimonial.";
+    res.cookie.errorMessage = "Failed to delete testimonial.";
     res.redirect('/admin/home/testimonials');
   }
 });
@@ -470,11 +470,11 @@ router.post('/home/testimonials/edit/:id', upload.single('testimonial_image'), a
     }
 
     await db.query('UPDATE testimonials SET name = ?, role = ?, description = ?, image_path = ? WHERE id = ?', [name, role, description, image_path, id]);
-    req.session.successMessage = 'Testimonial updated successfully!';
+    res.cookie.successMessage = 'Testimonial updated successfully!';
     res.redirect('/admin/home/testimonials');
   } catch (err) {
     console.error('Error updating testimonial:', err);
-    req.session.errorMessage = 'Failed to update testimonial.';
+    res.cookie.errorMessage = 'Failed to update testimonial.';
     res.redirect('/admin/home/testimonials');
   }
 });
@@ -483,7 +483,7 @@ router.post('/home/testimonials/edit/:id', upload.single('testimonial_image'), a
 // GET change credentials page
 router.get("/change-credentials", async (req, res) => {
   try {
-    const adminId = req.session.admin.id;
+    const adminId = res.cookie.admin.id;
     const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
     const currentUsername = rows[0]?.username || "";
     res.render("admin/change-credentials", {
@@ -494,7 +494,7 @@ router.get("/change-credentials", async (req, res) => {
   } catch (err) {
     console.error("Error loading change credentials page:", err);
     res.render("admin/change-credentials", {
-      username: req.session.admin.username,
+      username: res.cookie.admin.username,
       error: "Failed to load admin details",
       success: null
     });
@@ -518,7 +518,7 @@ router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (r
         await db.query("INSERT INTO gallery_images (file_path) VALUES (?)", [filePath]);
       }
     }
-    req.session.logoError = "";
+    res.cookie.logoError = "";
     res.redirect("/admin/home");
   } catch (err) {
     console.error("Error uploading gallery images:", err);
@@ -626,11 +626,11 @@ router.post('/home/why-choose-us/update',
       query += ' WHERE id=1';
       await db.query(query, params);
 
-      req.session.successMessage = 'Section updated successfully!';
+      res.cookie.successMessage = 'Section updated successfully!';
       res.redirect('/admin/home');
     } catch (err) {
       console.error(err);
-      req.session.errorMessage = 'Failed to update section.';
+      res.cookie.errorMessage = 'Failed to update section.';
       res.redirect('/admin/home');
     }
   });
@@ -678,18 +678,18 @@ router.post("/update-social", async (req, res) => {
 // router.post("/dashboard/update-logo", isAuthenticated, upload.single("logo"), async (req, res) => {
 //     try {
 //         if (!req.file) {
-//             req.session.logoError = "Please select a file";
+//             res.cookie.logoError = "Please select a file";
 //             return res.redirect("/admin/dashboard");
 //         }
 
 //         const logoPath = "/images/" + req.file.filename; // matches public/images
 //         await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
 
-//         req.session.logoSuccess = "Logo updated successfully!";
+//         res.cookie.logoSuccess = "Logo updated successfully!";
 //         res.redirect("/admin/dashboard");
 //     } catch (err) {
 //         console.error("Error updating logo:", err);
-//         req.session.logoError = "Failed to update logo";
+//         res.cookie.logoError = "Failed to update logo";
 //         res.redirect("/admin/dashboard");
 //     }
 // });
@@ -713,7 +713,7 @@ router.get("/dashboard", async (req, res) => {
     const social = socialRows[0] || {};
 
     res.render("dashboard", {
-      username: req.session.username || "Admin User",
+      username: res.cookie.username || "Admin User",
       contactUs,
       contactDetails,
       messages,
@@ -730,18 +730,18 @@ router.get("/dashboard", async (req, res) => {
 // router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) => {
 //   try {
 //     if (!req.file) {
-//       req.session.logoError = "Please select a file";
+//       res.cookie.logoError = "Please select a file";
 //       return res.redirect("/admin/dashboard");
 //     }
 
 //     const logoPath = "/images/" + req.file.filename; // matches public/images
 //     await db.query("UPDATE settings SET logo = ? WHERE id = 2", [logoPath]);
 
-//     req.session.logoSuccess = "Logo updated successfully!";
+//     res.cookie.logoSuccess = "Logo updated successfully!";
 //     res.redirect("/admin/dashboard");
 //   } catch (err) {
 //     console.error("Error updating logo:", err);
-//     req.session.logoError = "Failed to update logo";
+//     res.cookie.logoError = "Failed to update logo";
 //     res.redirect("/admin/dashboard");
 //   }
 // });
