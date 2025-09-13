@@ -175,7 +175,7 @@ app.set("view engine", "ejs");
 //         if (!match)
 //             return res.render("login", { logo: "/admin/static/images/logo.png", error: "Invalid username or password" });
 
-//         req.session.admin = { id: rows[0].id, username: rows[0].username };
+//         res.cookie.admin = { id: rows[0].id, username: rows[0].username };
 //         res.redirect("/admin/dashboard");
 //     } catch (err) {
 //         console.error("❌ Login error:", err);
@@ -199,7 +199,7 @@ app.use("/admin", adminAboutRoutes);
 app.get("/admin/logout", (req, res) => {
     res.clearCookie("token");
     // res.redirect("/admin/login");
-    req.session.destroy();
+    res.cookie.destroy();
     res.redirect("/admin/login");
 });
 // ----------------------------------------------------------- //
@@ -251,6 +251,6 @@ app.get('/course-view', (req, res) => {
 });
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
 module.exports = app;

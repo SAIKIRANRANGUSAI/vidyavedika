@@ -67,7 +67,7 @@ exports.postLogin = async (req, res) => {
 
 // Middleware to protect routes
 // function isAuthenticated(req, res, next) {
-//   if (req.session && req.session.admin) {
+//   if (res.cookie && res.cookie.admin) {
 //     return next(); // ✅ logged in
 //   }
 //   return res.redirect("/admin/login"); // ❌ not logged in
@@ -91,7 +91,7 @@ exports.postLogin = async (req, res) => {
 //     const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
 //     res.render("dashboard", {
-//       username: req.session.admin?.username || "Admin User",
+//       username: res.cookie.admin?.username || "Admin User",
 //       contactUs,
 //       contactDetails,
 //       messages
@@ -106,7 +106,7 @@ exports.postLogin = async (req, res) => {
 // Middleware to check authentication
 // adminController.js
 // exports.isAuthenticated = (req, res, next) => {
-//   if (req.session && req.session.admin) {
+//   if (res.cookie && res.cookie.admin) {
 //     return next();
 //   }
 
@@ -201,19 +201,19 @@ exports.isAuthenticated = (req, res, next) => {
 // GET change credentials page (optional if you render separately)
 exports.getChangeCredentials = async (req, res) => {
   try {
-    const adminId = req.session.admin.id;
+    const adminId = res.cookie.admin.id;
     const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
     const currentUsername = rows[0]?.username || "";
     res.render("admin/dashboard", { username: currentUsername, error: null, success: null });
   } catch (err) {
     console.error(err);
-    res.render("admin/dashboard", { username: req.session.admin.username, error: "Failed to load admin details", success: null });
+    res.render("admin/dashboard", { username: res.cookie.admin.username, error: "Failed to load admin details", success: null });
   }
 };
 
 exports.postChangeCredentials = async (req, res) => {
   const { newUsername, currentPassword, newPassword, confirmNewPassword } = req.body;
-  const adminId = req.session.admin.id;
+  const adminId = res.cookie.admin.id;
 
   try {
     const [rows] = await db.query("SELECT password FROM admins WHERE id = ?", [adminId]);
@@ -229,7 +229,7 @@ exports.postChangeCredentials = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await db.query("UPDATE admins SET username = ?, password = ? WHERE id = ?", [newUsername, hashedPassword, adminId]);
 
-    req.session.admin.username = newUsername;
+    res.cookie.admin.username = newUsername;
 
     return res.json({ success: true, message: "Credentials updated successfully!" });
   } catch (err) {
@@ -244,7 +244,7 @@ exports.postChangeCredentials = async (req, res) => {
 //     const [rows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
 //     const social = rows[0] || {};
 //     res.render("admin/dashboard", {
-//       admin: req.session.admin,
+//       admin: res.cookie.admin,
 //       social,
 //       socialError: null,
 //       socialSuccess: null,
@@ -254,7 +254,7 @@ exports.postChangeCredentials = async (req, res) => {
 //   } catch (err) {
 //     console.error(err);
 //     res.render("admin/dashboard", {
-//       admin: req.session.admin,
+//       admin: res.cookie.admin,
 //       social: {},
 //       socialError: "Failed to load social links",
 //       socialSuccess: null,
