@@ -3,6 +3,8 @@ const router = express.Router();
 const db = require("../config/db"); // adjust path if needed
 const DEFAULT_IMAGE = "/images/default.png";
 
+
+
 // GET /about (front-end About Us page)
 router.get("/about", async (req, res) => {
     try {
