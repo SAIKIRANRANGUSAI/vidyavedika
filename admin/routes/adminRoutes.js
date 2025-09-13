@@ -2,9 +2,13 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const fs = require("fs"); // Use promises version of fs
+// Multer memory storage (no disk writes)
 const multer = require('multer');
-const adminController = require('../controllers/adminController');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
+const adminController = require('../controllers/adminController');
+const  cloudinary= require("../../config/cloudinary");
 const db = require("../../config/db");
 const contactUsRoute = require("./admincontactus");
 //const { isAuthenticated } = adminController;
@@ -19,18 +23,18 @@ router.use(adminController.isAuthenticated);
 
 // Configure Multer for file uploads
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../../public/images')); // save to public/images
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, uniqueSuffix + ext); // unique filename
-  }
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(__dirname, '../../public/images')); // save to public/images
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+//     const ext = path.extname(file.originalname);
+//     cb(null, uniqueSuffix + ext); // unique filename
+//   }
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 // router.use(async (req, res, next) => {
 //   try {
@@ -509,16 +513,58 @@ router.post("/change-credentials", adminController.postChangeCredentials);
 
 // 📌 UPLOAD Gallery Images
 // =========================
+// router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (req, res) => {
+//   try {
+//     if (req.files && req.files.length > 0) {
+//       console.log("Files to upload:", req.files.length);
+//       for (let file of req.files) {
+//         console.log("Uploading file:", file.originalname);
+//         // Save relative path for frontend use
+//         //const filePath = "/images/" + file.filename;
+//         const result = await new Promise((resolve, reject) => {
+//           const stream = cloudinary.uploader.upload_stream(
+//             { folder: "vidyavedika/gallery" }, // Folder in Cloudinary
+//             (error, result) => {
+//               if (error) reject(error);
+//               else resolve(result);
+//             }
+//           );
+//           stream.end(file.buffer);
+//         });
+//         const stream = result.secure_url; // Use secure_url for HTTPS
+//         console.log("Uploaded to Cloudinary:", stream);
+//         //await db.query("INSERT INTO gallery_images (file_path) VALUES (?)", [stream]);
+//       }
+//     }
+//     // req.session.logoError = "";
+//     res.redirect("/admin/home");
+//   } catch (err) {
+//     console.error("Error uploading gallery images:", err);
+//     res.status(500).send("Error uploading gallery images");
+//   }
+// });
+
 router.post("/home/gallery/upload", upload.array("gallery_images", 10), async (req, res) => {
   try {
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
-        // Save relative path for frontend use
-        const filePath = "/images/" + file.filename;
-        await db.query("INSERT INTO gallery_images (file_path) VALUES (?)", [filePath]);
+        // Upload each file to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "vidyavedika/gallery" }, // Cloudinary folder
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          stream.end(file.buffer); // send buffer instead of file path
+        });
+
+        // Store the Cloudinary URL in DB
+        await db.query("INSERT INTO gallery_images (file_path) VALUES (?)", [result.secure_url]);
       }
     }
-    // req.session.logoError = "";
+
     res.redirect("/admin/home");
   } catch (err) {
     console.error("Error uploading gallery images:", err);
