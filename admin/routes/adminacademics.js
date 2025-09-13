@@ -2,19 +2,22 @@ const express = require("express");
 const adminController = require("../controllers/adminController");
 const router = express.Router();
 const db = require("../../config/db");
-const multer = require("multer");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const cloudinary = require("../../config/cloudinary");
 const path = require("path");
 router.use(adminController.isAuthenticated);
 //router.use(adminController.isAuthenticated);
 // Multer setup
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(__dirname, '../../public/images')),
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage });
+// const storage = multer.diskStorage({
+//     destination: (_req, file, cb) => cb(null, path.join(__dirname, '../../public/images')),
+//     filename: (req, file, cb) => {
+//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+//     }
+// });
+// const upload = multer({ storage });
 
 // Apply authentication middleware to all routes
 
@@ -49,7 +52,22 @@ router.get("/", async (req, res) => {
 router.post("/academics/save", upload.single("image"), async (req, res) => {
     try {
         const { heading, sub_heading, list_content } = req.body;
-        const imagePath = req.file ? "/images/" + req.file.filename : null;
+        let imagePath = null;
+
+        if (req.file) {
+            // Upload image to Cloudinary
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'vidyavedika/academics' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            imagePath = result.secure_url;
+        }
 
         const [rows] = await db.query("SELECT id FROM academics_section LIMIT 1");
 
@@ -62,7 +80,7 @@ router.post("/academics/save", upload.single("image"), async (req, res) => {
             );
         } else {
             await db.query(
-                `INSERT INTO academics_section (heading, sub_heading, list_content, image) 
+                `INSERT INTO academics_section (heading, sub_heading, list_content, image)
                  VALUES (?, ?, ?, ?)`,
                 [heading, sub_heading, list_content, imagePath]
             );
@@ -87,12 +105,27 @@ router.post("/exam/save", upload.fields([
         const { main_heading, main_description, final_description } = req.body;
 
         const items = {};
+
         for (let i = 1; i <= 5; i++) {
             items[`item${i}_title`] = req.body[`item${i}_title`] || null;
             items[`item${i}_description`] = req.body[`item${i}_description`] || null;
-            items[`item${i}_image`] = req.files[`item${i}_image`]
-                ? "/images/" + req.files[`item${i}_image`][0].filename
-                : null;
+
+            if (req.files[`item${i}_image`]) {
+                const file = req.files[`item${i}_image`][0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: `vidyavedika/exam_section` },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                items[`item${i}_image`] = result.secure_url;
+            } else {
+                items[`item${i}_image`] = null;
+            }
         }
 
         const [rows] = await db.query("SELECT id FROM exam_section LIMIT 1");
@@ -144,7 +177,6 @@ router.post("/exam/save", upload.fields([
         res.status(500).send("Database error");
     }
 });
-
 /* ===============================
    SAVE Admissions Section
 ================================= */
@@ -154,9 +186,26 @@ router.post("/admissions/save", upload.fields([
     try {
         const { heading, description } = req.body;
         const images = {};
-        ["image1", "image2", "image3"].forEach(img => {
-            images[img] = req.files[img] ? "/images/" + req.files[img][0].filename : null;
-        });
+
+        // Upload each image to Cloudinary if provided
+        for (const img of ["image1", "image2", "image3"]) {
+            if (req.files[img]) {
+                const file = req.files[img][0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: "vidyavedika/admissions_section" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                images[img] = result.secure_url;
+            } else {
+                images[img] = null;
+            }
+        }
 
         const [rows] = await db.query("SELECT id FROM admissions_section LIMIT 1");
 

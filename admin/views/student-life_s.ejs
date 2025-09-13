@@ -703,7 +703,7 @@
 
     <div class="sidebar">
         <div class="sidebar-header">
-           <img src="<%= logo %>" alt="Logo">
+            <img src="<%= logo %>" alt="Logo">
 
 
 
@@ -743,10 +743,10 @@
                 <span>Student Life</span>
             </a>
             <a href="/admin/logout" class="menu-item text-danger"
-   onclick="return confirm('Are you sure you want to logout?');">
-   <i class="fas fa-sign-out-alt"></i>
-   <span>Logout</span>
-</a>
+                onclick="return confirm('Are you sure you want to logout?');">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
 
 
         </div>
@@ -768,8 +768,8 @@
         <!-- Header -->
         <div class="header">
             <div class="header-left">
-                
-                
+
+
             </div>
 
             <!-- <div class="header-right">
@@ -848,7 +848,7 @@
             </div>
 
 
-            <!-- HOSTEL & ACCOMMODATION -->
+            <!-- HOSTEL & ACCOMMODATION
             <div class="content-section mb-5 p-4 border rounded bg-light">
                 <h2>Hostel & Accommodation</h2>
                 <form action="/admin/hostel/save" method="POST" enctype="multipart/form-data">
@@ -892,44 +892,46 @@
 
                             <button type="submit" class="btn btn-primary mt-3">Save Hostel Section</button>
                 </form>
+            </div> -->
+            <div class="content-section mb-5 p-4 border rounded bg-light">
+                <h2>Library & Labs</h2>
+
+                <form action="/admin/student-life/save-library" method="POST">
+                    <!-- Heading -->
+                    <div class="form-group mb-3">
+                        <label>Heading</label>
+                        <input type="text" name="heading" class="form-input" value="<%= lb.heading || '' %>" required>
+                    </div>
+
+                    <!-- Short Description (plain text) -->
+                    <div class="form-group mb-3">
+                        <label>Description</label>
+                        <textarea name="description" id="description"
+                            class="form-textarea"><%= lb.description || '' %></textarea>
+                    </div>
+
+                    <!-- Long Description (rich text with CKEditor) -->
+                    <div class="form-group mb-3">
+                        <label>Long Description</label>
+                        <textarea name="long_description" id="long_description"
+                            class="form-textarea"><%= lb.long_description || '' %></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Save Library & Labs</button>
+                </form>
             </div>
-<div class="content-section mb-5 p-4 border rounded bg-light">
-    <h2>Library & Labs</h2>
 
-    <form action="/admin/student-life/save-library" method="POST">
-        <!-- Heading -->
-        <div class="form-group mb-3">
-            <label>Heading</label>
-            <input type="text" name="heading" class="form-input" value="<%= lb.heading || '' %>" required>
-        </div>
+            <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+            <script>
+                // Plain text editor (optional, could just be normal textarea)
+                // Commented out since description is plain
+                // ClassicEditor.create(document.querySelector('#description')).catch(error => console.error(error));
 
-        <!-- Short Description (plain text) -->
-        <div class="form-group mb-3">
-            <label>Description</label>
-            <textarea name="description" id="description" class="form-textarea"><%= lb.description || '' %></textarea>
-        </div>
-
-        <!-- Long Description (rich text with CKEditor) -->
-        <div class="form-group mb-3">
-            <label>Long Description</label>
-            <textarea name="long_description" id="long_description" class="form-textarea"><%= lb.long_description || '' %></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-3">Save Library & Labs</button>
-    </form>
-</div>
-
-<script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
-<script>
-    // Plain text editor (optional, could just be normal textarea)
-    // Commented out since description is plain
-    // ClassicEditor.create(document.querySelector('#description')).catch(error => console.error(error));
-
-    // Rich text editor for long_description
-    ClassicEditor.create(document.querySelector('#long_description'), {
-        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-    }).catch(error => console.error(error));
-</script>
+                // Rich text editor for long_description
+                ClassicEditor.create(document.querySelector('#long_description'), {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+                }).catch(error => console.error(error));
+            </script>
 
 
 

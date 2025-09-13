@@ -3,23 +3,26 @@ const fs = require("fs");
 const db = require("../../config/db");
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const cloudinary = require("../../config/cloudinary");
 const adminController = require("../controllers/adminController");
 router.use(adminController.isAuthenticated);
 
 
 // ------------------- Courses -------------------
 
-// Upload folder for courses
-const uploadCoursesDir = path.join(__dirname, "../../public/uploads/courses");
-if (!fs.existsSync(uploadCoursesDir)) fs.mkdirSync(uploadCoursesDir, { recursive: true });
+// // Upload folder for courses
+// const uploadCoursesDir = path.join(__dirname, "../../public/uploads/courses");
+// if (!fs.existsSync(uploadCoursesDir)) fs.mkdirSync(uploadCoursesDir, { recursive: true });
 
-// Multer for courses
-const coursesStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadCoursesDir),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
-const uploadCourses = multer({ storage: coursesStorage });
+// // Multer for courses
+// const coursesStorage = multer.diskStorage({
+//     destination: (req, file, cb) => cb(null, uploadCoursesDir),
+//     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+// });
+// const uploadCourses = multer({ storage: coursesStorage });
 
 // GET Course page (admin)
 router.get("/", async (req, res) => {
@@ -67,10 +70,25 @@ router.post("/save", async (req, res) => {
 });
 
 // Add new course
-router.post("/add", uploadCourses.single("image"), async (req, res) => {
+// Add course
+router.post("/add", upload.single("image"), async (req, res) => {
     try {
         const { heading, description } = req.body;
-        const image = req.file ? "/uploads/courses/" + req.file.filename : null;
+        let image = null;
+
+        if (req.file) {
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/courses" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            image = result.secure_url;
+        }
 
         await db.query(
             "INSERT INTO courses (heading, description, image) VALUES (?, ?, ?)",
@@ -84,20 +102,25 @@ router.post("/add", uploadCourses.single("image"), async (req, res) => {
 });
 
 // Edit course
-router.post("/edit/:id", uploadCourses.single("image"), async (req, res) => {
+router.post("/edit/:id", upload.single("image"), async (req, res) => {
     try {
         const { id } = req.params;
         const { heading, description } = req.body;
 
         if (req.file) {
-            const image = "/uploads/courses/" + req.file.filename;
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/courses" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            const image = result.secure_url;
 
-            // Delete old image
-            const [oldRows] = await db.query("SELECT image FROM courses WHERE id=?", [id]);
-            if (oldRows.length && oldRows[0].image) {
-                const oldPath = path.join(__dirname, "../../public", oldRows[0].image);
-                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-            }
+            // Old local deletion is skipped since we're now using Cloudinary
 
             await db.query(
                 "UPDATE courses SET heading=?, description=?, image=? WHERE id=?",
@@ -121,11 +144,6 @@ router.post("/edit/:id", uploadCourses.single("image"), async (req, res) => {
 router.post("/delete/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const [rows] = await db.query("SELECT image FROM courses WHERE id=?", [id]);
-        if (rows.length && rows[0].image) {
-            const filePath = path.join(__dirname, "../../public", rows[0].image);
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-        }
         await db.query("DELETE FROM courses WHERE id=?", [id]);
         res.redirect("/admin/course");
     } catch (err) {
@@ -137,15 +155,15 @@ router.post("/delete/:id", async (req, res) => {
 // ------------------- Course Views -------------------
 
 // Upload folder for course views
-const uploadCourseViewDir = path.join(__dirname, "../../public/uploads/course-view");
-if (!fs.existsSync(uploadCourseViewDir)) fs.mkdirSync(uploadCourseViewDir, { recursive: true });
+// const uploadCourseViewDir = path.join(__dirname, "../../public/uploads/course-view");
+// if (!fs.existsSync(uploadCourseViewDir)) fs.mkdirSync(uploadCourseViewDir, { recursive: true });
 
-// Multer for course views
-const courseViewStorage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadCourseViewDir),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
-const uploadCourseView = multer({ storage: courseViewStorage });
+// // Multer for course views
+// const courseViewStorage = multer.diskStorage({
+//     destination: (req, file, cb) => cb(null, uploadCourseViewDir),
+//     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+// });
+// const uploadCourseView = multer({ storage: courseViewStorage });
 
 // GET Course View admin page
 router.get("/view", async (req, res) => {
@@ -166,10 +184,24 @@ router.get("/view", async (req, res) => {
 });
 
 // Add Course View
-router.post("/view/add", uploadCourseView.single("banner_image"), async (req, res) => {
+router.post("/view/add", upload.single("banner_image"), async (req, res) => {
     try {
         const { course_id, content } = req.body;
-        const banner_image = req.file ? "/uploads/course-view/" + req.file.filename : null;
+        let banner_image = null;
+
+        if (req.file) {
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/course_view" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            banner_image = result.secure_url;
+        }
 
         await db.query(
             "INSERT INTO course_view (course_id, banner_image, content) VALUES (?, ?, ?)",
@@ -183,20 +215,25 @@ router.post("/view/add", uploadCourseView.single("banner_image"), async (req, re
 });
 
 // Edit Course View
-router.post("/view/edit/:id", uploadCourseView.single("banner_image"), async (req, res) => {
+router.post("/view/edit/:id", upload.single("banner_image"), async (req, res) => {
     try {
         const { id } = req.params;
         const { course_id, content } = req.body;
 
         if (req.file) {
-            const banner_image = "/uploads/course-view/" + req.file.filename;
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/course_view" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            const banner_image = result.secure_url;
 
-            // Delete old banner image
-            const [oldRows] = await db.query("SELECT banner_image FROM course_view WHERE id=?", [id]);
-            if (oldRows.length && oldRows[0].banner_image) {
-                const oldPath = path.join(__dirname, "../../public", oldRows[0].banner_image);
-                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-            }
+            // Old local deletion is skipped since we now use Cloudinary
 
             await db.query(
                 "UPDATE course_view SET course_id=?, content=?, banner_image=? WHERE id=?",
@@ -219,13 +256,7 @@ router.post("/view/edit/:id", uploadCourseView.single("banner_image"), async (re
 // Delete Course View
 router.post("/view/delete/:id", async (req, res) => {
     try {
-        const { id } = req.params;
-        const [rows] = await db.query("SELECT banner_image FROM course_view WHERE id=?", [id]);
-        if (rows.length && rows[0].banner_image) {
-            const filePath = path.join(__dirname, "../../public", rows[0].banner_image);
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-        }
-        await db.query("DELETE FROM course_view WHERE id=?", [id]);
+        await db.query("DELETE FROM course_view WHERE id=?", [req.params.id]);
         res.redirect("/admin/course/view");
     } catch (err) {
         console.error(err);

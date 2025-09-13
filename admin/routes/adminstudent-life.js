@@ -1,52 +1,55 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../config/db");
-const multer = require("multer");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const cloudinary = require("../../config/cloudinary");
 const path = require("path");
 const fs = require("fs");
 const adminController = require("../controllers/adminController");
 router.use(adminController.isAuthenticated);
 
 
-// Multer setup for image uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = "public/uploads/hostel";
-        if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage });
+// // Multer setup for image uploads
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         const uploadPath = "public/uploads/hostel";
+//         if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+//         cb(null, uploadPath);
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + path.extname(file.originalname));
+//     }
+// });
+// const upload = multer({ storage });
 
-const sportsStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = "public/uploads/sports";
-        if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-const uploadSports = multer({ storage: sportsStorage });
+// const sportsStorage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         const uploadPath = "public/uploads/sports";
+//         if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+//         cb(null, uploadPath);
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + path.extname(file.originalname));
+//     }
+// });
+// const uploadSports = multer({ storage: sportsStorage });
 
 
 // Multer setup for Cultural Activities
-const culturalStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = "public/uploads/cultural";
-        if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-const uploadCultural = multer({ storage: culturalStorage });
-// ---------------- GET Hostel & Accommodation ----------------
+// const culturalStorage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         const uploadPath = "public/uploads/cultural";
+//         if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+//         cb(null, uploadPath);
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, Date.now() + path.extname(file.originalname));
+//     }
+// });
+// const uploadCultural = multer({ storage: culturalStorage });
+// // ---------------- GET Hostel & Accommodation ----------------
 // GET Student Life page
 router.get("/", async (req, res) => {
     try {
@@ -101,7 +104,19 @@ router.post("/save", upload.fields([
             data[`item${i}_description`] = req.body[`item${i}_description`] || null;
 
             if (req.files[`item${i}_image`] && req.files[`item${i}_image`][0]) {
-                data[`item${i}_image`] = "/uploads/hostel/" + req.files[`item${i}_image`][0].filename;
+                // Upload image to Cloudinary
+                const file = req.files[`item${i}_image`][0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: `vidyavedika/hostel` },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                data[`item${i}_image`] = result.secure_url;
             }
         }
 
@@ -120,7 +135,6 @@ router.post("/save", upload.fields([
         res.status(500).send("Database error");
     }
 });
-
 
 // ---------------- POST Library & Labs Save ----------------
 router.post("/save-library", async (req, res) => {
@@ -150,7 +164,7 @@ router.post("/save-library", async (req, res) => {
 });
 
 //POST Save Sports & Extracurriculars
-router.post("/save-sports", uploadSports.fields([
+router.post("/save-sports", upload.fields([
     { name: "image1" },
     { name: "image2" }
 ]), async (req, res) => {
@@ -160,11 +174,36 @@ router.post("/save-sports", uploadSports.fields([
             description: req.body.description
         };
 
+        // Upload image1 to Cloudinary if provided
         if (req.files['image1'] && req.files['image1'][0]) {
-            data.image1 = "/uploads/sports/" + req.files['image1'][0].filename;
+            const file = req.files['image1'][0];
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/sports" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+            data.image1 = result.secure_url;
         }
+
+        // Upload image2 to Cloudinary if provided
         if (req.files['image2'] && req.files['image2'][0]) {
-            data.image2 = "/uploads/sports/" + req.files['image2'][0].filename;
+            const file = req.files['image2'][0];
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/sports" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+            data.image2 = result.secure_url;
         }
 
         const [existing] = await db.query("SELECT id FROM sports_extracurriculars LIMIT 1");
@@ -182,7 +221,7 @@ router.post("/save-sports", uploadSports.fields([
 });
 
 // POST Save Cultural Activities
-router.post("/save-cultural", uploadCultural.fields([
+router.post("/save-cultural", upload.fields([
     { name: "activity_image1" },
     { name: "activity_image2" }
 ]), async (req, res) => {
@@ -192,11 +231,36 @@ router.post("/save-cultural", uploadCultural.fields([
             activity_description: req.body.activity_description
         };
 
+        // Upload activity_image1 to Cloudinary if provided
         if (req.files['activity_image1'] && req.files['activity_image1'][0]) {
-            data.activity_image1 = "/uploads/cultural/" + req.files['activity_image1'][0].filename;
+            const file = req.files['activity_image1'][0];
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/cultural" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+            data.activity_image1 = result.secure_url;
         }
+
+        // Upload activity_image2 to Cloudinary if provided
         if (req.files['activity_image2'] && req.files['activity_image2'][0]) {
-            data.activity_image2 = "/uploads/cultural/" + req.files['activity_image2'][0].filename;
+            const file = req.files['activity_image2'][0];
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/cultural" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+            data.activity_image2 = result.secure_url;
         }
 
         const [existing] = await db.query("SELECT id FROM cultural_activities LIMIT 1");

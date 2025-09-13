@@ -6,9 +6,10 @@ const fs = require("fs"); // Use promises version of fs
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+const cloudinary = require("../../config/cloudinary");
 
 const adminController = require('../controllers/adminController');
-const  cloudinary= require("../../config/cloudinary");
+
 const db = require("../../config/db");
 const contactUsRoute = require("./admincontactus");
 //const { isAuthenticated } = adminController;
@@ -62,10 +63,20 @@ router.post("/dashboard/update-logo", upload.single("logo"), async (req, res) =>
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
-    const newLogoPath = "/images/" + req.file.filename;
+    // Upload new logo to Cloudinary
+const result = await new Promise((resolve, reject) => {
+  const stream = cloudinary.uploader.upload_stream(
+    { folder: "vidyavedika/logo" },
+    (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    }
+  );
+  stream.end(req.file.buffer);
+});
 
-    // Update DB
-    await db.query("UPDATE settings SET logo=? WHERE id=2", [newLogoPath]);
+// Only save secure_url in `logo` column
+await db.query("UPDATE settings SET logo=? WHERE id=2", [result.secure_url]);
 
     // req.session.logoSuccess = "Logo updated successfully!";
     res.redirect("/admin/dashboard");
@@ -200,17 +211,31 @@ router.post("/home/hero", upload.array("banner_images"), async (req, res) => {
     const [homeContentRows] = await db.query("SELECT banner_image_paths FROM home_page_content WHERE id = 1");
     const currentPaths = (homeContentRows[0] && homeContentRows[0].banner_image_paths) || [];
 
-    // 2. Create paths for the newly uploaded images
-    const newPaths = newFiles.map(file => `/images/${file.filename}`);
-
-    // 3. Combine the old and new image paths
-    const updatedPaths = [...currentPaths, ...newPaths];
-
-    // 4. Update the database with the new data
-    await db.query(
-      "UPDATE home_page_content SET heading = ?, sub_heading = ?, description = ?, banner_image_paths = ? WHERE id = 1",
-      [heading, sub_heading, description, JSON.stringify(updatedPaths)]
+// 2. Upload new files to Cloudinary and collect URLs
+const newPaths = [];
+for (let file of newFiles) {
+  const result = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "vidyavedika/hero" }, // Cloudinary folder
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
     );
+    stream.end(file.buffer);
+  });
+
+  newPaths.push(result.secure_url); // store full Cloudinary URL
+}
+
+// 3. Combine the old and new image URLs
+const updatedPaths = [...currentPaths, ...newPaths];
+
+// 4. Update the database with the new data
+await db.query(
+  "UPDATE home_page_content SET heading = ?, sub_heading = ?, description = ?, banner_image_paths = ? WHERE id = 1",
+  [heading, sub_heading, description, JSON.stringify(updatedPaths)]
+);
 
     res.redirect("/admin/home");
 
@@ -273,29 +298,47 @@ router.post("/home/cta", upload.single("cta_image"), async (req, res) => {
     const currentImagePath = ctaContentRows[0]?.cta_image_path;
 
     if (newFile) {
-      // New file was uploaded, so update the path and delete the old one
-      newImagePath = `/images/${newFile.filename}`;
-      if (currentImagePath) {
-        const oldFilePath = path.join(__dirname, "../../public", currentImagePath);
-        // await fs.unlink(oldFilePath).catch(err => console.error("Failed to delete old CTA image:", err));
-        fs.unlink(oldFilePath, (err) => {
-  if (err) {
-  console.error("Error adding image:", err);
-  } else {
-    console.log("Image adding successfully");
-  }
-});
+  // 1. Upload new file to Cloudinary
+  const result = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "vidyavedika/cta" }, // Cloudinary folder
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
       }
-    } else {
-      // No new file, keep the old path
-      newImagePath = currentImagePath;
-    }
-
-    // 2. Update the database with the new data
-    await db.query(
-      "UPDATE cta_content SET cta_heading = ?, cta_text = ?, cta_image_path = ? WHERE id = 1",
-      [cta_heading, cta_text, newImagePath]
     );
+    stream.end(newFile.buffer);
+  });
+
+  newImagePath = result.secure_url; // Cloudinary URL
+
+  // 2. Delete old image from Cloudinary (if exists)
+  if (currentImagePath) {
+    // Extract public_id from old URL
+    const publicId = currentImagePath
+      .split("/")
+      .slice(-2) // take folder + filename
+      .join("/")
+      .split(".")[0]; // remove file extension
+
+    try {
+      await cloudinary.uploader.destroy(publicId);
+      console.log("Old CTA image deleted from Cloudinary:", publicId);
+    } catch (err) {
+      console.error("Failed to delete old CTA image:", err);
+    }
+  }
+} else {
+  // No new file, keep the old path
+  newImagePath = currentImagePath;
+}
+
+// 3. Update the database with the new data
+await db.query(
+  "UPDATE cta_content SET cta_heading = ?, cta_text = ?, cta_image_path = ? WHERE id = 1",
+  [cta_heading, cta_text, newImagePath]
+);
+
 
     res.redirect("/admin/home");
   } catch (err) {
@@ -396,15 +439,33 @@ router.post('/home/testimonials/update-text', async (req, res) => {
 // --- Add new testimonial ---
 router.post("/home/testimonials/add", upload.single("testimonial_image"), async (req, res) => {
   const { name, role, description } = req.body;
-  const image_path = req.file ? `/images/${req.file.filename}` : null;
 
-  if (!image_path) {
+  if (!req.file) {
     // req.session.errorMessage = "Image upload is required.";
     return res.redirect("/admin/home/testimonials");
   }
 
   try {
-    await db.query("INSERT INTO testimonials (name, role, description, image_path) VALUES (?, ?, ?, ?)", [name, role, description, image_path]);
+    // 1. Upload image to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "vidyavedika/testimonials" }, // Cloudinary folder
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    const image_path = result.secure_url; // Cloudinary URL
+
+    // 2. Insert into database
+    await db.query(
+      "INSERT INTO testimonials (name, role, description, image_path) VALUES (?, ?, ?, ?)",
+      [name, role, description, image_path]
+    );
+
     // req.session.successMessage = "New testimonial added successfully!";
     res.redirect("/admin/home/testimonials");
   } catch (err) {
@@ -413,7 +474,6 @@ router.post("/home/testimonials/add", upload.single("testimonial_image"), async 
     res.redirect("/admin/home/testimonials");
   }
 });
-
 
 // POST route to delete a testimonial card
 router.post('/home/testimonials/delete/:id', async (req, res) => {
@@ -456,33 +516,58 @@ router.post('/home/testimonials/edit/:id', upload.single('testimonial_image'), a
   let image_path;
 
   try {
-    // If new image uploaded, use it, else keep old
+    // 1. Get old testimonial data
+    const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
+    const oldImagePath = oldData.length ? oldData[0].image_path : null;
+
+    // 2. If new image uploaded
     if (req.file) {
-      image_path = `/images/${req.file.filename}`;
-      // Optional: delete old image from /public/images/testimonial
-      const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
-      if (oldData.length && oldData[0].image_path) {
-        const fs = require('fs');
-        const oldImagePath = __dirname + '/../public' + oldData[0].image_path;
-        fs.unlink(oldImagePath, (err) => {
-          if (err) console.log('Old image not found:', err.message);
-        });
+      // Upload new image to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'vidyavedika/testimonials' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      image_path = result.secure_url; // Cloudinary URL
+
+      // 3. Delete old image from Cloudinary if exists
+      if (oldImagePath) {
+        const publicId = oldImagePath
+          .split('/')
+          .slice(-2)
+          .join('/')
+          .split('.')[0]; // folder/filename without extension
+
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log('Old testimonial image deleted from Cloudinary:', publicId);
+        } catch (err) {
+          console.error('Failed to delete old testimonial image:', err);
+        }
       }
     } else {
-      const [oldData] = await db.query('SELECT image_path FROM testimonials WHERE id = ?', [id]);
-      image_path = oldData.length ? oldData[0].image_path : null;
+      // No new image, keep old path
+      image_path = oldImagePath;
     }
 
-    await db.query('UPDATE testimonials SET name = ?, role = ?, description = ?, image_path = ? WHERE id = ?', [name, role, description, image_path, id]);
-    // req.session.successMessage = 'Testimonial updated successfully!';
+    // 4. Update DB
+    await db.query(
+      'UPDATE testimonials SET name = ?, role = ?, description = ?, image_path = ? WHERE id = ?',
+      [name, role, description, image_path, id]
+    );
+
     res.redirect('/admin/home/testimonials');
   } catch (err) {
     console.error('Error updating testimonial:', err);
-    // req.session.errorMessage = 'Failed to update testimonial.';
     res.redirect('/admin/home/testimonials');
   }
 });
-
 // Change credentials (protected)
 // GET change credentials page
 router.get("/change-credentials", async (req, res) => {
@@ -641,11 +726,24 @@ router.post('/home/why-choose-us/update',
         description_4
       } = req.body;
 
-      // Build image paths dynamically
+      // Build image paths dynamically with Cloudinary upload
       const images = {};
-      if (req.files['image_1']) images.image_1 = '/images/' + req.files['image_1'][0].filename;
-      if (req.files['image_2']) images.image_2 = '/images/' + req.files['image_2'][0].filename;
-      if (req.files['image_3']) images.image_3 = '/images/' + req.files['image_3'][0].filename;
+      for (const key of ['image_1', 'image_2', 'image_3']) {
+        if (req.files[key]) {
+          const file = req.files[key][0];
+          const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: 'vidyavedika/why_choose_us' },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(file.buffer);
+          });
+          images[key] = result.secure_url; // Cloudinary URL
+        }
+      }
 
       // Update query
       let query = `UPDATE why_choose_us SET 

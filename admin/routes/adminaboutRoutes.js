@@ -1,28 +1,31 @@
 const express = require("express");
 
 const adminController = require("../controllers/adminController");
-
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+const cloudinary = require("../../config/cloudinary");
 
 const router = express.Router();
 const db = require("../../config/db");
-const multer = require("multer");
+//const multer = require("multer");
 const path = require("path");
 
 
 //const adminController = require("../controllers/adminController");
 router.use(adminController.isAuthenticated);
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../../public/images')); // must be inside public
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, path.join(__dirname, '../../public/images')); // must be inside public
+//     },
+//     filename: (req, file, cb) => {
+//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+//     }
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 
 
@@ -58,11 +61,7 @@ router.get("/about-us", async (req, res) => {
 
 // POST About Us update
 router.post(
-
     "/about-us",
-
-    
-
     upload.fields([{ name: "image1" }, { name: "image2" }]),
     async (req, res) => {
         try {
@@ -71,11 +70,35 @@ router.post(
             let image1 = null;
             let image2 = null;
 
+            // Upload to Cloudinary if files exist
             if (req.files.image1) {
-                image1 = "/images/" + req.files.image1[0].filename;
+                const file = req.files.image1[0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: "vidyavedika/about_us" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                image1 = result.secure_url;
             }
+
             if (req.files.image2) {
-                image2 = "/images/" + req.files.image2[0].filename;
+                const file = req.files.image2[0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: "vidyavedika/about_us" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                image2 = result.secure_url;
             }
 
             await db.query(
@@ -87,23 +110,18 @@ router.post(
                 [heading, paragraph1, paragraph2, image1, image2]
             );
 
-            res.redirect("/admin/about-us"); // ✅ fixed redirect
+            res.redirect("/admin/about-us");
         } catch (err) {
             console.error(err);
             res.send("Error updating About Us data");
         }
     }
 );
-
 /* ======================
    POST Vision & Mission Update
 ====================== */
 router.post(
-
     "/vision-mission",
-
-   
-
     upload.fields([{ name: "vision_image" }, { name: "mission_image" }]),
     async (req, res) => {
         try {
@@ -112,11 +130,36 @@ router.post(
             let vision_image = null;
             let mission_image = null;
 
+            // Upload vision image to Cloudinary if exists
             if (req.files.vision_image) {
-                vision_image = "/images/" + req.files.vision_image[0].filename;
+                const file = req.files.vision_image[0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: "vidyavedika/vision_mission" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                vision_image = result.secure_url;
             }
+
+            // Upload mission image to Cloudinary if exists
             if (req.files.mission_image) {
-                mission_image = "/images/" + req.files.mission_image[0].filename;
+                const file = req.files.mission_image[0];
+                const result = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { folder: "vidyavedika/vision_mission" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+                    stream.end(file.buffer);
+                });
+                mission_image = result.secure_url;
             }
 
             await db.query(
@@ -129,7 +172,7 @@ router.post(
                 [vision_heading, vision_text, mission_heading, mission_text, vision_image, mission_image]
             );
 
-            res.redirect("/admin/about-us");  // ✅ stay on same page
+            res.redirect("/admin/about-us"); // stay on same page
         } catch (err) {
             console.error(err);
             res.send("Error updating Vision & Mission data");
@@ -171,10 +214,28 @@ router.post("/team-section", async (req, res) => {
 // only relative paths here, no /admin prefix
 
 // Add Member
+// Add Member
 router.post("/team-members/add", upload.single("image"), async (req, res) => {
     try {
         const { name, designation } = req.body;
-        const imagePath = req.file ? "/images/" + req.file.filename : null;
+
+        if (!req.file) {
+            return res.redirect("/admin/about-us");
+        }
+
+        // Upload image to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: "vidyavedika/team_members" },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+            stream.end(req.file.buffer);
+        });
+
+        const imagePath = result.secure_url; // Cloudinary URL
 
         await db.query(
             "INSERT INTO team_members (name, designation, image_path) VALUES (?, ?, ?)",
@@ -194,13 +255,44 @@ router.post("/team-members/edit/:id", upload.single("image"), async (req, res) =
         const { name, designation } = req.body;
         const { id } = req.params;
 
-        // Only replace image if a new file is uploaded
-        const imagePath = req.file ? "/images/" + req.file.filename : null;
+        let imagePath = null;
+
+        if (req.file) {
+            // Upload new image to Cloudinary
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "vidyavedika/team_members" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+
+            imagePath = result.secure_url;
+
+            // Optional: delete old image from Cloudinary
+            const [oldData] = await db.query('SELECT image_path FROM team_members WHERE id = ?', [id]);
+            if (oldData.length && oldData[0].image_path) {
+                const publicId = oldData[0].image_path
+                    .split('/')
+                    .slice(-2)
+                    .join('/')
+                    .split('.')[0];
+                try {
+                    await cloudinary.uploader.destroy(publicId);
+                    console.log('Old team member image deleted:', publicId);
+                } catch (err) {
+                    console.error('Failed to delete old team member image:', err);
+                }
+            }
+        }
 
         await db.query(
             `UPDATE team_members 
-       SET name = ?, designation = ?, image_path = COALESCE(?, image_path)
-       WHERE id = ?`,
+             SET name = ?, designation = ?, image_path = COALESCE(?, image_path)
+             WHERE id = ?`,
             [name, designation, imagePath, id]
         );
 
@@ -210,7 +302,6 @@ router.post("/team-members/edit/:id", upload.single("image"), async (req, res) =
         res.status(500).send("Error editing team member");
     }
 });
-
 // Delete Member
 router.post("/team-members/delete/:id", async (req, res) => {
     try {
@@ -246,45 +337,81 @@ router.post("/md-message", async (req, res) => {
 });
 
 
-    router.post('/journey-history', upload.fields([{ name: 'image1' }, { name: 'image2' }]), async (req, res) => {
+router.post('/journey-history', upload.fields([{ name: 'image1' }, { name: 'image2' }]), async (req, res) => {
+    try {
+        const { heading, description1, description2 } = req.body;
+        const images = req.files;
 
-        try {
-            const { heading, description1, description2 } = req.body;
-            const images = req.files;
+        let updateQuery = 'UPDATE journey_history SET heading = ?, description1 = ?, description2 = ?';
+        const params = [heading, description1, description2];
 
-            let updateQuery = 'UPDATE journey_history SET heading = ?, description1 = ?, description2 = ?';
-            const params = [heading, description1, description2];
-
-            if (images?.image1) {
-                updateQuery += ', image1 = ?';
-                params.push('/images/' + images.image1[0].filename);
-            }
-            if (images?.image2) {
-                updateQuery += ', image2 = ?';
-                params.push('/images/' + images.image2[0].filename);
-            }
-
-            updateQuery += ' WHERE id = 1';
-            await db.query(updateQuery, params);
-
-            res.redirect('/admin/about-us');
-        } catch (err) {
-            console.error(err);
-            res.status(500).send('Error updating Journey / History');
+        // Upload image1 to Cloudinary if provided
+        if (images?.image1) {
+            const file = images.image1[0];
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'vidyavedika/journey_history' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+            params.push(result.secure_url);
+            updateQuery += ', image1 = ?';
         }
-    });
+
+        // Upload image2 to Cloudinary if provided
+        if (images?.image2) {
+            const file = images.image2[0];
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'vidyavedika/journey_history' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+            params.push(result.secure_url);
+            updateQuery += ', image2 = ?';
+        }
+
+        updateQuery += ' WHERE id = 1';
+        await db.query(updateQuery, params);
+
+        res.redirect('/admin/about-us');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error updating Journey / History');
+    }
+});
 
 
 
-   
+router.post('/accreditations-achievements', upload.single('image'), async (req, res) => {
+    try {
+        const { heading, description } = req.body;
+        let imagePath = null;
 
-        router.post('/accreditations-achievements', upload.single('image'), async (req, res) => {
+        if (req.file) {
+            // Upload image to Cloudinary
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'vidyavedika/accreditations_achievements' },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            imagePath = result.secure_url;
+        }
 
-            try {
-                const { heading, description } = req.body;
-                const imagePath = req.file ? '/images/' + req.file.filename : null;
-
-                let query = `
+        let query = `
             INSERT INTO accreditations_achievements (id, heading, description, image)
             VALUES (1, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
@@ -293,48 +420,49 @@ router.post("/md-message", async (req, res) => {
                 image = IF(VALUES(image) IS NOT NULL, VALUES(image), image)
         `;
 
-                await db.query(query, [heading, description, imagePath]);
+        await db.query(query, [heading, description, imagePath]);
 
-                res.redirect('/admin/about-us');
-            } catch (err) {
-                console.error(err);
-                res.status(500).send('Error updating Accreditations & Achievements');
-            }
-        });
-
-        // --- Middleware: fetch logo for all admin pages ---
-        router.use(async (req, res, next) => {
-            try {
-                const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
-                res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-            } catch (err) {
-                console.error("Error fetching logo:", err);
-                res.locals.logo = "/admin/static/images/logo.png"; // fallback
-            }
-            next();
-        });
+        res.redirect('/admin/about-us');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error updating Accreditations & Achievements');
+    }
+});
 
 
-        // --- Admin Settings Page (upload logo) ---
+// --- Middleware: fetch logo for all admin pages ---
+router.use(async (req, res, next) => {
+    try {
+        const [rows] = await db.query("SELECT logo FROM settings LIMIT 1");
+        res.locals.logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+    } catch (err) {
+        console.error("Error fetching logo:", err);
+        res.locals.logo = "/admin/static/images/logo.png"; // fallback
+    }
+    next();
+});
 
 
-            router.get("/settings", async (req, res) => {
+// --- Admin Settings Page (upload logo) ---
 
-                const [rows] = await db.query("SELECT logo FROM settings LIMIT 2");
-                const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
-                res.render("admin/settings", { logo });
-            });
 
-            // --- Update Logo ---
-            router.post("/settings/update-logo", upload.single("logo"), async (req, res) => {
-                try {
-                    const logoPath = "/uploads/" + req.file.filename;
-                    await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
-                    res.redirect("/admin/settings");
-                } catch (err) {
-                    console.error("Error updating logo:", err);
-                    res.status(500).send("Error updating logo");
-                }
-            });
+// router.get("/settings", async (req, res) => {
 
-            module.exports = router;
+//     const [rows] = await db.query("SELECT logo FROM settings LIMIT 2");
+//     const logo = rows.length ? rows[0].logo : "/admin/static/images/logo.png";
+//     res.render("admin/settings", { logo });
+// });
+
+// // --- Update Logo ---
+// router.post("/settings/update-logo", upload.single("logo"), async (req, res) => {
+//     try {
+//         const logoPath = "/uploads/" + req.file.filename;
+//         await db.query("UPDATE settings SET logo = ? WHERE id = 1", [logoPath]);
+//         res.redirect("/admin/settings");
+//     } catch (err) {
+//         console.error("Error updating logo:", err);
+//         res.status(500).send("Error updating logo");
+//     }
+// });
+
+module.exports = router;
