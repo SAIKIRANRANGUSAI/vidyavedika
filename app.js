@@ -196,12 +196,21 @@ app.use("/admin", adminAboutRoutes);
 
 
 // Logout route
+// app.get("/admin/logout", (req, res) => {
+//     res.clearCookie("token");
+//     // res.redirect("/admin/login");
+//     res.cookie.destroy();
+//     res.redirect("/admin/login");
+// });
+
 app.get("/admin/logout", (req, res) => {
-    res.clearCookie("token");
-    // res.redirect("/admin/login");
-    res.cookie.destroy();
-    res.redirect("/admin/login");
+  // remove the auth cookie
+  res.clearCookie("token", { httpOnly: true, secure: false }); 
+
+  // redirect to login page
+  res.redirect("/admin/login");
 });
+
 // ----------------------------------------------------------- //
 // const footerRoute = require("./routes/footerRoute");
 // app.use("/", footerRoute);
@@ -253,4 +262,5 @@ app.get('/course-view', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+
 module.exports = app;
