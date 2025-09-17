@@ -7,13 +7,9 @@
         <div class="spacer-20"></div>
         <!-- Footer Description -->
         <p>
-          <% if (footerData && footerData.contact && footerData.contact.description) { %>
-            <%= footerData.contact.description %>
-              <% } else { %>
-                It is a long established fact that a reader will be distracted by the readable content of a page when
-                looking at its layout.
-                <% } %>
-        </p>
+  <%= footerData && footerData.social ? footerData.social.description : "" %>
+</p>
+
 
         <!-- Social Links -->
         <div class="social-icons mb-sm-30">
@@ -236,4 +232,5 @@
 
 
 </html>
+
 
