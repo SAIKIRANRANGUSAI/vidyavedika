@@ -12971,3 +12971,20 @@ div#mySidenav ul li {
 
   display: none;
 }
+
+.hover p{
+   display: -webkit-box;
+  -webkit-line-clamp: 3;   /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+.item p{
+   display: -webkit-box;
+  -webkit-line-clamp: 3;   /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
