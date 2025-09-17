@@ -61,57 +61,54 @@
 
   <section>
     <div class="container">
-      <div class="row g-4 gx-5 align-items-center">
-        <div class="col-lg-6">
+  <div class="row g-4 gx-5 align-items-center">
+    <div class="col-lg-6">
+      <div class="row g-4">
+        <div class="col-6">
           <div class="row g-4">
-            <div class="col-6">
-              <div class="row g-4">
-                <div class="col-lg-12">
-                  <div class="rounded-1 overflow-hidden wow zoomIn">
-                    <img src="images/about-img-1.png" class="w-100 wow scaleIn" alt="" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="row g-4">
-                <div class="spacer-single sm-hide"></div>
-                <div class="col-lg-12">
-                  <div class="rounded-1 overflow-hidden wow zoomIn" data-wow-delay=".3s">
-                    <img src="images/about-img-2.png" class="w-100 wow scaleIn" alt="" data-wow-delay=".3s" />
-                  </div>
-                </div>
+            <div class="col-lg-12">
+              <div class="rounded-1 overflow-hidden wow zoomIn">
+                <img src="<%= aboutUs.image1 %>" class="w-100 wow scaleIn" alt="About Image 1" />
               </div>
             </div>
           </div>
         </div>
-
-        <div class="col-lg-6">
-          <div class=" home-about-content">
-            <div class="subtitle s2 mb-3 wow fadeInUp" data-wow-delay=".0s">
-              About Us
-            </div>
-            <h2 class="wow fadeInUp" data-wow-delay=".2s">
-              Welcome to Vidya Vedika IIT & NEET Academy
-            </h2>
-            <p class="wow fadeInUp" data-wow-delay=".4s">
-              We are delighted to welcome you to our official website! At Vidya Vedika IIT & NEET Academy, we believe
-              in empowering young minds with knowledge, discipline, and confidence to excel in academics and life. Our
-              institution is dedicated to providing student-focused, quality education that prepares learners for
-              Intermediate Boards, IIT-JEE, NEET, and beyond.
-            </p>
-            <p class="wow fadeInUp" data-wow-delay=".4s">Through our committed faculty, innovative teaching methods,
-              and supportive environment, we aim to shape not just achievers, but responsible and value-driven
-              individuals. We invite you to explore our website, discover our programs and facilities, and join us in
-              this journey of learning, growth, and success.</p>
-
-            <div class="text-center text-md-left">
-              <a class="btn-main fx-slide wow fadeInUp" data-wow-delay=".8s" href="/about"><span>Read More</span></a>
+        <div class="col-6">
+          <div class="row g-4">
+            <div class="spacer-single sm-hide"></div>
+            <div class="col-lg-12">
+              <div class="rounded-1 overflow-hidden wow zoomIn" data-wow-delay=".3s">
+                <img src="<%= aboutUs.image2 %>" class="w-100 wow scaleIn" alt="About Image 2" data-wow-delay=".3s" />
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="col-lg-6">
+      <div class="home-about-content">
+        <div class="subtitle s2 mb-3 wow fadeInUp" data-wow-delay=".0s">
+          About Us
+        </div>
+        <h2 class="wow fadeInUp" data-wow-delay=".2s">
+          <%= aboutUs.heading %>
+        </h2>
+        <p class="wow fadeInUp" data-wow-delay=".4s">
+          <%= aboutUs.paragraph1 %>
+        </p>
+        <p class="wow fadeInUp" data-wow-delay=".4s">
+          <%= aboutUs.paragraph2 %>
+        </p>
+
+        <div class="text-center text-md-left">
+          <a class="btn-main fx-slide wow fadeInUp" data-wow-delay=".8s" href="/about"><span>Read More</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   </section>
 
 
@@ -400,5 +397,6 @@
   </section>
   </div>
   <!-- content end -->
+
 
   <%- include('partials/footer') %>
