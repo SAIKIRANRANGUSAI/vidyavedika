@@ -12725,7 +12725,7 @@ img {
 
   .mobile-toggle {
 
-    display: block;
+    display: block !important;
   }
   .register-img img {
 
