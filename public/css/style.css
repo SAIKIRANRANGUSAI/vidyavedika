@@ -12492,6 +12492,14 @@ img {
     width: 33.3%;
     border: none;
   }
+.hover p{
+   display: -webkit-box;
+  -webkit-line-clamp: 3;   /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
 
   .de_tab.tab_style_4 .de_nav li:first-child,
   .de_tab.tab_style_4 .de_nav li:last-child {
