@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Manager | VidyaVedika</title>
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin/static/css/admin.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --success: #06d6a0;
+      --warning: #ffd166;
+      --danger: #ef476f;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --gray: #94a3b8;
+      --sidebar-width: 260px;
+      --header-height: 70px;
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      display: flex;
+      background: #f1f5f9;
+      color: var(--dark);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--dark);
+      color: white;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+
+    .sidebar-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .sidebar-menu {
+      padding: 20px 0;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .menu-label {
+      padding: 10px 20px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--gray);
+      letter-spacing: 1px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      color: white;
+      text-decoration: none;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .menu-item:hover,
+    .menu-item.active {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .menu-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: var(--primary);
+    }
+
+    .menu-item i {
+      width: 24px;
+      margin-right: 12px;
+      font-size: 18px;
+    }
+
+    .menu-item span {
+      flex: 1;
+    }
+
+    .menu-badge {
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+
+    .user-details h4 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .user-details span {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .header {
+      height: var(--header-height);
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-sidebar {
+      margin-right: 16px;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--dark);
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      padding: 10px 16px 10px 40px;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      width: 300px;
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-action {
+      position: relative;
+      cursor: pointer;
+      color: var(--dark);
+      font-size: 18px;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: white;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .user-profile img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+
+    .content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    .breadcrumb a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .breadcrumb i {
+      margin: 0 8px;
+      font-size: 12px;
+    }
+
+    .content-section {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .section-action {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-action i {
+      margin-left: 6px;
+      font-size: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+      outline: none;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #d93757;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 12px 16px;
+      background: #f8fafc;
+      color: var(--gray);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .data-table td {
+      padding: 16px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+
+    .data-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dashboard-footer {
+      background: white;
+      padding: 16px 24px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 14px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        height: 100%;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .search-box input {
+        width: 200px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-box {
+        display: none;
+      }
+
+      .header {
+        padding: 0 16px;
+      }
+
+      .content {
+        padding: 16px;
+      }
+    }
+
+    .og-image-preview {
+      max-width: 120px;
+      height: auto;
+      margin-top: 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <img src="<%= logo %>" alt="Logo">
+      <h2>VidyaVedika Admin</h2>
+    </div>
+
+    <div class="sidebar-menu">
+      <div class="menu-label">Main</div>
+      <a href="/admin/dashboard" class="menu-item">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="/admin/home" class="menu-item">
+        <i class="fas fa-house-user"></i>
+        <span>Home</span>
+      </a>
+
+      <div class="menu-label">Content</div>
+      <a href="/admin/about-us" class="menu-item">
+        <i class="fas fa-info-circle"></i>
+        <span>About Us</span>
+      </a>
+      <a href="/admin/academics" class="menu-item">
+        <i class="fas fa-book-open"></i>
+        <span>Academics</span>
+      </a>
+      <a href="/admin/course" class="menu-item">
+        <i class="fas fa-graduation-cap"></i>
+        <span>Courses</span>
+      </a>
+      <a href="/admin/student-life" class="menu-item">
+        <i class="fas fa-users"></i>
+        <span>Student Life</span>
+      </a>
+      <a href="/admin/seo" class="menu-item active">
+        <i class="fas fa-search"></i>
+        <span>SEO Manager</span>
+      </a>
+      <a href="/admin/logout" class="menu-item text-danger"
+        onclick="return confirm('Are you sure you want to logout?');">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <!-- <div class="toggle-sidebar">
+          <i class="fas fa-bars"></i>
+        </div> -->
+        <!-- <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search...">
+        </div> -->
+      </div>
+
+      <div class="header-right">
+        <!-- <div class="header-action">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </div> -->
+        <!-- <div class="header-action">
+          <i class="fas fa-envelope"></i>
+          <span class="notification-badge">7</span>
+        </div> -->
+        <!-- <div class="user-profile" id="userProfileBtn">
+          <img src="<%= logo %>" alt="User">
+          <span>Admin User</span>
+        </div> -->
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-header">
+        <h1 class="page-title">SEO Manager</h1>
+        <div class="breadcrumb">
+          <a href="/admin/dashboard">Dashboard</a>
+          <i class="fas fa-chevron-right"></i>
+          <span>SEO Manager</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-5">
+          <div class="content-section">
+            <div class="section-header">
+              <h2 class="section-title"><%= editing ? 'Edit SEO' : 'Add New SEO' %></h2>
+            </div>
+            
+            <form action="/admin/seo/save" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="id" value="<%= (editing && seo) ? seo.id : '' %>">
+
+              <div class="form-group">
+                <label class="form-label">Page Key (exact or pattern like /courses/*)</label>
+                <input class="form-input" name="page_key" value="<%= (editing && seo) ? seo.page_key : '' %>" required>
+                <small class="text-muted">Examples: '/', '/about', '/courses', '/courses/*', 'default'</small>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Title</label>
+                <input class="form-input" name="title" value="<%= (editing && seo) ? seo.title : '' %>">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Meta Description</label>
+                <textarea class="form-textarea" name="meta_description" rows="3"><%= (editing && seo) ? seo.meta_description : '' %></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Keywords (comma separated)</label>
+                <input class="form-input" name="meta_keywords" value="<%= (editing && seo) ? seo.meta_keywords : '' %>">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">OG Title</label>
+                <input class="form-input" name="og_title" value="<%= (editing && seo) ? seo.og_title : '' %>">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">OG Description</label>
+                <textarea class="form-textarea" name="og_description" rows="2"><%= (editing && seo) ? seo.og_description : '' %></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">OG Image URL (or upload)</label>
+                <input class="form-input mb-2" name="og_image_url" value="<%= (editing && seo) ? seo.og_image : '' %>">
+                <input type="file" class="form-input" name="og_image_file">
+                <small class="text-muted">Uploading file will override URL.</small>
+                <% if (editing && seo && seo.og_image) { %>
+                  <div class="mt-2">Current: <img src="<%= seo.og_image %>" class="og-image-preview"></div>
+                <% } %>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Canonical (optional)</label>
+                <input class="form-input" name="canonical" value="<%= (editing && seo) ? seo.canonical : '' %>">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Robots</label>
+                <input class="form-input" name="robots" value="<%= (editing && seo) ? seo.robots : 'index,follow' %>">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Schema (JSON-LD)</label>
+                <textarea class="form-textarea" name="schema_json" rows="4"><%= (editing && seo) ? seo.schema_json : '' %></textarea>
+              </div>
+
+              <button class="btn btn-primary" type="submit">Save</button>
+              <% if (editing) { %>
+                <a href="/admin/seo" class="btn btn-secondary">Cancel</a>
+              <% } %>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-md-7">
+          <div class="content-section">
+            <div class="section-header">
+              <h2 class="section-title">Existing SEO Entries</h2>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Page Key</th>
+                    <th>Title</th>
+                    <th>OG Image</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% seoList.forEach(function(r) { %>
+                    <tr>
+                      <td><%= r.page_key %></td>
+                      <td><%= r.title %></td>
+                      <td>
+                        <% if (r.og_image) { %>
+                          <img src="<%= r.og_image %>" class="og-image-preview">
+                        <% } %>
+                      </td>
+                      <td>
+                        <div class="table-actions">
+                          <a class="btn btn-sm btn-primary" href="/admin/seo/edit/<%= r.id %>">Edit</a>
+                          <form method="POST" action="/admin/seo/delete/<%= r.id %>">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="dashboard-footer">
+      <p>&copy; 2023 VidyaVedika Institute. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle sidebar on mobile
+    document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('active');
+    });
+
+    // Handle image preview for OG image upload
+    document.querySelector('input[name="og_image_file"]')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const previewContainer = document.querySelector('.og-image-preview')?.parentElement;
+          if (previewContainer) {
+            previewContainer.innerHTML = 'Preview: <img src="' + event.target.result + '" class="og-image-preview">';
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
