@@ -4,57 +4,36 @@
     <link rel="icon" href="images/favicon.png" type="image/gif" sizes="16x16" />
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <!-- Primary Meta Tags -->
-    <title>Vidyavedika | Empowering Education & Knowledge Sharing</title>
-    <meta
-      name="title"
-      content="Vidyavedika | Empowering Education & Knowledge Sharing"
-    />
-    <meta
-      name="description"
-      content="Vidyavedika is a platform dedicated to learning, knowledge sharing, and empowering students through education, resources, and guidance. Discover courses, activities, and support for academic excellence."
-    />
-    <meta
-      name="keywords"
-      content="Vidyavedika, education platform, learning portal, student resources, online learning, academic guidance, knowledge sharing, study materials"
-    />
+
+    <!-- Primary Meta Tags (dynamic) -->
+    <title><%= (seo && seo.title) ? seo.title : 'Vidyavedika | Empowering Education & Knowledge Sharing' %></title>
+    <meta name="title" content="<%= (seo && seo.title) ? seo.title : 'Vidyavedika | Empowering Education & Knowledge Sharing' %>">
+    <meta name="description" content="<%= (seo && seo.meta_description) ? seo.meta_description : 'Vidyavedika is a platform dedicated to learning, knowledge sharing, and empowering students through education, resources, and guidance.' %>">
+    <meta name="keywords" content="<%= (seo && seo.meta_keywords) ? seo.meta_keywords : 'Vidyavedika, education platform, learning portal, student resources' %>">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.vidyavedika.com/" />
-    <meta
-      property="og:title"
-      content="Vidyavedika | Empowering Education & Knowledge Sharing"
-    />
-    <meta
-      property="og:description"
-      content="Explore Vidyavedika – a dedicated platform for education, learning, and knowledge sharing. Access resources, courses, and guidance for student growth."
-    />
-    <meta
-      property="og:image"
-      content="https://www.vidyavedika.com/assets/images/banner.jpg"
-    />
+    <meta property="og:url" content="<%= (seo && seo.canonical) ? seo.canonical : (typeof fullUrl !== 'undefined' ? fullUrl : 'https://www.vidyavedika.com') %>" />
+    <meta property="og:title" content="<%= (seo && seo.og_title) ? seo.og_title : ((seo && seo.title) ? seo.title : 'Vidyavedika | Empowering Education & Knowledge Sharing') %>" />
+    <meta property="og:description" content="<%= (seo && seo.og_description) ? seo.og_description : ((seo && seo.meta_description) ? seo.meta_description : 'Vidyavedika - education and courses.') %>" />
+    <meta property="og:image" content="<%= (seo && seo.og_image) ? seo.og_image : 'https://www.vidyavedika.com/assets/images/banner.jpg' %>" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://www.vidyavedika.com/" />
-    <meta
-      name="twitter:title"
-      content="Vidyavedika | Empowering Education & Knowledge Sharing"
-    />
-    <meta
-      name="twitter:description"
-      content="A learning and knowledge-sharing platform for students. Discover resources, courses, and academic support."
-    />
-    <meta
-      name="twitter:image"
-      content="https://www.vidyavedika.com/assets/images/banner.jpg"
-    />
+    <meta name="twitter:url" content="<%= (seo && seo.canonical) ? seo.canonical : (typeof fullUrl !== 'undefined' ? fullUrl : 'https://www.vidyavedika.com') %>" />
+    <meta name="twitter:title" content="<%= (seo && seo.og_title) ? seo.og_title : ((seo && seo.title) ? seo.title : 'Vidyavedika') %>" />
+    <meta name="twitter:description" content="<%= (seo && seo.og_description) ? seo.og_description : ((seo && seo.meta_description) ? seo.meta_description : '') %>" />
+    <meta name="twitter:image" content="<%= (seo && seo.og_image) ? seo.og_image : 'https://www.vidyavedika.com/assets/images/banner.jpg' %>" />
 
-    <!-- Additional SEO -->
-    <link rel="canonical" href="https://www.vidyavedika.com/" />
-    <meta name="robots" content="index, follow" />
+    <!-- Canonical -->
+    <link rel="canonical" href="<%= (seo && seo.canonical) ? seo.canonical : (typeof fullUrl !== 'undefined' ? fullUrl : 'https://www.vidyavedika.com') %>" />
 
+    <meta name="robots" content="<%= (seo && seo.robots) ? seo.robots : 'index,follow' %>" />
+
+    <!-- If there is JSON-LD schema in the DB, render it -->
+    <% if (seo && seo.schema_json) { %>
+      <script type="application/ld+json"><%= seo.schema_json %></script>
+    <% } %>
     <!-- CSS Files
     ================================================== -->
     <link
@@ -179,3 +158,4 @@ function closeNav() {
 </script>
 
    
+
