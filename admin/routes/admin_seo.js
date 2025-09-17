@@ -2,20 +2,18 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../config/db'); // adjust path to your db module
 const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('../../config/cloudinary'); // use centralized cloudinary config
 const adminController = require("../controllers/adminController");
-// configure Cloudinary (ensure env vars set)
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+const jwt = require("jsonwebtoken");
 
-const upload = multer({ dest: path.join(__dirname, '../../tmp') });
+// Multer memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+// Middleware: check authentication
 router.use(adminController.isAuthenticated);
-// List all
+
+// List all SEO records
 router.get('/seo', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM seo_meta ORDER BY page_key ASC');
@@ -26,7 +24,7 @@ router.get('/seo', async (req, res) => {
   }
 });
 
-// New (reuse form) - optional
+// New (reuse form)
 router.get('/seo/new', (req, res) => {
   res.render('admin_seo', { seoList: [], editing: false });
 });
@@ -36,6 +34,7 @@ router.get('/seo/edit/:id', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM seo_meta WHERE id = ?', [req.params.id]);
     if (!rows || rows.length === 0) return res.redirect('/admin/seo');
+
     const seo = rows[0];
     const [all] = await db.query('SELECT * FROM seo_meta ORDER BY page_key ASC');
     res.render('admin_seo', { seoList: all, editing: true, seo });
@@ -45,20 +44,25 @@ router.get('/seo/edit/:id', async (req, res) => {
   }
 });
 
-// Save (create or update) - handles og_image_file upload
+// Save (create or update) with Cloudinary upload
 router.post('/seo/save', upload.single('og_image_file'), async (req, res) => {
   try {
     const body = req.body;
     let ogImage = body.og_image_url || null;
 
     if (req.file) {
-      // upload to cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: 'vidyavedika/seo'
+      // upload buffer to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'vidyavedika/seo' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        uploadStream.end(req.file.buffer);
       });
       ogImage = result.secure_url;
-      // delete tmp file
-      fs.unlink(req.file.path, () => {});
     }
 
     const data = [
@@ -75,15 +79,18 @@ router.post('/seo/save', upload.single('og_image_file'), async (req, res) => {
     ];
 
     if (body.id) {
-      // update
+      // update existing record
       await db.query(
-        `UPDATE seo_meta SET page_key=?, title=?, meta_description=?, meta_keywords=?, og_title=?, og_description=?, og_image=?, canonical=?, robots=?, schema_json=? WHERE id=?`,
+        `UPDATE seo_meta 
+         SET page_key=?, title=?, meta_description=?, meta_keywords=?, og_title=?, og_description=?, og_image=?, canonical=?, robots=?, schema_json=? 
+         WHERE id=?`,
         [...data, body.id]
       );
     } else {
-      // insert (ignore duplicate page_key)
+      // insert new record
       await db.query(
-        `INSERT INTO seo_meta (page_key, title, meta_description, meta_keywords, og_title, og_description, og_image, canonical, robots, schema_json)
+        `INSERT INTO seo_meta 
+         (page_key, title, meta_description, meta_keywords, og_title, og_description, og_image, canonical, robots, schema_json)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         data
       );
@@ -91,12 +98,12 @@ router.post('/seo/save', upload.single('og_image_file'), async (req, res) => {
 
     res.redirect('/admin/seo');
   } catch (err) {
-    console.error('save seo error', err);
+    console.error('Save SEO error:', err);
     res.status(500).send('Server error');
   }
 });
 
-// Delete
+// Delete SEO record
 router.post('/seo/delete/:id', async (req, res) => {
   try {
     await db.query('DELETE FROM seo_meta WHERE id = ?', [req.params.id]);
