@@ -17,6 +17,11 @@ app.set("views", [
     path.join(__dirname, "admin", "views")
 ]);
 
+app.use((req, res, next) => { res.locals.req = req; next(); });
+
+const { seoMiddleware } = require('./routes/seometa');
+app.use(seoMiddleware);
+
 // Middleware to load footer data for all pages
 app.use(async function (req, res, next) {
   try {
@@ -75,7 +80,8 @@ app.use(
 
 const aboutusRoutes = require("./routes/aboutusRoutes"); 
 app.use("/", aboutusRoutes);
-
+const adminSeoRoutes = require('./admin/routes/admin_seo');
+app.use('/admin', adminSeoRoutes);
 const adminRoutes = require("./admin/routes/adminRoutes");
 const indexRoutes = require('./routes/indexRoutes');
 app.use('/', indexRoutes); 
@@ -264,3 +270,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
 
 module.exports = app;
+
