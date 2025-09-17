@@ -20,8 +20,20 @@ router.get("/", async (req, res) => {
     } else {
       homeContent.banner_image_paths = [];
     }
-    
-    
+
+    // ✅ Fetch gallery images (all)
+    const [galleryImages] = await db.query("SELECT * FROM gallery_images");
+
+    // 👉 Pagination logic
+    const perPage = 8;
+    const page = parseInt(req.query.page) || 1;
+    const totalPages = Math.ceil(galleryImages.length / perPage);
+
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const imagesToShow = galleryImages.slice(start, end);
+
+
 
     // --- CTA content ---
     const [ctaRows] = await db.query("SELECT * FROM cta_content WHERE id = 1");
@@ -33,9 +45,12 @@ router.get("/", async (req, res) => {
 
     console.log("👉 CTA Content from DB:", ctaContent);
 
-    // ✅ Fetch gallery images
-    const [galleryImages] = await db.query("SELECT * FROM gallery_images");
-
+   // --- Gallery content (heading + desc) ---
+    const [galleryRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
+    let galleryContent = galleryRows[0] || {
+      heading: "Default Gallery Heading",
+      description: "Default gallery description.",
+    };
     const [whyChooseRows] = await db.query('SELECT * FROM why_choose_us WHERE id = 1');
     const whyChooseUs = whyChooseRows[0] || {};
 
@@ -49,21 +64,16 @@ router.get("/", async (req, res) => {
 
     const [testimonials] = await db.query("SELECT * FROM testimonials ORDER BY id DESC");
 
-    
+
 
     // --- Counters content ---
     const [counterRows] = await db.query("SELECT * FROM counters");
     let counters = counterRows || [];
 
     const [sections] = await db.query("SELECT * FROM course_section ORDER BY id ASC");
-     const [courses] = await db.query("SELECT * FROM courses ORDER BY id ASC");
+    const [courses] = await db.query("SELECT * FROM courses ORDER BY id ASC");
 
-    const [galleryRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
-    
-    let galleryContent = galleryRows[0] || {
-      heading: "Default Gallery Heading",
-      description: "Default gallery description.",
-    };
+    // const [galleryRows] = await db.query("SELECT * FROM gallery_content WHERE id = 1");
     const [aboutRows] = await db.query("SELECT * FROM about_us WHERE id = 1");
     let aboutUs = aboutRows[0] || {
       heading: "Default About Us Heading",
@@ -73,13 +83,22 @@ router.get("/", async (req, res) => {
       image2: "/images/default2.png",
     };
 
-    
+    // let galleryContent = galleryRows[0] || {
+    //   heading: "Default Gallery Heading",
+    //   description: "Default gallery description.",
+    // };
+
 
     console.log("👉 CTA Content from DB:", ctaContent);
     console.log("👉 Counters from DB:", counters);
 
     // --- Pass both into EJS ---
-    res.render("index", { homeContent, ctaContent, counters, galleryContent, galleryImages, testimonialContent, testimonials, whyChooseUs, sections, courses, aboutUs });
+    res.render("index", { homeContent, ctaContent, counters, galleryContent,
+      galleryImages,
+      imagesToShow,   // ✅ current page images
+      currentPage: page,  // ✅ add currentPage
+      totalPages,         // ✅ add totalPages,
+      imagesToShow, testimonialContent, testimonials, whyChooseUs, sections, courses, aboutUs });
 
   } catch (err) {
     console.error("Error in homepage route:", err);
@@ -88,4 +107,3 @@ router.get("/", async (req, res) => {
 });
 
 module.exports = router;
-
