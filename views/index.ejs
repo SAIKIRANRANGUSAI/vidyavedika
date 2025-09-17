@@ -310,8 +310,8 @@
       </div>
 
       <div class="row">
-        <% if (typeof galleryImages !=="undefined" && galleryImages.length> 0) { %>
-          <% galleryImages.slice(0, 8).forEach(img=> { %>
+        <% if (typeof imagesToShow !=="undefined" && imagesToShow.length> 0) { %>
+          <% imagesToShow.forEach(img=> { %>
             <div class="col-md-3 col-sm-6 col-12 mb-4 item facilities">
               <a href="<%= img.file_path %>" class="image-popup d-block hover">
                 <div class="relative overflow-hidden rounded-1">
@@ -329,11 +329,30 @@
                 <% } %>
       </div>
 
+      <!-- Pagination -->
+      <% if (totalPages> 1) { %>
+        <div class="d-flex justify-content-center mt-4">
+          <nav>
+            <ul class="pagination">
+              <% for (let i=1; i <=totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>">
+                    <%= i %>
+                  </a>
+                </li>
+                <% } %>
+            </ul>
+          </nav>
+        </div>
+        <% } %>
+
 
 
 
     </div>
   </section>
+
+
   <section class="bg-color-op-1">
     <div class="container">
       <div class="row">
@@ -401,4 +420,5 @@
 
 
   <%- include('partials/footer') %>
+
 
