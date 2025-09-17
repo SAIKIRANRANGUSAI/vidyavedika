@@ -33,9 +33,11 @@
 
                   <!-- Content -->
                   <div class="relative mt-2 wow fadeInUp">
+                    <a href="/courses/<%= course.heading.toLowerCase() %>">
                     <h4>
                       <%= course.heading %>
                     </h4>
+                    </a>
                     <p>
                       <%= course.description ? course.description.substring(0, 100) + '...'
                         : 'Description coming soon...' %>
