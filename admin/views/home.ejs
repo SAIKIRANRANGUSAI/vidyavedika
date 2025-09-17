@@ -1017,6 +1017,7 @@
                 <form action="/admin/home/gallery/upload" method="POST" enctype="multipart/form-data" class="mt-4">
                     <div class="form-group">
                         <label class="form-label">Upload New Gallery Images</label>
+<small class="text-muted d-block">Please upload up to <strong>7 images only</strong>.</small>
                         <input type="file" name="gallery_images" class="form-input" multiple accept="image/*">
                     </div>
                     <div class="form-footer">
@@ -1231,7 +1232,14 @@
                                     <input type="text" class="form-control" id="testimonialRole" name="role" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="testimonialDescription" class="form-label">Description</label>
+                                    <label for="testimonialDescription" class="form-label">
+  Description
+  <br>
+  <small class="text-muted">
+    Note: Please add up to <strong>152 characters</strong> only in the description to avoid disturbing the homepage design.
+  </small>
+</label>
+
                                     <textarea class="form-control" id="testimonialDescription" name="description"
                                         required></textarea>
                                 </div>
@@ -1523,5 +1531,6 @@
         </div> -->
         
 </body>
+
 
 </html>
