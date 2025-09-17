@@ -664,20 +664,18 @@ router.get("/home/gallery/delete-image/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
-    // 1. Get file path from DB
-    const [rows] = await db.query("SELECT file_path FROM gallery_images WHERE id = ?", [id]);
+    // Check if image exists in DB
+    const [rows] = await db.query(
+      "SELECT file_path FROM gallery_images WHERE id = ?",
+      [id]
+    );
+
     if (rows.length > 0) {
-      const dbPath = rows[0].file_path; // e.g. "/uploads/gallery/xyz.png"
+      // Optionally, delete local file if stored locally
+      // const absolutePath = path.join(__dirname, "../../public", rows[0].file_path);
+      // if (fs.existsSync(absolutePath)) fs.unlinkSync(absolutePath);
 
-      // 2. Resolve absolute path
-      const absolutePath = path.join(__dirname, "../../public", dbPath);
-
-      // 3. Delete from filesystem
-      if (fs.existsSync(absolutePath)) {
-        fs.unlinkSync(absolutePath);
-      }
-
-      // 4. Delete DB entry
+      // Delete DB entry
       await db.query("DELETE FROM gallery_images WHERE id = ?", [id]);
     }
 
@@ -952,6 +950,7 @@ router.post("/contactus/contact-details/save", async (req, res) => {
     res.status(500).send("Database error");
   }
 });
+
 
 
 module.exports = router;
