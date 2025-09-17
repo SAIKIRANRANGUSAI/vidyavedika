@@ -181,9 +181,11 @@
                 <div class="bg-white h-100 p-20 rounded-1">
                   <img src="<%= course.image %>" class="w-70px mb-3 wow scaleIn" alt="<%= course.heading %>">
                   <div class="relative mt-2 wow fadeInUp">
+<a href="/courses/<%= course.heading.toLowerCase() %>">
                     <h4>
                       <%= course.heading %>
                     </h4>
+</a>
                     <p>
                       <%= course.description %>
                     </p>
@@ -420,6 +422,7 @@
 
 
   <%- include('partials/footer') %>
+
 
 
 
