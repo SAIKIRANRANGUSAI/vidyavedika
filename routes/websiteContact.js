@@ -23,7 +23,6 @@ router.post("/contact-us/send", async (req, res) => {
     }
 
     // Verify CAPTCHA
-    // const secretKey = process.env.RECAPTCHA_SECRET_KEY;
     const secretKey = "6Lf2Mc0rAAAAAPZYg9MHRyVvKE2IQgLBMAqrUaaL";
 
     const captchaVerify = await axios.post(
@@ -66,5 +65,3 @@ router.get("/contact", async (req, res) => {
 });
 
 module.exports = router;
-
-
