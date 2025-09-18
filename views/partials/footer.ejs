@@ -85,54 +85,52 @@
         </div>
       </div>
       <div class="col-lg-3 col-sm-6 order-lg-2 order-sm-1">
-        <div class="widget">
-          <h5>Contact Us</h5>
+  <div class="widget">
+    <h5>Contact Us</h5>
 
-          <div class="fw-bold text-white">
-            <i class="icofont-location-pin me-2 id-color"></i>
-            <% if (footerData && footerData.contact && footerData.contact.location_heading) { %>
-              <%= footerData.contact.location_heading %>
-                <% } else { %>
-                  Location
-                  <% } %>
-          </div>
-          <% if (footerData && footerData.contact && footerData.contact.location_text) { %>
-            <%= footerData.contact.location_text %>
-              <% } else { %>
-                Vizag, India.
-                <% } %>
+    <!-- Location -->
+    <div class="fw-bold text-white">
+      <i class="icofont-location-pin me-2 id-color"></i>
+      <%= footerData?.contact?.location_heading || "Location" %>
+    </div>
+    <div>
+      <%= footerData?.contact?.location_text || "Vizag, India." %>
+    </div>
 
-                  <div class="spacer-20"></div>
+    <div class="spacer-20"></div>
 
-                  <div class="fw-bold text-white">
-                    <i class="icofont-phone me-2 id-color"></i>
-                    <% if (footerData && footerData.contact && footerData.contact.phone_heading) { %>
-                      <%= footerData.contact.phone_heading %>
-                        <% } else { %>
-                          Call Us
-                          <% } %>
-                  </div>
-                  <a
-                    href="tel:<%= footerData && footerData.contact ? footerData.contact.phone_number : '+91 123456789' %>">
-                    <%= footerData && footerData.contact ? footerData.contact.phone_number : '+91 123456789' %>
-                  </a>
+    <!-- Phone numbers -->
+    <div class="fw-bold text-white">
+      <i class="icofont-phone me-2 id-color"></i>
+      <%= footerData?.contact?.phone_heading || "Call Us" %>
+    </div>
+    <div>
+      <% 
+        const phones = (footerData?.contact?.phone_number || "+91 123456789").split(',');
+        phones.forEach(phone => { 
+      %>
+        <a href="tel:<%= phone.trim() %>"><%= phone.trim() %></a><br>
+      <% }) %>
+    </div>
 
-                  <div class="spacer-20"></div>
+    <div class="spacer-20"></div>
 
-                  <div class="fw-bold text-white">
-                    <i class="icofont-envelope me-2 id-color"></i>
-                    <% if (footerData && footerData.contact && footerData.contact.email_heading) { %>
-                      <%= footerData.contact.email_heading %>
-                        <% } else { %>
-                          Email Us
-                          <% } %>
-                  </div>
-                  <a
-                    href="mailto:<%= footerData && footerData.contact ? footerData.contact.email_address : 'info@vidyavedika.com' %>">
-                    <%= footerData && footerData.contact ? footerData.contact.email_address : 'info@vidyavedika.com' %>
-                  </a>
-        </div>
-      </div>
+    <!-- Emails -->
+    <div class="fw-bold text-white">
+      <i class="icofont-envelope me-2 id-color"></i>
+      <%= footerData?.contact?.email_heading || "Email Us" %>
+    </div>
+    <div>
+      <% 
+        const emails = (footerData?.contact?.email_address || "info@vidyavedika.com").split(',');
+        emails.forEach(email => { 
+      %>
+        <a href="mailto:<%= email.trim() %>"><%= email.trim() %></a><br>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
     </div>
   </div>
   <div class="subfooter">
@@ -232,6 +230,7 @@
 
 
 </html>
+
 
 
 
