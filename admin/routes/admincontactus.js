@@ -74,29 +74,61 @@ router.post("/save", async (req, res) => {
 
 // POST save Contact Details
 router.post("/contact-details/save", async (req, res) => {
-    try {
-        const data = {
-            location_heading: req.body.location_heading,
-            location_text: req.body.location_text,
-            phone_heading: req.body.phone_heading,
-            phone_number: req.body.phone_number,
-            email_heading: req.body.email_heading,
-            email_address: req.body.email_address,
-        };
+  try {
+    const data = {
+      location_heading: req.body.location_heading?.trim(),
+      location_text: req.body.location_text?.trim(),
+      phone_heading: req.body.phone_heading?.trim(),
+      phone_number: req.body.phone_number?.trim(), // may contain multiple numbers
+      email_heading: req.body.email_heading?.trim(),
+      email_address: req.body.email_address?.trim(),
+    };
 
-        const [existing] = await db.query("SELECT id FROM contact_details LIMIT 1");
+    // ✅ Phone validation (allow multiple numbers separated by commas)
+    const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{10}$/;
+    const phoneNumbers = data.phone_number.split(",").map(num => num.trim());
 
-        if (existing.length > 0) {
-            await db.query("UPDATE contact_details SET ? WHERE id = ?", [data, existing[0].id]);
-        } else {
-            await db.query("INSERT INTO contact_details SET ?", [data]);
-        }
-
-        res.redirect("/admin/contactus");
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Database error");
+    for (let num of phoneNumbers) {
+      if (!phoneRegex.test(num)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid phone number: ${num}. Example: +919876543210 or 9876543210`,
+        });
+      }
     }
+
+    // ✅ Email validation (multiple emails allowed, separated by commas)
+    const emails = data.email_address.split(",").map(e => e.trim());
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    for (let email of emails) {
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid email address: ${email}`,
+        });
+      }
+    }
+
+    // ✅ Insert or Update contact_details
+    const [existing] = await db.query("SELECT id FROM contact_details LIMIT 1");
+
+    if (existing.length > 0) {
+      await db.query("UPDATE contact_details SET ? WHERE id = ?", [data, existing[0].id]);
+    } else {
+      await db.query("INSERT INTO contact_details SET ?", [data]);
+    }
+
+    return res.json({
+      success: true,
+      message: "Contact details updated successfully!",
+    });
+  } catch (err) {
+    console.error("DB Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Database error. Please try again later.",
+    });
+  }
 });
 
 // ---------------- POST Contact Message from Website ----------------
@@ -145,4 +177,5 @@ router.post("/messages/delete/:id", async (req, res) => {
 
 
 module.exports = router;
+
 
