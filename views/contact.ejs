@@ -75,7 +75,7 @@
                             <!-- Load reCAPTCHA v2 -->
                             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-                            <form id="contactForm" action="/contact-us/send" method="POST">
+                            <form id="contactForm" method="POST">
                                 <div class="mb-4">
                                     <input type="text" name="name" id="name" class="form-control"
                                         placeholder="Your Name" required>
@@ -98,7 +98,7 @@
 
                                 <!-- ✅ v2 reCAPTCHA checkbox -->
                                 <div class="mb-4">
-                                    <div class="g-recaptcha" data-sitekey="6LfIRM0rAAAAAGfORHKKpFWIW3Mjx4nf1J1yyjge">
+                                    <div class="g-recaptcha" data-sitekey="6Lf2Mc0rAAAAANVm9KDgNu9bfsIEbc9fz6U9NC-s">
                                     </div>
                                 </div>
 
@@ -106,8 +106,57 @@
                                     <input type="submit" id="send_message" value="Send Message" class="btn-main">
                                 </div>
                             </form>
+
+                            <!-- Popup message -->
+                            <div id="contactMessage" style="display:none; margin-top:10px;"></div>
                         </div>
                     </div>
+                    <script>
+                        document.getElementById("contactForm").addEventListener("submit", async function (e) {
+                            e.preventDefault();
+
+                            const form = e.target;
+                            const formData = new FormData(form);
+                            const data = Object.fromEntries(formData.entries());
+
+                            // Get reCAPTCHA response
+                            data["g-recaptcha-response"] = grecaptcha.getResponse();
+
+                            const messageDiv = document.getElementById("contactMessage");
+                            messageDiv.style.display = "block";
+                            messageDiv.style.padding = "10px";
+                            messageDiv.style.borderRadius = "5px";
+
+                            try {
+                                const response = await fetch("/contact-us/send", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify(data)
+                                });
+
+                                const result = await response.json();
+
+                                if (result.success) {
+                                    messageDiv.style.backgroundColor = "#d4edda";
+                                    messageDiv.style.color = "#155724";
+                                    messageDiv.innerText = result.message;
+                                    form.reset();
+                                    grecaptcha.reset();
+                                } else {
+                                    messageDiv.style.backgroundColor = "#f8d7da";
+                                    messageDiv.style.color = "#721c24";
+                                    messageDiv.innerText = result.message;
+                                }
+
+                            } catch (err) {
+                                console.error(err);
+                                messageDiv.style.backgroundColor = "#f8d7da";
+                                messageDiv.style.color = "#721c24";
+                                messageDiv.innerText = "Server error. Please try again.";
+                            }
+                        });
+                    </script>
+
 
 
                 </div>
