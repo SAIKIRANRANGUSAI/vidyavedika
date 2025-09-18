@@ -57,21 +57,7 @@
   <div class="widget widget-post">
     <h4>Related Courses</h4>
     <ul class="de-bloglist-type-1">
-  <% courses.forEach(c => { %>
-    <li>
-      <div class="d-image">
-        <img src="<%= c.image || '/images/related-corses.png' %>" alt="<%= c.heading %>">
-      </div>
-      <div class="d-content">
-        <a href="/courses/<%= c.heading.toLowerCase() %>">
-          <h4><%= c.heading %></h4>
-        </a>
-        <p class="mb-0">
-          <%= c.description ? c.description.substring(0, 60) + '...' : 'Description coming soon...' %>
-        </p>
-      </div>
-    </li>
-  <% }) %>
+  
 </ul>
 
   </div>
