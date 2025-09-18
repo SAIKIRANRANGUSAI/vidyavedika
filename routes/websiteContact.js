@@ -23,7 +23,7 @@ router.post("/contact-us/send", async (req, res) => {
     }
 
     // Verify CAPTCHA
-    const secretKey = "6Lf2Mc0rAAAAAPZYg9MHRyVvKE2IQgLBMAqrUaaL";
+    const secretKey = "6LfIRM0rAAAAAH1CVLqy-zJtYUCnk5t5qFQSG_LQ";
 
     const captchaVerify = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`
@@ -65,3 +65,4 @@ router.get("/contact", async (req, res) => {
 });
 
 module.exports = router;
+
