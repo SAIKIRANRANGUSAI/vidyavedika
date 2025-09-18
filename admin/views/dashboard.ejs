@@ -837,52 +837,112 @@
             </div>
 
 
-            <div class="content-section">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+             <div class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">Contact Details</h2>
                 </div>
-                <form action="/admin/contactus/contact-details/save" method="POST">
-                    <div class="form-group">
-                        <label class="form-label">Location Heading</label>
-                        <input type="text" class="form-input" name="location_heading"
-                            value="<%= (contactDetails && contactDetails.location_heading) ? contactDetails.location_heading : '' %>" " required>
-                    </div>
-                    <div class=" form-group">
-                        <label class="form-label">Location Text</label>
-                        <input type="text" class="form-input" name="location_text"
-                            value="<%= contactDetails?.location_text || '' %>" required>
-                    </div>
+            <form id="contactDetailsForm" action="/admin/contactus/contact-details/save" method="POST" novalidate>
+                <div class="form-group">
+                    <label class="form-label">Location Heading</label>
+                    <input type="text" class="form-input" name="location_heading"
+                        value="<%= (contactDetails && contactDetails.location_heading) ? contactDetails.location_heading : '' %>"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location Text</label>
+                    <input type="text" class="form-input" name="location_text"
+                        value="<%= contactDetails?.location_text || '' %>" required>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Phone Heading</label>
-                        <input type="text" class="form-input" name="phone_heading"
-                            value="<%= contactDetails?.phone_heading || '' %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="text" class="form-input" name="phone_number"
-                            value="<%= contactDetails?.phone_number || '' %>" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Heading</label>
+                    <input type="text" class="form-input" name="phone_heading"
+                        value="<%= contactDetails?.phone_heading || '' %>" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" class="form-input" name="phone_number"
+                        value="<%= contactDetails?.phone_number || '' %>" required>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Email Heading</label>
-                        <input type="text" class="form-input" name="email_heading"
-                            value="<%= contactDetails?.email_heading || '' %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email Address(es)</label>
-                        <input type="text" class="form-input" name="email_address"
-                            value="<%= contactDetails?.email_address || '' %>"
-                            placeholder="Enter multiple emails separated by commas" required>
+                <div class="form-group">
+                    <label class="form-label">Email Heading</label>
+                    <input type="text" class="form-input" name="email_heading"
+                        value="<%= contactDetails?.email_heading || '' %>" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address(es)</label>
+                    <input type="text" class="form-input" name="email_address"
+                        value="<%= contactDetails?.email_address || '' %>"
+                        placeholder="Enter multiple emails separated by commas" required>
+                </div>
 
-                    </div>
-
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-primary">Save Contact Details</button>
-                    </div>
-                </form>
+                <div class="form-footer">
+                    <button type="submit" id="contactSubmitBtn" class="btn btn-primary">Save Contact Details</button>
+                </div>
+            </form>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const form = document.getElementById('contactDetailsForm');
+                    if (!form) return;
+
+                    const submitBtn = document.getElementById('contactSubmitBtn');
+
+                    form.addEventListener('submit', async function (e) {
+                        e.preventDefault();                // stop normal submit
+                        // basic client-side gathering & trim
+                        const payload = {
+                            location_heading: form.location_heading.value.trim(),
+                            location_text: form.location_text.value.trim(),
+                            phone_heading: form.phone_heading.value.trim(),
+                            phone_number: form.phone_number.value.trim(),
+                            email_heading: form.email_heading.value.trim(),
+                            email_address: form.email_address.value.trim()
+                        };
+
+                        // optional quick client-side checks
+                        if (!payload.location_heading || !payload.location_text || !payload.phone_number || !payload.email_address) {
+                            Swal.fire('Validation', 'Please fill all required fields.', 'warning');
+                            return;
+                        }
+
+                        // disable button
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('disabled');
+
+                        try {
+                            const res = await fetch(form.action || window.location.pathname, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload),
+                                credentials: 'same-origin' // include cookies if needed
+                            });
+
+                            // try to parse JSON
+                            let data;
+                            try { data = await res.json(); } catch (err) { data = null; }
+
+                            if (res.ok && data && data.success) {
+                                Swal.fire({ icon: 'success', title: 'Saved', text: data.message || 'Contact details updated.' });
+                                // stay on same page; optionally update form values or UI here
+                            } else {
+                                // server responded with error status or invalid JSON
+                                const errMsg = (data && data.message) ? data.message : `Server error (${res.status})`;
+                                Swal.fire({ icon: 'error', title: 'Error', text: errMsg });
+                            }
+                        } catch (err) {
+                            console.error('Fetch error', err);
+                            Swal.fire({ icon: 'error', title: 'Network error', text: 'Failed to save. Try again.' });
+                        } finally {
+                            submitBtn.disabled = false;
+                            submitBtn.classList.remove('disabled');
+                        }
+                    });
+                });
+            </script>
             <!-- Social Links Settings Section -->
             <div class="content-section" id="contact-us">
             <section id="social-links-section" class="card p-4 mb-4">
@@ -1284,6 +1344,7 @@
 
 
 </html>
+
 
 
 
