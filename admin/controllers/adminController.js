@@ -199,23 +199,42 @@ exports.isAuthenticated = (req, res, next) => {
 };
 
 // GET change credentials page (optional if you render separately)
+// GET change credentials page (optional if you render separately)
 exports.getChangeCredentials = async (req, res) => {
   try {
-    const adminId = res.cookie.admin.id;
+    const token = req.cookies.token;
+    if (!token) return res.redirect("/admin/login");
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "12345678");
+    const adminId = decoded.id;
+
     const [rows] = await db.query("SELECT username FROM admins WHERE id = ?", [adminId]);
     const currentUsername = rows[0]?.username || "";
-    res.render("admin/dashboard", { username: currentUsername, error: null, success: null });
+
+    res.render("admin/change-credentials", {
+      username: currentUsername,
+      error: null,
+      success: null
+    });
   } catch (err) {
-    console.error(err);
-    res.render("admin/dashboard", { username: res.cookie.admin.username, error: "Failed to load admin details", success: null });
+    console.error("Error loading change credentials:", err);
+    res.render("admin/change-credentials", {
+      username: "",
+      error: "Failed to load admin details",
+      success: null
+    });
   }
 };
-
 exports.postChangeCredentials = async (req, res) => {
   const { newUsername, currentPassword, newPassword, confirmNewPassword } = req.body;
-  const adminId = res.cookie.admin.id;
 
   try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Not authenticated" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "12345678");
+    const adminId = decoded.id;
+
     const [rows] = await db.query("SELECT password FROM admins WHERE id = ?", [adminId]);
     const user = rows[0];
     if (!user) return res.status(404).json({ error: "User not found." });
@@ -227,9 +246,10 @@ exports.postChangeCredentials = async (req, res) => {
       return res.status(400).json({ error: "New passwords do not match." });
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await db.query("UPDATE admins SET username = ?, password = ? WHERE id = ?", [newUsername, hashedPassword, adminId]);
-
-    res.cookie.admin.username = newUsername;
+    await db.query(
+      "UPDATE admins SET username = ?, password = ? WHERE id = ?",
+      [newUsername, hashedPassword, adminId]
+    );
 
     return res.json({ success: true, message: "Credentials updated successfully!" });
   } catch (err) {
@@ -292,3 +312,4 @@ exports.postChangeCredentials = async (req, res) => {
 //     res.status(500).json({ success: false, message: "Server error. Please try again." });
 //   }
 // };
+
