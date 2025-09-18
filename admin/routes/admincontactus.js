@@ -9,24 +9,44 @@ router.use(adminController.isAuthenticated);
 // GET dashboard with both sections
 router.get("/", async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5;
+        const offset = (page - 1) * limit;
+
         const [contactRows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
         const contactUs = contactRows[0] || {};
 
         const [detailsRows] = await db.query("SELECT * FROM contact_details LIMIT 1");
         const contactDetails = detailsRows[0] || {};
-        const [messages] = await db.query("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
-        // Pass username as well
-        const username = "Admin User"; // or fetch from DB if you have a users table
+        // total messages
+        const [countRows] = await db.query("SELECT COUNT(*) AS total FROM contact_messages");
+        const totalMessages = countRows[0].total;
+        const totalPages = Math.ceil(totalMessages / limit);
 
-        res.render("dashboard", { contactUs, contactDetails, username, messages });
+        // fetch only 5 messages per page
+        const [messages] = await db.query(
+            `SELECT *, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS date_time
+             FROM contact_messages
+             ORDER BY created_at DESC
+             LIMIT ? OFFSET ?`,
+            [limit, offset]
+        );
+
+        res.render("dashboard", {
+            contactUs,
+            contactDetails,
+            username: "Admin User",
+            messages,          // only 5 messages per page
+            currentPage: page,
+            totalPages
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error");
     }
 });
-
-
 // POST save Contact Us heading & description
 router.post("/save", async (req, res) => {
     try {
@@ -125,3 +145,4 @@ router.post("/messages/delete/:id", async (req, res) => {
 
 
 module.exports = router;
+
