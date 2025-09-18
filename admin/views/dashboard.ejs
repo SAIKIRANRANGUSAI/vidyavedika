@@ -884,6 +884,7 @@
                 </form>
             </div>
             <!-- Social Links Settings Section -->
+            <div class="content-section" id="contact-us">
             <section id="social-links-section" class="card p-4 mb-4">
                 <h3 class="mb-3">Social Links & Description</h3>
 
@@ -891,109 +892,80 @@
                 <div id="socialMessage" class="alert" style="display:none;"></div>
 
                 <!-- Social Links Form -->
-<form id="socialLinksForm" method="POST" action="/update-social">
-
-    <div class="form-group mb-3">
-        <label for="description">Description</label>
-        <textarea id="description" name="description" class="form-input w-full p-2 border rounded"
-            rows="3" placeholder="Enter description"></textarea>
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="facebook">Facebook URL</label>
-        <input type="text" id="facebook" name="facebook" class="form-input w-full p-2 border rounded"
-            placeholder="Enter Facebook URL">
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="twitter">Twitter (X) URL</label>
-        <input type="text" id="twitter" name="twitter" class="form-input w-full p-2 border rounded"
-            placeholder="Enter Twitter URL">
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="instagram">Instagram URL</label>
-        <input type="text" id="instagram" name="instagram" class="form-input w-full p-2 border rounded"
-            placeholder="Enter Instagram URL">
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="youtube">YouTube URL</label>
-        <input type="text" id="youtube" name="youtube" class="form-input w-full p-2 border rounded"
-            placeholder="Enter YouTube URL">
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="whatsapp">WhatsApp Number/Link</label>
-        <input type="text" id="whatsapp" name="whatsapp" class="form-input w-full p-2 border rounded"
-            placeholder="Enter WhatsApp link or number">
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-2">Update Social Links</button>
-</form>
-
-            </section>
-            <script>
-                const socialForm = document.getElementById('socialLinksForm');
-                const socialMessage = document.getElementById('socialMessage');
-
-                socialForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-
-                    const formData = new URLSearchParams(new FormData(socialForm));
-
-                    try {
-                        const response = await fetch('/admin/update-social', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: formData
-                        });
-
-                        const result = await response.json();
-
-                        if (result.success) {
-                            socialMessage.textContent = result.message;
-                            socialMessage.className = 'alert alert-success';
-                            socialMessage.style.display = 'block';
-                        } else {
-                            socialMessage.textContent = result.message || 'Something went wrong';
-                            socialMessage.className = 'alert alert-danger';
-                            socialMessage.style.display = 'block';
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        socialMessage.textContent = 'Server error. Try again.';
-                        socialMessage.className = 'alert alert-danger';
-                        socialMessage.style.display = 'block';
-                    }
-                });
-            </script>
-
-            <div class="card p-4 mb-4">
-                <h4>Current Logo</h4>
-                <img src="<%= logo %>" alt="Current Logo" class="img-fluid mb-3" style="max-width:200px;">
-
-                <% if (locals.logoError) { %>
-                    <div class="alert alert-danger">
-                        <%= locals.logoError %>
+                <form id="socialLinksForm" method="POST" action="/admin/update-social">
+                    <div class="form-group mb-3">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" class="form-input w-full p-2 border rounded"
+                            rows="3" placeholder="Enter description"><%= social.description || "" %></textarea>
                     </div>
-                    <% } %>
 
-                        <% if (locals.logoSuccess) { %>
-                            <div class="alert alert-success">
-                                <%= locals.logoSuccess %>
-                            </div>
-                            <% } %>
+                    <div class="form-group mb-3">
+                        <label for="facebook">Facebook URL</label>
+                        <input type="text" id="facebook" name="facebook" class="form-input w-full p-2 border rounded"
+                            value="<%= social.facebook || "" %>" placeholder="Enter Facebook URL">
+                    </div>
 
-                                <form action="/admin/dashboard/update-logo" method="POST" enctype="multipart/form-data"
-                                    onsubmit="return confirm('Are you sure you want to change the logo?');">
-                                    <div class="mb-3">
-                                        <label for="logo" class="form-label">Upload New Logo</label>
-                                        <input type="file" name="logo" id="logo" class="form-control" accept="image/*"
-                                            required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Update Logo</button>
-                                </form>
+                    <div class="form-group mb-3">
+                        <label for="twitter">Twitter (X) URL</label>
+                        <input type="text" id="twitter" name="twitter" class="form-input w-full p-2 border rounded"
+                            value="<%= social.twitter || "" %>" placeholder="Enter Twitter URL">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="instagram">Instagram URL</label>
+                        <input type="text" id="instagram" name="instagram" class="form-input w-full p-2 border rounded"
+                            value="<%= social.instagram || "" %>" placeholder="Enter Instagram URL">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="youtube">YouTube URL</label>
+                        <input type="text" id="youtube" name="youtube" class="form-input w-full p-2 border rounded"
+                            value="<%= social.youtube || "" %>" placeholder="Enter YouTube URL">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="whatsapp">WhatsApp Number/Link</label>
+                        <input type="text" id="whatsapp" name="whatsapp" class="form-input w-full p-2 border rounded"
+                            value="<%= social.whatsapp || "" %>" placeholder="Enter WhatsApp link or number">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-2">
+                        Update Social Links
+                    </button>
+                </form>
+            </section>
+            </div>
+
+            <div class="content-section">
+                <div class="card p-4 mb-4">
+                    <h2>Current Logo</h2>
+                    <img src="<%= logo %>" alt="Current Logo" class="img-fluid mb-3" style="max-width:200px;">
+
+                    <% if (locals.logoError) { %>
+                        <div class="alert alert-danger">
+                            <%= locals.logoError %>
+                        </div>
+                        <% } %>
+
+                            <% if (locals.logoSuccess) { %>
+                                <div class="alert alert-success">
+                                    <%= locals.logoSuccess %>
+                                </div>
+                                <% } %>
+
+                                    <form action="/admin/dashboard/update-logo" method="POST"
+                                        enctype="multipart/form-data"
+                                        onsubmit="return confirm('Are you sure you want to change the logo?');">
+                                        <div class="mb-3">
+                                            <label for="logo" class="form-label">Upload New Logo</label>
+                                            <input type="file" name="logo" id="logo" class="form-control mb-3"
+                                                accept="image/*" required>
+                                                
+                                        </div>
+                                        <button type="submit" class="btn btn-primary "  style="margin-top: 15px;">Update Logo</button>
+                                    </form>
+
+                </div>
 
             </div>
 
@@ -1312,6 +1284,7 @@
 
 
 </html>
+
 
 
 
