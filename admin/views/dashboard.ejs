@@ -632,6 +632,19 @@
                 padding: 16px;
             }
         }
+.table-responsive::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
     </style>
 </head>
 
@@ -726,7 +739,7 @@
             <div class="page-header">
                 <h1 class="page-title">Dashboard</h1>
                 <div class="breadcrumb">
-                    <a href="admin/dashboard">dashboard</a>
+                    <a href="dashboard">dashboard</a>
                     <i class="fas fa-chevron-right"></i>
                     <span>Dashboard</span>
                 </div>
@@ -744,7 +757,8 @@
                     <h2 class="section-title">Recent Contact Messages</h2>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                    <!-- 👆 Adjust max-height as per need -->
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -793,37 +807,10 @@
                                             <% } %>
                         </tbody>
                     </table>
-
-                    <% const page=typeof currentPage !=='undefined' ? currentPage : 1; %>
-                        <% const pages=typeof totalPages !=='undefined' ? totalPages : 1; %>
-
-                            <div class="pagination-wrapper mt-3">
-                                <ul class="pagination">
-                                    <% if(page> 1) { %>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page=<%= page - 1 %>">&laquo; Prev</a>
-                                        </li>
-                                        <% } %>
-
-                                            <% for(let i=1; i <=pages; i++) { %>
-                                                <li class="page-item <%= page === i ? 'active' : '' %>">
-                                                    <a class="page-link" href="?page=<%= i %>">
-                                                        <%= i %>
-                                                    </a>
-                                                </li>
-                                                <% } %>
-
-                                                    <% if(page < pages) { %>
-                                                        <li class="page-item">
-                                                            <a class="page-link" href="?page=<%= page + 1 %>">Next
-                                                                &raquo;</a>
-                                                        </li>
-                                                        <% } %>
-                                </ul>
-                            </div>
-
                 </div>
             </div>
+
+
 
 
 
@@ -1329,4 +1316,5 @@
 
 
 </html>
+
 
