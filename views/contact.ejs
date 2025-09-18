@@ -33,34 +33,37 @@
 
                         <div class="row g-4 gx-5">
 
-  <div class="col-lg-6">
-    <div class="fw-bold text-dark"><i class="icofont-location-pin me-2 id-color-2"></i>Clinic Location</div>
-    <%= footerData?.contact?.location_text || "Vizag, India." %>
-  </div>
+                            <div class="col-lg-6">
+                                <div class="fw-bold text-dark"><i
+                                        class="icofont-location-pin me-2 id-color-2"></i>Clinic Location</div>
+                                <%= footerData?.contact?.location_text || "Vizag, India." %>
+                            </div>
 
-  <div class="col-lg-6">
-    <div class="fw-bold text-dark"><i class="icofont-phone me-2 id-color-2"></i>Call Us Directly</div>
-    <% 
-      const phones = (footerData?.contact?.phone_number || "+91 98765 43210").split(',');
-      phones.forEach(phone => { 
-    %>
-      <a href="tel:<%= phone.trim() %>"><%= phone.trim() %></a><br>
-    <% }) %>
-  </div>
+                            <div class="col-lg-6">
+                                <div class="fw-bold text-dark"><i class="icofont-phone me-2 id-color-2"></i>Call Us
+                                    Directly</div>
+                                <% const phones=(footerData?.contact?.phone_number || "+91 98765 43210" ).split(',');
+                                    phones.forEach(phone=> {
+                                    %>
+                                    <a href="tel:<%= phone.trim() %>">
+                                        <%= phone.trim() %>
+                                    </a><br>
+                                    <% }) %>
+                            </div>
 
-  <div class="col-lg-6">
-    <div class="fw-bold text-dark"><i class="icofont-envelope me-2 id-color-2"></i>Send a Message</div>
-    <% 
-      const emails = (footerData?.contact?.email_address || "info@vidyavedika.com").split(',');
-      emails.forEach(email => { 
-    %>
-      <a href="mailto:<%= email.trim() %>"><%= email.trim() %></a><br>
-    <% }) %>
-  </div>
+                            <div class="col-lg-6">
+                                <div class="fw-bold text-dark"><i class="icofont-envelope me-2 id-color-2"></i>Send a
+                                    Message</div>
+                                <% const emails=(footerData?.contact?.email_address || "info@vidyavedika.com"
+                                    ).split(','); emails.forEach(email=> {
+                                    %>
+                                    <a href="mailto:<%= email.trim() %>">
+                                        <%= email.trim() %>
+                                    </a><br>
+                                    <% }) %>
+                            </div>
 
-</div>
-
-
+                        </div>
 
 
                     </div>
