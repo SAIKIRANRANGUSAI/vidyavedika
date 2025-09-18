@@ -1161,8 +1161,8 @@
                                             <td>
                                                 <%= testimonial.description %>
                                             </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-primary open-testimonial-modal"
+                                            <td><div class="d-flex flex-row justify-content-around">
+                                                <button class="btn btn-sm btn-primary open-testimonial-modal  mx-2"
                                                     data-action="edit" data-id="<%= testimonial.id %>"
                                                     data-name="<%= testimonial.name %>"
                                                     data-role="<%= testimonial.role %>"
@@ -1179,6 +1179,8 @@
                                                     <button type="button"
                                                         class="btn btn-sm btn-danger open-delete-modal">Delete</button>
                                                 </form>
+                                            </div>
+
                                             </td>
                                         </tr>
                                         <% }) %>
@@ -1535,6 +1537,7 @@
 
 
 </html>
+
 
 
 
