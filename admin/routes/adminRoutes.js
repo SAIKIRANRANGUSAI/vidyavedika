@@ -157,6 +157,15 @@ router.get("/home", async (req, res) => {
     const [courses] = await db.query(
       "SELECT id, main_heading, main_description, created_at, updated_at FROM course_section"
     );
+    const [socialRows] = await db.query("SELECT * FROM admin_social WHERE id = 1");
+    const socialData = socialRows[0] || {
+      description: "",
+      facebook: "",
+      twitter: "",
+      instagram: "",
+      youtube: "",
+      whatsapp: ""
+    };
 
 
     // Construct the data object to be passed to the view
@@ -189,7 +198,8 @@ router.get("/home", async (req, res) => {
         heading: testimonialContentData.heading || "",
         description: testimonialContentData.description || ""
       },
-      testimonials: testimonialsData
+      testimonials: testimonialsData,
+      social: socialData,
     };
 
     // Render the EJS template with the data
@@ -778,31 +788,20 @@ router.post('/home/why-choose-us/update',
   });
 
 router.post("/update-social", async (req, res) => {
-  const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
-
   try {
-    const [rows] = await db.query("SELECT id FROM admin_social WHERE id = 1");
+    const { description, facebook, twitter, instagram, youtube, whatsapp } = req.body;
 
-    if (rows.length > 0) {
-      await db.query(
-        `UPDATE admin_social 
-         SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=? 
-         WHERE id=1`,
-        [description, facebook, twitter, instagram, youtube, whatsapp]
-      );
-    } else {
-      await db.query(
-        `INSERT INTO admin_social 
-         (id, description, facebook, twitter, instagram, youtube, whatsapp) 
-         VALUES (1, ?, ?, ?, ?, ?, ?)`,
-        [description, facebook, twitter, instagram, youtube, whatsapp]
-      );
-    }
+    await db.query(
+      `UPDATE admin_social 
+       SET description=?, facebook=?, twitter=?, instagram=?, youtube=?, whatsapp=?, updated_at=NOW()
+       WHERE id = 1`,
+      [description, facebook, twitter, instagram, youtube, whatsapp]
+    );
 
-    res.json({ success: true, message: "Social links updated successfully!" });
+    res.redirect('/admin/dashboard');
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error. Please try again." });
+    console.error("Update social error:", err);
+    res.json({ success: false, message: "Failed to update social links" });
   }
 });
 
@@ -954,3 +953,4 @@ router.post("/contactus/contact-details/save", async (req, res) => {
 
 
 module.exports = router;
+
