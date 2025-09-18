@@ -57,15 +57,18 @@
                     <div class="col-lg-6">
                         <div class="p-40 bg-color-op-1 rounded-1">
                             <h3>Get In Touch</h3>
-                            <form id="contactForm" action="/contact-us/send" method="POST">
 
+                            <!-- Load reCAPTCHA v2 -->
+                            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+                            <form id="contactForm" action="/contact-us/send" method="POST">
                                 <div class="mb-4">
                                     <input type="text" name="name" id="name" class="form-control"
                                         placeholder="Your Name" required>
                                 </div>
 
                                 <div class="mb-4">
-                                    <input type="text" name="email" id="email" class="form-control"
+                                    <input type="email" name="email" id="email" class="form-control"
                                         placeholder="Your Email" required>
                                 </div>
 
@@ -79,22 +82,19 @@
                                         placeholder="Your Message" required></textarea>
                                 </div>
 
-                                <div id='submit' class="mt20">
-                                    <input type='submit' id='send_message' value='Send Message' class="btn-main">
+                                <!-- ✅ v2 reCAPTCHA checkbox -->
+                                <div class="mb-4">
+                                    <div class="g-recaptcha" data-sitekey="6Lf2Mc0rAAAAANVm9KDgNu9bfsIEbc9fz6U9NC-s">
+                                    </div>
                                 </div>
 
-                                <div id="success_message" class='success'>
-                                    Your message has been sent successfully. Refresh this page if you want to send more
-                                    messages.
-                                </div>
-                                <div id="error_message" class='error'>
-                                    Sorry there was an error sending your form.
+                                <div id="submit" class="mt20">
+                                    <input type="submit" id="send_message" value="Send Message" class="btn-main">
                                 </div>
                             </form>
-
-
                         </div>
                     </div>
+
 
                 </div>
             </div>
