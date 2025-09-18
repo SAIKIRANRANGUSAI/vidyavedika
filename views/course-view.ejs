@@ -31,9 +31,9 @@
 
                 <!-- Banner Image -->
                 <% if (courseView && courseView.banner_image) { %>
-                  <img src="<%= courseView.banner_image %>" class="w-100 mb-4 rounded-1" alt="Course Banner">
+                  <img src="<%= courseView.banner_image %>" class="w-100 mb-4 rounded-1" alt="<%= course.heading %> Banner">
                   <% } else { %>
-                    <img src="/images/course-banner.png" class="w-100 mb-4 rounded-1" alt="Course Banner">
+                    <img src="/images/course-banner.png" class="w-100 mb-4 rounded-1" alt="<%= course.heading %> Banner">
                     <% } %>
 
                       <!-- Course Content -->
