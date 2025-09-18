@@ -862,7 +862,8 @@
                         <%= course.description %>
                       </td>
                       <td>
-                        <button class="btn btn-sm btn-primary" data-id="<%= course.id %>"
+                        <div class="d-flex flex-row justify-content-around">
+                        <button class="btn btn-sm btn-primary mx-2" data-id="<%= course.id %>"
                           data-heading="<%- course.heading %>" data-description="<%- course.description %>"
                           data-image="<%= course.image || '' %>" onclick="openCourseModal('edit', this)">
                           Edit
@@ -871,7 +872,9 @@
                           <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
                             Delete
                           </button>
+                          
                         </form>
+                        </div>
                       </td>
                     </tr>
                     <% }) %>
@@ -1524,5 +1527,6 @@
 
 
 </html>
+
 
 
