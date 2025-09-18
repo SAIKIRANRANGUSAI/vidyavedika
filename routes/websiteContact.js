@@ -15,42 +15,53 @@ function sanitizeInput(str) {
 
 // POST route with CAPTCHA & sanitization
 router.post("/contact-us/send", async (req, res) => {
-  try {
-    const { name, email, phone, message, "g-recaptcha-response": captcha } = req.body;
+    try {
+        const { name, email, phone, message, "g-recaptcha-response": captcha } = req.body;
 
-    if (!name || !email || !phone || !message || !captcha) {
-      return res.status(400).send("All fields including CAPTCHA are required");
+        if (!name || !email || !phone || !message || !captcha) {
+            return res.json({ success: false, message: "All fields including CAPTCHA are required" });
+        }
+
+        // Verify reCAPTCHA
+        const secretKey = "6Lf2Mc0rAAAAAPZYg9MHRyVvKE2IQgLBMAqrUaaL";
+        const captchaVerify = await axios.post(
+            `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`
+        );
+        if (!captchaVerify.data.success) {
+            return res.json({ success: false, message: "CAPTCHA verification failed" });
+        }
+
+        // Multiple emails validation
+        const emails = email.split(",").map(e => e.trim());
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        for (let e of emails) {
+            if (!emailRegex.test(e)) {
+                return res.json({ success: false, message: `Invalid email: ${e}` });
+            }
+        }
+
+        // Multiple phone numbers validation
+        const phones = phone.split(",").map(p => p.trim());
+        const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{10}$/;
+        for (let p of phones) {
+            if (!phoneRegex.test(p)) {
+                return res.json({ success: false, message: `Invalid phone number: ${p}` });
+            }
+        }
+
+        // Insert message
+        await db.query(
+            "INSERT INTO contact_messages (name, email, phone, message) VALUES (?, ?, ?, ?)",
+            [name.trim(), email.trim(), phone.trim(), message.trim()]
+        );
+
+        return res.json({ success: true, message: "Message sent successfully!" });
+
+    } catch (err) {
+        console.error("Contact form error:", err);
+        return res.json({ success: false, message: "Server error. Please try again." });
     }
-
-    // Verify CAPTCHA
-    const secretKey = "6LfIRM0rAAAAAH1CVLqy-zJtYUCnk5t5qFQSG_LQ";
-
-    const captchaVerify = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`
-    );
-
-    if (!captchaVerify.data.success) {
-      return res.status(400).send("CAPTCHA verification failed");
-    }
-
-    // Sanitize inputs
-    const cleanName = sanitizeInput(name);
-    const cleanEmail = sanitizeInput(email);
-    const cleanPhone = sanitizeInput(phone);
-    const cleanMessage = sanitizeInput(message);
-
-    await db.query(
-      "INSERT INTO contact_messages (name, email, phone, message) VALUES (?, ?, ?, ?)",
-      [cleanName, cleanEmail, cleanPhone, cleanMessage]
-    );
-
-    res.redirect("/contact");
-  } catch (err) {
-    console.error("Contact form error:", err);
-    res.status(500).send("Server error");
-  }
 });
-
 router.get("/contact", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM get_in_touch LIMIT 1");
@@ -65,4 +76,5 @@ router.get("/contact", async (req, res) => {
 });
 
 module.exports = router;
+
 
