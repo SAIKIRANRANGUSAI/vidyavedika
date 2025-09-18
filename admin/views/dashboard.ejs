@@ -752,7 +752,7 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Message</th>
-                                <th>Date</th>
+                                <th>Date & Time</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -773,7 +773,7 @@
                                             <%= msg.message %>
                                         </td>
                                         <td>
-                                            <%= new Date(msg.created_at).toLocaleDateString() %>
+                                            <%= msg.created_at %>
                                         </td>
                                         <td>
                                             <div class="table-actions">
@@ -782,7 +782,6 @@
                                                     onsubmit="return confirm('Are you sure you want to delete this message?');">
                                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                                 </form>
-
                                             </div>
                                         </td>
                                     </tr>
@@ -794,8 +793,38 @@
                                             <% } %>
                         </tbody>
                     </table>
+
+                    <% const page=typeof currentPage !=='undefined' ? currentPage : 1; %>
+                        <% const pages=typeof totalPages !=='undefined' ? totalPages : 1; %>
+
+                            <div class="pagination-wrapper mt-3">
+                                <ul class="pagination">
+                                    <% if(page> 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= page - 1 %>">&laquo; Prev</a>
+                                        </li>
+                                        <% } %>
+
+                                            <% for(let i=1; i <=pages; i++) { %>
+                                                <li class="page-item <%= page === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <% if(page < pages) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page=<%= page + 1 %>">Next
+                                                                &raquo;</a>
+                                                        </li>
+                                                        <% } %>
+                                </ul>
+                            </div>
+
                 </div>
             </div>
+
 
 
 
@@ -1300,3 +1329,4 @@
 
 
 </html>
+
