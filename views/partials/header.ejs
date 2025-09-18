@@ -32,8 +32,9 @@
 
     <!-- If there is JSON-LD schema in the DB, render it -->
     <% if (seo && seo.schema_json) { %>
-      <script type="application/ld+json"><%= seo.schema_json %></script>
-    <% } %>
+  <script type="application/ld+json"><%- seo.schema_json %></script>
+<% } %>
+
     <!-- CSS Files
     ================================================== -->
     <link
@@ -158,4 +159,5 @@ function closeNav() {
 </script>
 
    
+
 
