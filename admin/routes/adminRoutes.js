@@ -136,8 +136,8 @@ router.get("/home", async (req, res) => {
     const [galleryImages] = await db.query("SELECT * FROM gallery_images ORDER BY id DESC");
 
     // 🎯 Query for testimonial section content
-    const [testimonialContentRows] = await db.query("SELECT * FROM testimonial_content WHERE id = 1");
-    const testimonialContentData = testimonialContentRows[0] || {};
+    const [testimonialRowszz] = await db.query('SELECT * FROM testimonial_content WHERE id = 1');
+    const testimonialsContent = testimonialRowszz[0] || { heading: "", description: "" };
 
     // Fetch Why Choose Us content
     // Fetch Why Choose Us data
@@ -194,10 +194,7 @@ router.get("/home", async (req, res) => {
 
       // REMOVE THIS DUPLICATE cta KEY ❌
       // cta: { title: "", button_text: "", button_link: "", updated_at: null }, 
-      testimonialsContent: {
-        heading: testimonialContentData.heading || "",
-        description: testimonialContentData.description || ""
-      },
+      testimonialsContent,
       testimonials: testimonialsData,
       social: socialData,
     };
@@ -411,38 +408,17 @@ router.post("/home/gallery/update", async (req, res) => {
 });
 
 
-// GET route to display testimonials
-router.get('/home/testimonials', async (req, res) => {
-  try {
-    const [testimonialsContent] = await db.query('SELECT * FROM testimonial_content WHERE id = 1');
-    const [testimonials] = await db.query('SELECT * FROM testimonials ORDER BY id');
-
-    // Ensure success message is retrieved from a session or query parameter if coming from a redirect
-    // const successMessage = req.session.successMessage || null;
-    // const errorMessage = req.session.errorMessage || null;
-
-    // // Clear the messages from the session
-    // delete req.session.successMessage;
-    // delete req.session.errorMessage;
-
-    res.redirect("/admin/home");
-  } catch (err) {
-    console.error('Error fetching testimonials:', err);
-    res.status(500).send('Server Error');
-  }
-});
-
-// POST route to update the main testimonial heading and description
 router.post('/home/testimonials/update-text', async (req, res) => {
   const { testimonials_heading, testimonials_description } = req.body;
   try {
-    await db.query('UPDATE testimonial_content SET heading = ?, description = ? WHERE id = 1', [testimonials_heading, testimonials_description]);
-    // req.session.successMessage = "Testimonial section text updated successfully!";
-    res.redirect('/admin/home/testimonials');
+    await db.query(
+      'UPDATE testimonial_content SET heading = ?, description = ? WHERE id = 1',
+      [testimonials_heading, testimonials_description]
+    );
+    res.redirect('/admin/home'); // back to admin home
   } catch (err) {
     console.error('Error updating testimonial text:', err);
-    // req.session.errorMessage = "Failed to update testimonial section text.";
-    res.redirect('/admin/home/testimonials');
+    res.redirect('/admin/home');
   }
 });
 
@@ -953,4 +929,5 @@ router.post("/contactus/contact-details/save", async (req, res) => {
 
 
 module.exports = router;
+
 
