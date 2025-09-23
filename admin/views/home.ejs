@@ -1115,7 +1115,28 @@
 
 
 
+<div class="container">
+    <form id="testimonialForm" action="/admin/home/testimonials/update-text" method="POST">
 
+        <!-- Heading -->
+        <div class="form-group">
+            <label for="testimonialsHeading" class="form-label">Heading</label>
+            <input type="text" class="form-input" id="testimonialsHeading" name="testimonials_heading"
+                value="<%= testimonialsContent.heading %>" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="testimonialsDescription" class="form-label">Description</label>
+            <textarea class="form-textarea" id="testimonialsDescription" name="testimonials_description"
+                rows="4" required><%= testimonialsContent.description %></textarea>
+        </div>
+
+        <div class="form-footer">
+            <button type="submit" class="btn btn-primary">Save Testimonial Content</button>
+        </div>
+    </form>
+</div>
 
 
             <div class="container">
@@ -1537,6 +1558,7 @@
 
 
 </html>
+
 
 
 
